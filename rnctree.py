@@ -131,11 +131,15 @@ class Node(object):
                     write('  '*(indent+1)+'</element>')
                     write('  '*indent+'</%s>' % TAGS[x.quant])
             elif x.type == ATTR:
-                if x.value[0].type == TEXT:
+                if x.value.type == TEXT:
                     write('  '*indent+'<attribute name="%s"/>' % x.name)
-                elif x.value[0].type == EMPTY:
+                elif x.value.type == EMPTY:
                     write('  '*indent+'<attribute name="%s">' % x.name)
                     write('  '*(indent+1)+'<empty/>')
+                    write('  '*indent+'</attribute>')
+		elif x.value.type == CHOICE:
+                    write('  '*indent+'<attribute name="%s">' % x.name)
+		    write(x.value.xmlnode(indent+1))
                     write('  '*indent+'</attribute>')
 
         return '\n'.join(out)
