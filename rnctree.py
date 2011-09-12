@@ -110,6 +110,8 @@ class Node(object):
                 write('  '*indent+'<text/>')
             elif x.type == EMPTY:
                 write('  '*indent+'<empty/>')
+            elif x.type == SEQ:
+                write(x.xmlnode(indent+1))
             elif x.type == DATATAG:
                 DATATYPE_LIB[0] = 1     # Use datatypes
                 if x.name is None:      # no paramaters
