@@ -133,9 +133,9 @@ class Node(object):
                     write('  '*(indent+1)+'</element>')
                     write('  '*indent+'</%s>' % TAGS[x.quant])
             elif x.type == ATTR:
-                if x.value.type == TEXT:
+                if x.value[0].type == TEXT:
                     write('  '*indent+'<attribute name="%s"/>' % x.name)
-                elif x.value.type == EMPTY:
+                elif x.value[0].type == EMPTY:
                     write('  '*indent+'<attribute name="%s">' % x.name)
                     write('  '*(indent+1)+'<empty/>')
                     write('  '*indent+'</attribute>')
