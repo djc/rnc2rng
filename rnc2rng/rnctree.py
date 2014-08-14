@@ -139,9 +139,9 @@ class Node(object):
                     write('  '*indent+'<attribute name="%s">' % x.name)
                     write('  '*(indent+1)+'<empty/>')
                     write('  '*indent+'</attribute>')
-		elif x.value.type == CHOICE:
+                elif x.value.type == CHOICE:
                     write('  '*indent+'<attribute name="%s">' % x.name)
-		    write(x.value.xmlnode(indent+1))
+                    write(x.value.xmlnode(indent+1))
                     write('  '*indent+'</attribute>')
 
         return '\n'.join(out)
