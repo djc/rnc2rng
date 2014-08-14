@@ -2,7 +2,8 @@
 
 # Define the tokenizer for RELAX NG compact syntax
 # This file released to the Public Domain by David Mertz
-import lex
+from __future__ import absolute_import
+from . import lex
 tokens = tuple('''
   ELEM ATTR EMPTY TEXT KEYWORD LITERAL ANNOTATION COMMENT
   BEG_PAREN END_PAREN BEG_BODY END_BODY EQUAL NAME CHOICE SEQ
