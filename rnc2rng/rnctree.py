@@ -105,7 +105,13 @@ class Node(object):
                 write(x.xmlnode(indent+1))
                 write('  '*indent+'</choice>')
             elif x.type == GROUP:
-                write(x.xmlnode(indent))
+                if x.quant in (ANY, SOME):
+                    write('  '*indent+'<%s>' % TAGS[x.quant])
+
+                write(x.xmlnode(indent+1))
+
+                if x.quant in (ANY, SOME):
+                    write('  '*indent+'</%s>' % TAGS[x.quant])
             elif x.type == TEXT:
                 write('  '*indent+'<text/>')
             elif x.type == EMPTY:
