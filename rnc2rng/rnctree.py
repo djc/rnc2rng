@@ -267,7 +267,7 @@ def nest_defines(nodes):
         newnodes.append(node)
         if node.type == DEFINE:
             group = []
-            while (i+1) < len(nodes) and nodes[i+1].type <> DEFINE:
+            while (i+1) < len(nodes) and nodes[i+1].type not in (DEFINE, START):
                 group.append(nodes[i+1])
                 i += 1
             node.name = node.value
