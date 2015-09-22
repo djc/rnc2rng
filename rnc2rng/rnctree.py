@@ -248,8 +248,6 @@ def type_bodies(nodes):
             node = Node(DATATAG, nodes[i+1].value, nodes[i].value)
             newnodes.append(node)
             i += 2
-        elif nodes[i] == DEFINE:
-            print nodes[i:]
         else:
             if nodes[i].type == GROUP:   # Recurse into groups
                 value = type_bodies(nodes[i].value)
