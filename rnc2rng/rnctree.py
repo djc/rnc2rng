@@ -149,7 +149,7 @@ class Node(object):
                 if isinstance(x.value, Node) and x.value.type == CHOICE:
                     write('  '*indent+'<attribute name="%s">' % x.name)
                     write('  '*(indent+1)+'<choice>')
-                    write(x.value.xmlnode(indent+2))
+                    write(x.value.xmlnode(indent+1))
                     write('  '*(indent+1)+'</choice>')
                     write('  '*indent+'</attribute>')
                 elif x.value[0].type == TEXT:
