@@ -142,15 +142,25 @@ class Node(object):
                 if x.quant == MAYBE:
                     write('  '*indent+'<%s>' % TAGS[x.quant])
 
-                if x.value[0].type == TEXT:
+                if isinstance(x.value, Node) and x.value.type == CHOICE:
+                    write('  '*indent+'<attribute name="%s">' % x.name)
+                    write('  '*(indent+1)+'<choice>')
+                    write(x.value.xmlnode(indent+2))
+                    write('  '*(indent+1)+'</choice>')
+                    write('  '*indent+'</attribute>')
+                elif x.value[0].type == TEXT:
                     write('  '*indent+'<attribute name="%s"/>' % x.name)
                 elif x.value[0].type == EMPTY:
                     write('  '*indent+'<attribute name="%s">' % x.name)
                     write('  '*(indent+1)+'<empty/>')
                     write('  '*indent+'</attribute>')
-                elif x.value.type == CHOICE:
+                elif x.value[0].type == LITERAL:
                     write('  '*indent+'<attribute name="%s">' % x.name)
-                    write(x.value.xmlnode(indent+1))
+                    write('  '*(indent+1)+'<value>' + x.value[0].value + '</value>')
+                    write('  '*indent+'</attribute>')
+                elif x.value[0].type == NAME:
+                    write('  '*indent+'<attribute name="%s">' % x.name)
+                    write(x.xmlnode(indent+1))
                     write('  '*indent+'</attribute>')
 
                 if x.quant == MAYBE:
