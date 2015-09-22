@@ -45,7 +45,7 @@ def t_ANNOTATION(t):
     return t
 
 def t_COMMENT(t):
-    r"(?im)^\# .*$"
+    r"(?im)\# .*$"
     t.value = t.value[2:]
     return t
 
