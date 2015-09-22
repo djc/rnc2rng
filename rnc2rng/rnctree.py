@@ -105,7 +105,9 @@ class Node(object):
                 write(x.xmlnode(indent + 1))
                 write('  ' * indent + '</define>')
             elif x.type == NAME:
+                indent = self.quant_start(x, write, indent)
                 write('  ' * indent + '<ref name="%s"/>' % x.value)
+                indent = self.quant_end(x, write, indent)
             elif x.type == COMMENT:
                 write('  ' * indent + '<!-- %s -->' % x.value)
             elif x.type == LITERAL:
