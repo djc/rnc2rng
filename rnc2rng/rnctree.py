@@ -76,6 +76,18 @@ class Node(object):
         else:
             return self.add_ns(self.xmlnode())
 
+    def quant_start(self, x, write, indent, explicit=False):
+        if x.quant == ONE and not explicit:
+            return indent
+        write('  ' * indent + '<%s>' % TAGS[x.quant])
+        return indent + 1
+
+    def quant_end(self, x, write, indent, explicit=False):
+        if x.quant == ONE and not explicit:
+            return indent
+        write('  ' * (indent - 1) + '</%s>' % TAGS[x.quant])
+        return indent - 1
+
     def xmlnode(self, indent=0):
         out = []
         write = out.append
@@ -110,17 +122,9 @@ class Node(object):
                 write(x.xmlnode(indent + 1))
                 write('  ' * indent + '</choice>')
             elif x.type == GROUP:
-                if x.quant in (ANY, SOME):
-                    write('  ' * indent + '<%s>' % TAGS[x.quant])
-                else:
-                    write('  ' * indent + '<group>')
-
+                indent = self.quant_start(x, write, indent, True)
                 write(x.xmlnode(indent + 1))
-
-                if x.quant in (ANY, SOME):
-                    write('  ' * indent + '</%s>' % TAGS[x.quant])
-                else:
-                    write('  ' * indent + '</group>')
+                indent = self.quant_end(x, write, indent, True)
             elif x.type == TEXT:
                 write('  ' * indent + '<text/>')
             elif x.type == EMPTY:
