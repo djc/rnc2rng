@@ -8,7 +8,7 @@ from rnc_tokenize import token_list
 class ParseError(SyntaxError): pass
 
 for t in """
-  ANY SOME MAYBE ONE BODY ANNOTATION ELEM ATTR GROUP LITERAL
+  ANY SOME MAYBE ONE BODY ANNOTATION ELEM EQUAL ATTR GROUP LITERAL
   NAME COMMENT TEXT EMPTY INTERLEAVE CHOICE SEQ ROOT
   DEFAULT_NS NS DATATYPES DATATAG PATTERN START DEFINE
   """.split(): globals()[t] = t
@@ -128,8 +128,9 @@ class Node(object):
                     write('  '*indent+'<data type="%s"/>' % x.value)
                 else:
                     write('  '*indent+'<data type="%s">' % x.name)
-                    p = '<param name="pattern">%s</param>' % x.value
-                    write('  '*(indent+1)+p)
+                    for key, val in x.value.iteritems():
+                        p = '<param name="%s">%s</param>' % (key, val)
+                        write('  '*(indent+1)+p)
                     write('  '*indent+'</data>')
             elif x.type == ELEM:
                 if x.quant == ONE:
@@ -166,6 +167,12 @@ class Node(object):
                     write('  '*indent+'<attribute name="%s">' % x.name)
                     write(x.xmlnode(indent+1))
                     write('  '*indent+'</attribute>')
+                elif x.value[0].type == DATATAG:
+                    write('  '*indent+'<attribute name="%s">' % x.name)
+                    write(x.xmlnode(indent+1))
+                    write('  '*indent+'</attribute>')
+                else:
+                    assert False, x.value
 
                 if x.quant == MAYBE:
                     write('  '*indent+'</%s>' % TAGS[x.quant])
@@ -258,8 +265,27 @@ def type_bodies(nodes):
             node = Node(nodes[i].type, value, name, quant)
             newnodes.append(node)
             i += 3
-        elif nodetypes(nodes[i:i+2]) == (DATATAG, PATTERN):
-            node = Node(DATATAG, nodes[i+1].value, nodes[i].value)
+        elif nodes[i].type == DATATAG and nodes[i+1].type in (PATTERN, BODY):
+            params = {}
+            if nodes[i+1].type == PATTERN:
+                params['pattern'] = nodes[i+1].value
+            else:
+                cur = []
+                for p in nodes[i+1].value:
+                    if p.type == SEQ:
+                        assert not len(cur), cur
+                        continue
+                    if len(cur) < 2:
+                        cur.append(p)
+                        continue
+                    cur.append(p)
+                    assert cur[0].type == NAME, cur[0]
+                    assert cur[1].type == EQUAL, cur[1]
+                    assert cur[2].type == LITERAL, cur[2]
+                    params[cur[0].value] = cur[2].value
+                    cur = []
+                assert not len(cur), cur
+            node = Node(DATATAG, params, nodes[i].value)
             newnodes.append(node)
             i += 2
         else:
@@ -307,7 +333,7 @@ def intersperse(nodes):
                     if pat.type <> intertype:
                         items.append(pat)
                 node.value = Node(intertype, items)
-        if not isinstance(node.value, str): # No recurse to terminal str
+        if not isinstance(node.value, (str, dict)): # No recurse to terminal str
             intersperse(node.value)
     return nodes
 
