@@ -159,8 +159,8 @@ class Node(object):
         return '\n'.join(out)
 
     def __repr__(self):
-        return "Node(%s,%s,%s)[%d]" % (self.type, self.name,
-                                       self.quant, len(self.value))
+        return "Node(%s, %r, %r, %s)" % (self.type, self.name,
+                                         self.value, self.quant)
 
     def add_ns(self, xml):
         "Add namespace attributes to top level element"
