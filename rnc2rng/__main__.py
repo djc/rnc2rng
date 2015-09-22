@@ -7,7 +7,6 @@ else:
     tokens = token_list(sys.stdin.read())
 root = make_nodetree(tokens)
 if len(sys.argv) > 2:
-    open(sys.argv[2],'w').write(root.toxml())
+    open(sys.argv[2], 'w').write(root.toxml())
 else:
     print root.toxml()
-

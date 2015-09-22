@@ -4,6 +4,7 @@
 # This file released to the Public Domain by David Mertz
 from __future__ import absolute_import
 from . import lex
+
 tokens = tuple('''
   ELEM ATTR EMPTY TEXT KEYWORD LITERAL ANNOTATION COMMENT
   BEG_PAREN END_PAREN BEG_BODY END_BODY EQUAL NAME CHOICE SEQ
@@ -12,27 +13,28 @@ tokens = tuple('''
   '''.split())
 
 reserved = {
-   'element'    : 'ELEM',
-   'attribute'  : 'ATTR',
-   'empty'      : 'EMPTY',
-   'text'       : 'TEXT',
-   'div'        : 'TODO',
-   'external'   : 'TODO',
-   'grammar'    : 'TODO',
-   'include'    : 'TODO',
-   'inherit'    : 'TODO',
-   'list'       : 'TODO',
-   'mixed'      : 'TODO',
-   'notAllowed' : 'TODO',
-   'parent'     : 'TODO',
-   'string'     : 'TODO',
-   'token'      : 'TODO',
+    'element': 'ELEM',
+    'attribute': 'ATTR',
+    'empty': 'EMPTY',
+    'text': 'TEXT',
+    'div': 'TODO',
+    'external': 'TODO',
+    'grammar': 'TODO',
+    'include': 'TODO',
+    'inherit': 'TODO',
+    'list': 'TODO',
+    'mixed': 'TODO',
+    'notAllowed': 'TODO',
+    'parent': 'TODO',
+    'string': 'TODO',
+    'token': 'TODO',
 }
 
 def t_START(t):
     r"(?im)^start\s*=\s*.*$"
     t.value = t.value.split('=')[1].strip()
     return t
+
 
 def t_DEFINE(t):
     r"(?im)^[\w-]+\s*="
@@ -71,12 +73,12 @@ def t_PATTERN(t):
 
 def t_NS(t):
     r"(?im)^namespace\s+.*$"
-    t.value = t.value.split(None,1)[1]
+    t.value = t.value.split(None, 1)[1]
     return t
 
 def t_ID(t):
     r"[\w:_-]+"
-    t.type = reserved.get(t.value,'NAME')    # Check for reserved words
+    t.type = reserved.get(t.value, 'NAME') # Check for reserved words
     return t
 
 def t_LITERAL(t):
@@ -86,16 +88,16 @@ def t_LITERAL(t):
 
 t_BEG_PAREN = r"\("
 t_END_PAREN = r"\)"
-t_BEG_BODY  = r"{"
-t_END_BODY  = r"}"
-t_EQUAL     = r"="
-t_CHOICE    = r"[|]"
-t_SEQ       = r","
-t_INTERLEAVE= r"&"
-t_ANY       = r"[*]"
-t_SOME      = r"[+]"
-t_MAYBE     = r"[?]"
-t_WHITESPACE= r"\s+"
+t_BEG_BODY = r"{"
+t_END_BODY = r"}"
+t_EQUAL = r"="
+t_CHOICE = r"[|]"
+t_SEQ = r","
+t_INTERLEAVE = r"&"
+t_ANY = r"[*]"
+t_SOME = r"[+]"
+t_MAYBE = r"[?]"
+t_WHITESPACE = r"\s+"
 t_ignore = " \t\n\r"
 
 def t_error(t):
@@ -112,7 +114,7 @@ def token_list(rnc):
         ts.append(t)
     return ts
 
-if __name__=='__main__':
+if __name__ == '__main__':
     import sys
     del t_ignore
     tokens = token_list(sys.stdin.read())
