@@ -6,6 +6,10 @@ Is what it says on the tin. Dependencies:
 - Python 2.x (tested mostly with 2.7 so far)
 - Python 3.x (currently untested)
 
+Feedback welcome on `GitHub`_.
+
+.. GitHub: https://github.com/djc/rnc2rng
+
 How to install
 --------------
 
