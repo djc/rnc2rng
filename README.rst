@@ -8,7 +8,7 @@ Is what it says on the tin. Dependencies:
 
 Feedback welcome on `GitHub`_.
 
-.. GitHub: https://github.com/djc/rnc2rng
+.. _GitHub: https://github.com/djc/rnc2rng
 
 How to install
 --------------
