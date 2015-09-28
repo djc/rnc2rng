@@ -1,17 +1,29 @@
-Example files and programming tools for working with RELAX NG
+RELAX NG Compact to RELAX NG conversion library
+===============================================
 
-Some of these files are part of James Clark's test suite (see
-clark.html for some details).
+Is what it says on the tin. Dependencies:
 
-All of the examples and scripts (unless indicated otherwise within
-the file) are released to the Public Domain.
+- Python 2.x (tested mostly with 2.7 so far)
+- Python 3.x (currently untested)
 
-+++
+How to install
+--------------
 
-To utilize the utility 'rnc2rng' download the following files, 
-and place them in a working directory (or in your $PYTHONPATH):
+The usual should work:
 
-    rnc2rng
-    rnctree.py
-    rnc_tokenize.py
-    lex.py
+.. code-block:: shell
+
+   $ sudo pip install .
+
+Getting started
+---------------
+
+.. code-block:: shell
+
+   $ python -m rnc2rng test.rnc > test.rng
+
+License
+-------
+
+All of the code are released to the Public Domain, unless indicated otherwise
+within the file (this is true for PLY's lex.py distributed with this package).
