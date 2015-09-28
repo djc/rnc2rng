@@ -14,5 +14,10 @@ setup(
         'Programming Language :: Python',
     ],
     packages=['rnc2rng'],
+    entry_points={
+        'console_scripts': [
+            'rnc2rng = rnc2rng.__main__:main',
+        ],
+    },
     use_2to3=True,
 )
