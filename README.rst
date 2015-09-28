@@ -14,7 +14,7 @@ History
 -------
 
 rnc2rng was originally written by `David Mertz`_ in 2003 and published as part
-of a collection of files around RELAX NG `on his site` into the Public Domain.
+of a collection of files around RELAX NG `on his site`_ into the Public Domain.
 `Hartmut Goebel`_ published it as a package on PyPI to make it easier to access.
 It was mirrored on GitHub by `Dustin J. Mitchell`_ in 2010 after he fixed some
 bugs. `Timmy Zhu`_ forked his repository and contributed further enhancements.
