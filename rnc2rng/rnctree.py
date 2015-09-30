@@ -92,7 +92,7 @@ class Node(object):
 
         for x in self.value:
             if not isinstance(x, Node):
-                raise TypeError, "Unhappy Node.value: " + repr(x)
+                raise TypeError("Unhappy Node.value: " + repr(x))
             elif x.type == DEFINE:
                 if x.name == 'start':
                     write('  ' * indent + '<start>')
@@ -237,8 +237,8 @@ def findmatch(beg, nodes, offset):
             level -= 1
         if level == 0:
             return i + offset
-    raise EOFError, ("No closing token encountered for %s @ %d"
-                     % (beg, offset))
+    raise EOFError("No closing token encountered for %s @ %d"
+                   % (beg, offset))
 
 def match_pairs(nodes):
     newnodes = []
@@ -340,7 +340,7 @@ def intersperse(nodes):
             inters = [t for t in ntypes if t in (INTERLEAVE, CHOICE, SEQ)]
             inters = dict(zip(inters, [0] * len(inters)))
             if len(inters) > 1:
-                raise ParseError, "Ambiguity in sequencing: %s" % node
+                raise ParseError("Ambiguity in sequencing: %s" % node)
             if len(inters) > 0:
                 intertype = inters.keys()[0]
                 items = []
