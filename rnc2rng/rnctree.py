@@ -33,8 +33,6 @@ try:
 except:
     enumerate = lambda seq: zip(range(len(seq)), seq)
 
-toNodes = lambda toks: map(lambda t: Node(t.type, t.value), toks)
-
 class Node(object):
     __slots__ = ('type', 'value', 'name', 'quant')
 
@@ -382,7 +380,7 @@ def scan_NS(nodes):
         nodes[rules[0][0]] = node
 
 def make_nodetree(tokens):
-    nodes = toNodes(tokens)
+    nodes = [Node(t.type, t.value) for t in tokens]
     match_pairs(nodes)
     type_bodies(nodes)
     nest_defines(nodes)
