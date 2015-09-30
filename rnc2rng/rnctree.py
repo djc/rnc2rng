@@ -27,7 +27,6 @@ TAGS = {ONE:   'group',
 DEFAULT_NAMESPACE = None
 DATATYPE_LIB = [0, '"http://www.w3.org/2001/XMLSchema-datatypes"']
 OTHER_NAMESPACE = {}
-CONTEXT_FREE = 0
 
 try:
     enumerate
@@ -64,17 +63,14 @@ class Node(object):
         print self.format()
 
     def toxml(self):
-        if CONTEXT_FREE:
-            out = []
-            write = out.append
-            write('<?xml version="1.0" encoding="UTF-8"?>')
-            write('<grammar>')
-            self.type = None
-            write(self.xmlnode(1))
-            write('</grammar>')
-            return self.add_ns('\n'.join(out))
-        else:
-            return self.add_ns(self.xmlnode())
+        out = []
+        write = out.append
+        write('<?xml version="1.0" encoding="UTF-8"?>')
+        write('<grammar>')
+        self.type = None
+        write(self.xmlnode(1))
+        write('</grammar>')
+        return self.add_ns('\n'.join(out))
 
     def quant_start(self, x, write, indent, explicit=False):
         if x.quant == ONE and not explicit:
@@ -352,8 +348,9 @@ def intersperse(nodes):
 
 def scan_NS(nodes):
     "Look for any namespace configuration lines"
-    global DEFAULT_NAMESPACE, OTHER_NAMESPACE, CONTEXT_FREE
-    for node in nodes:
+    global DEFAULT_NAMESPACE, OTHER_NAMESPACE
+    defines, rules = [], []
+    for i, node in enumerate(nodes):
         if node.type == DEFAULT_NS:
             DEFAULT_NAMESPACE = node.value
         elif node.type == NS:
@@ -364,8 +361,14 @@ def scan_NS(nodes):
                 '"http://relaxng.org/ns/compatibility/annotations/1.0"'
         elif node.type == DATATYPES:
             DATATYPE_LIB[:] = [1, node.value]
-        elif node.type == START:
-            CONTEXT_FREE = 1
+        elif node.type == START or node.type == DEFINE:
+            defines.append((i, node))
+        elif node.type == ELEM:
+            rules.append((i, node))
+
+    if rules:
+        node = Node(START, rules[0][1], 'grammar')
+        nodes[rules[0][0]] = node
 
 def make_nodetree(tokens):
     nodes = toNodes(tokens)
