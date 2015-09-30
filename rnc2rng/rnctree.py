@@ -121,14 +121,14 @@ class Node(object):
                 write('  ' * indent + '</choice>')
             elif x.type == GROUP:
                 indent = self.quant_start(x, write, indent, True)
-                write(x.xmlnode(indent + 1))
+                write(x.xmlnode(indent))
                 indent = self.quant_end(x, write, indent, True)
             elif x.type == TEXT:
                 write('  ' * indent + '<text/>')
             elif x.type == EMPTY:
                 write('  ' * indent + '<empty/>')
             elif x.type == SEQ:
-                write(x.xmlnode(indent + 1))
+                write(x.xmlnode(indent))
             elif x.type == DATATAG:
                 DATATYPE_LIB[0] = 1     # Use datatypes
                 if x.name is None:      # no paramaters
@@ -141,12 +141,12 @@ class Node(object):
                     write('  ' * indent + '</data>')
             elif x.type == ELEM:
                 if x.name == '*':
-                    write('  ' * (indent + 1) + '<anyName/>')
+                    write('  ' * indent + '<anyName/>')
                 else:
                     indent = self.quant_start(x, write, indent)
-                    write('  ' * (indent + 1) + '<element name="%s">' % x.name)
-                    write(x.xmlnode(indent + 2))
-                    write('  ' * (indent + 1) + '</element>')
+                    write('  ' * indent + '<element name="%s">' % x.name)
+                    write(x.xmlnode(indent + 1))
+                    write('  ' * indent + '</element>')
                     indent = self.quant_end(x, write, indent)
             elif x.type == ATTR:
                 if x.quant == MAYBE:
@@ -155,7 +155,7 @@ class Node(object):
                 if isinstance(x.value, Node) and x.value.type == CHOICE:
                     write('  ' * indent + '<attribute name="%s">' % x.name)
                     write('  ' * (indent + 1) + '<choice>')
-                    write(x.value.xmlnode(indent + 1))
+                    write(x.value.xmlnode(indent + 2))
                     write('  ' * (indent + 1) + '</choice>')
                     write('  ' * indent + '</attribute>')
                 elif x.value[0].type == TEXT:
