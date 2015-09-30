@@ -365,7 +365,13 @@ def scan_NS(nodes):
             defines.append((i, node))
         elif node.type == ELEM:
             rules.append((i, node))
+        else:
+            raise ParseError('no non-element tokens allowed at top level')
 
+    if defines and rules:
+        raise ParseError('cannot have defines and top-level pattern')
+    if len(rules) > 1:
+        raise ParseError('only one top-level pattern allowed')
     if rules:
         node = Node(START, rules[0][1], 'grammar')
         nodes[rules[0][0]] = node
