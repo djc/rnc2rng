@@ -138,14 +138,16 @@ class Node(object):
                         write('  ' * (indent + 1) + p)
                     write('  ' * indent + '</data>')
             elif x.type == ELEM:
+                indent = self.quant_start(x, write, indent)
+                write('  ' * indent + '<element>')
                 if x.name == '*':
-                    write('  ' * indent + '<anyName/>')
+                    write('  ' * (indent + 1) + '<anyName/>')
                 else:
-                    indent = self.quant_start(x, write, indent)
-                    write('  ' * indent + '<element name="%s">' % x.name)
-                    write(x.xmlnode(indent + 1))
-                    write('  ' * indent + '</element>')
-                    indent = self.quant_end(x, write, indent)
+                    name = '<name>%s</name>' % x.name
+                    write('  ' * (indent + 1) + name)
+                write(x.xmlnode(indent + 1))
+                write('  ' * indent + '</element>')
+                indent = self.quant_end(x, write, indent)
             elif x.type == ATTR:
                 if x.quant == MAYBE:
                     write('  ' * indent + '<%s>' % TAGS[x.quant])
