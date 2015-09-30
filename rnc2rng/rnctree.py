@@ -15,14 +15,12 @@ for t in """
   """.split():
       globals()[t] = t
 
-PAIRS = {'BEG_BODY': ('END_BODY', BODY),
-         'BEG_PAREN': ('END_PAREN', GROUP),
-         'BEG_ANNO': ('END_ANNO', ANNOTATION)}
-
-TAGS = {ONE:   'group',
-        SOME:  'oneOrMore',
-        MAYBE: 'optional',
-        ANY:   'zeroOrMore'}
+PAIRS = {
+    'BEG_BODY': ('END_BODY', BODY),
+    'BEG_PAREN': ('END_PAREN', GROUP),
+    'BEG_ANNO': ('END_ANNO', ANNOTATION),
+}
+TAGS = {ONE: 'group', SOME: 'oneOrMore', MAYBE: 'optional', ANY: 'zeroOrMore'}
 
 DEFAULT_NAMESPACE = None
 DATATYPE_LIB = [0, '"http://www.w3.org/2001/XMLSchema-datatypes"']
