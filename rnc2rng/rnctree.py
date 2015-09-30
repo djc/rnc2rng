@@ -11,7 +11,7 @@ class ParseError(SyntaxError):
 for t in """
   ANY SOME MAYBE ONE BODY ANNOTATION ELEM EQUAL ATTR GROUP LITERAL
   NAME COMMENT TEXT EMPTY INTERLEAVE CHOICE SEQ ROOT
-  DEFAULT_NS NS DATATYPES DATATAG PATTERN START DEFINE
+  DEFAULT_NS NS DATATYPES DATATAG PATTERN DEFINE
   """.split():
       globals()[t] = t
 
@@ -93,13 +93,16 @@ class Node(object):
         for x in self.value:
             if not isinstance(x, Node):
                 raise TypeError, "Unhappy Node.value: " + repr(x)
-            elif x.type == START:
-                startelem = '<start><ref name="%s"/></start>' % x.value
-                write('  ' * indent + startelem)
             elif x.type == DEFINE:
-                write('  ' * indent + '<define name="%s">' % x.name)
+                if x.name == 'start':
+                    write('  ' * indent + '<start>')
+                else:
+                    write('  ' * indent + '<define name="%s">' % x.name)
                 write(x.xmlnode(indent + 1))
-                write('  ' * indent + '</define>')
+                if x.name == 'start':
+                    write('  ' * indent + '</start>')
+                else:
+                    write('  ' * indent + '</define>')
             elif x.type == NAME:
                 indent = self.quant_start(x, write, indent)
                 write('  ' * indent + '<ref name="%s"/>' % x.value)
@@ -319,7 +322,7 @@ def nest_defines(nodes):
         newnodes.append(node)
         if node.type == DEFINE:
             group = []
-            while (i + 1) < len(nodes) and nodes[i + 1].type not in (DEFINE, START):
+            while (i + 1) < len(nodes) and nodes[i + 1].type != DEFINE:
                 group.append(nodes[i + 1])
                 i += 1
             node.name = node.value
@@ -364,7 +367,7 @@ def scan_NS(nodes):
                 '"http://relaxng.org/ns/compatibility/annotations/1.0"'
         elif node.type == DATATYPES:
             DATATYPE_LIB[:] = [1, node.value]
-        elif node.type == START or node.type == DEFINE:
+        elif node.type == DEFINE:
             defines.append((i, node))
         elif node.type == ELEM:
             rules.append((i, node))
@@ -376,7 +379,7 @@ def scan_NS(nodes):
     if len(rules) > 1:
         raise ParseError('only one top-level pattern allowed')
     if rules:
-        node = Node(START, rules[0][1], 'grammar')
+        node = Node(DEFINE, rules[0][1], 'start')
         nodes[rules[0][0]] = node
 
 def make_nodetree(tokens):

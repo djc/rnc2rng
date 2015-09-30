@@ -9,7 +9,7 @@ tokens = tuple('''
   ELEM ATTR EMPTY TEXT KEYWORD LITERAL ANNOTATION COMMENT
   BEG_PAREN END_PAREN BEG_BODY END_BODY EQUAL NAME CHOICE SEQ
   INTERLEAVE ANY SOME MAYBE WHITESPACE TODO DATATAG PATTERN
-  DEFAULT_NS NS DATATYPES NS_ANNOTATION START DEFINE
+  DEFAULT_NS NS DATATYPES NS_ANNOTATION DEFINE
   '''.split())
 
 reserved = {
@@ -29,12 +29,6 @@ reserved = {
     'string': 'TODO',
     'token': 'TODO',
 }
-
-def t_START(t):
-    r"(?im)^start\s*=\s*.*$"
-    t.value = t.value.split('=')[1].strip()
-    return t
-
 
 def t_DEFINE(t):
     r"(?im)^[\w-]+\s*="
