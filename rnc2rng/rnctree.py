@@ -326,7 +326,7 @@ def nest_defines(nodes):
                 group.append(nodes[i + 1])
                 i += 1
             node.name = node.value
-            node.value = Node(GROUP, group)
+            node.value = group
         i += 1
     nodes[:] = newnodes
     return nodes
