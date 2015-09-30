@@ -263,8 +263,8 @@ def type_bodies(nodes):
     while 1:
         if i >= len(nodes):
             break
-        if nodetypes(nodes[i:i + 3]) == (ELEM, NAME, BODY) or \
-           nodetypes(nodes[i:i + 3]) == (ATTR, NAME, BODY):
+        if nodes[i].type in (ELEM, ATTR):
+            assert nodes[i + 2].type == BODY, nodes[i + 2]
             name, body = nodes[i + 1].value, nodes[i + 2]
             value, quant = type_bodies(body.value), body.quant
             node = Node(nodes[i].type, value, name, quant)
