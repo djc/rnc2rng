@@ -33,7 +33,6 @@ try:
 except:
     enumerate = lambda seq: zip(range(len(seq)), seq)
 
-nodetypes = lambda nl: tuple(map(lambda n: n.type, nl))
 toNodes = lambda toks: map(lambda t: Node(t.type, t.value), toks)
 
 class Node(object):
