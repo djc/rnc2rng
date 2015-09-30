@@ -254,9 +254,6 @@ def match_pairs(nodes):
             i += 1
         if i >= len(nodes):
             break
-        if nodes[i].type in (ANY, SOME, MAYBE):
-            newnodes[-1].quant = nodes[i].type
-            i += 1
     nodes[:] = newnodes
     return nodes
 
@@ -301,6 +298,9 @@ def type_bodies(nodes):
                 value = type_bodies(nodes[i].value)
                 nodes[i] = Node(GROUP, value, None, nodes[i].quant)
             newnodes.append(nodes[i])
+            i += 1
+        if i < len(nodes) and nodes[i].type in (ANY, SOME, MAYBE):
+            newnodes[-1].quant = nodes[i].type
             i += 1
     nodes[:] = newnodes
     return nodes
