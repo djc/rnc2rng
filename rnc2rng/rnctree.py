@@ -389,5 +389,8 @@ def make_nodetree(tokens):
     root = Node(ROOT, nodes)
     return root
 
+def tree(src):
+    return make_nodetree(token_list(src))
+
 if __name__ == '__main__':
     make_nodetree(token_list(sys.stdin.read())).prettyprint()
