@@ -67,7 +67,7 @@ class Node(object):
         write('<?xml version="1.0" encoding="UTF-8"?>')
         write('<grammar>')
         self.type = None
-        write(self.xmlnode(1))
+        write(self.xmlnode(self, 1))
         write('</grammar>')
         return self.add_ns('\n'.join(out))
 
@@ -83,13 +83,13 @@ class Node(object):
         write('  ' * (indent - 1) + '</%s>' % TAGS[x.quant])
         return indent - 1
 
-    def xmlnode(self, indent=0):
+    def xmlnode(self, node, indent=0):
         out = []
         write = out.append
-        if self.type == ROOT:
+        if node.type == ROOT:
             write('<?xml version="1.0" encoding="UTF-8"?>')
 
-        for x in self.value:
+        for x in node.value:
             if not isinstance(x, Node):
                 raise TypeError("Unhappy Node.value: " + repr(x))
             elif x.type == DEFINE:
@@ -97,7 +97,7 @@ class Node(object):
                     write('  ' * indent + '<start>')
                 else:
                     write('  ' * indent + '<define name="%s">' % x.name)
-                write(x.xmlnode(indent + 1))
+                write(self.xmlnode(x, indent + 1))
                 if x.name == 'start':
                     write('  ' * indent + '</start>')
                 else:
@@ -115,22 +115,22 @@ class Node(object):
                       '<a:documentation>%s</a:documentation>' % x.value)
             elif x.type == INTERLEAVE:
                 write('  ' * indent + '<interleave>')
-                write(x.xmlnode(indent + 1))
+                write(self.xmlnode(x, indent + 1))
                 write('  ' * indent + '</interleave>')
             elif x.type == CHOICE:
                 write('  ' * indent + '<choice>')
-                write(x.xmlnode(indent + 1))
+                write(self.xmlnode(x, indent + 1))
                 write('  ' * indent + '</choice>')
             elif x.type == GROUP:
                 indent = self.quant_start(x, write, indent, True)
-                write(x.xmlnode(indent))
+                write(self.xmlnode(x, indent))
                 indent = self.quant_end(x, write, indent, True)
             elif x.type == TEXT:
                 write('  ' * indent + '<text/>')
             elif x.type == EMPTY:
                 write('  ' * indent + '<empty/>')
             elif x.type == SEQ:
-                write(x.xmlnode(indent))
+                write(self.xmlnode(x, indent))
             elif x.type == DATATAG:
                 DATATYPE_LIB[0] = 1     # Use datatypes
                 if x.name is None:      # no paramaters
@@ -149,7 +149,7 @@ class Node(object):
                 else:
                     name = '<name>%s</name>' % x.name
                     write('  ' * (indent + 1) + name)
-                write(x.xmlnode(indent + 1))
+                write(self.xmlnode(x, indent + 1))
                 write('  ' * indent + '</element>')
                 indent = self.quant_end(x, write, indent)
             elif x.type == ATTR:
@@ -159,7 +159,7 @@ class Node(object):
                 if isinstance(x.value, Node) and x.value.type == CHOICE:
                     write('  ' * indent + '<attribute name="%s">' % x.name)
                     write('  ' * (indent + 1) + '<choice>')
-                    write(x.value.xmlnode(indent + 2))
+                    write(self.xmlnode(x.value, indent + 2))
                     write('  ' * (indent + 1) + '</choice>')
                     write('  ' * indent + '</attribute>')
                 elif x.value[0].type == TEXT:
@@ -175,11 +175,11 @@ class Node(object):
                     write('  ' * indent + '</attribute>')
                 elif x.value[0].type == NAME:
                     write('  ' * indent + '<attribute name="%s">' % x.name)
-                    write(x.xmlnode(indent + 1))
+                    write(self.xmlnode(x, indent + 1))
                     write('  ' * indent + '</attribute>')
                 elif x.value[0].type == DATATAG:
                     write('  ' * indent + '<attribute name="%s">' % x.name)
-                    write(x.xmlnode(indent + 1))
+                    write(self.xmlnode(x, indent + 1))
                     write('  ' * indent + '</attribute>')
                 else:
                     assert False, x.value
