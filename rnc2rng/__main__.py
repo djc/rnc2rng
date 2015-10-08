@@ -10,10 +10,11 @@ def main():
     else:
         root = rnctree.tree(sys.stdin.read())
 
+    xml = rnctree.XMLSerializer().toxml(root)
     if len(args) > 1:
-        open(sys.argv[2], 'w').write(root.toxml())
+        open(sys.argv[2], 'w').write(xml)
     else:
-        print root.toxml()
+        print xml
 
 if __name__ == '__main__':
     main()

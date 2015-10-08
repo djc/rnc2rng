@@ -47,13 +47,15 @@ class Node(object):
         return "Node(%s, %r, %r, %s)" % (self.type, self.name,
                                          self.value, self.quant)
 
-    def toxml(self):
+class XMLSerializer(object):
+
+    def toxml(self, node):
         out = []
         write = out.append
         write('<?xml version="1.0" encoding="UTF-8"?>')
         write('<grammar>')
         self.type = None
-        write(self.xmlnode(self, 1))
+        write(self.xmlnode(node, 1))
         write('</grammar>')
         return self.add_ns('\n'.join(out))
 
@@ -72,9 +74,6 @@ class Node(object):
     def xmlnode(self, node, indent=0):
         out = []
         write = out.append
-        if node.type == ROOT:
-            write('<?xml version="1.0" encoding="UTF-8"?>')
-
         for x in node.value:
             if not isinstance(x, Node):
                 raise TypeError("Unhappy Node.value: " + repr(x))
