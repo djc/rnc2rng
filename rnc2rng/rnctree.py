@@ -47,20 +47,6 @@ class Node(object):
         return "Node(%s, %r, %r, %s)" % (self.type, self.name,
                                          self.value, self.quant)
 
-    def format(self, indent=0):
-        out = ['  ' * indent + repr(self)]
-        write = out.append
-        if isinstance(self.value, str):
-            if self.type == COMMENT:
-                write('  ' * (1 + indent) + self.value)
-        else:
-            for node in self.value:
-                write(node.format(indent + 1))
-        return '\n'.join(out)
-
-    def prettyprint(self):
-        print self.format()
-
     def toxml(self):
         out = []
         write = out.append
@@ -391,6 +377,3 @@ def make_nodetree(tokens):
 
 def tree(src):
     return make_nodetree(token_list(src))
-
-if __name__ == '__main__':
-    make_nodetree(token_list(sys.stdin.read())).prettyprint()
