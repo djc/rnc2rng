@@ -43,6 +43,10 @@ class Node(object):
         self.name = name
         self.quant = quant
 
+    def __repr__(self):
+        return "Node(%s, %r, %r, %s)" % (self.type, self.name,
+                                         self.value, self.quant)
+
     def format(self, indent=0):
         out = ['  ' * indent + repr(self)]
         write = out.append
@@ -184,10 +188,6 @@ class Node(object):
                     write('  ' * indent + '</%s>' % TAGS[x.quant])
 
         return '\n'.join(out)
-
-    def __repr__(self):
-        return "Node(%s, %r, %r, %s)" % (self.type, self.name,
-                                         self.value, self.quant)
 
     def add_ns(self, xml):
         "Add namespace attributes to top level element"
