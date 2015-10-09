@@ -1,6 +1,9 @@
 RELAX NG Compact to RELAX NG conversion library
 ===============================================
 
+.. image:: https://travis-ci.org/djc/rnc2rng.svg?branch=master
+   :target: https://travis-ci.org/djc/rnc2rng
+
 Is what it says on the tin. Dependencies:
 
 - Python 2.x (tested mostly with 2.7 so far)
