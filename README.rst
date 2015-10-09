@@ -3,6 +3,8 @@ RELAX NG Compact to RELAX NG conversion library
 
 .. image:: https://travis-ci.org/djc/rnc2rng.svg?branch=master
    :target: https://travis-ci.org/djc/rnc2rng
+.. image:: https://img.shields.io/coveralls/djc/rnc2rng.svg?branch=master
+   :target: https://coveralls.io/r/djc/rnc2rng?branch=master
 
 Is what it says on the tin. Dependencies:
 
