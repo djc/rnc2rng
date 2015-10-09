@@ -60,8 +60,6 @@
 #
 #-----------------------------------------------------------------------------
 
-from functools import cmp_to_key
-
 r"""
 lex.py
 
@@ -498,10 +496,10 @@ def lex(module=None,debug=0,optimize=0,lextab="lextab"):
             error = 1
 
     # Sort the functions by line number
-    fsymbols.sort(key=cmp_to_key(lambda x,y: x.func_code.co_firstlineno - y.func_code.co_firstlineno))
+    fsymbols.sort(key=lambda x: x.func_code.co_firstlineno)
 
     # Sort the strings by regular expression length
-    ssymbols.sort(key=cmp_to_key(lambda x,y: (len(x[1]) < len(y[1])) - (len(x[1]) > len(y[1]))))
+    ssymbols.sort(key=lambda x: len(x[1]), reverse=True)
 
     # Check for non-empty symbols
     if len(fsymbols) == 0 and len(ssymbols) == 0:
