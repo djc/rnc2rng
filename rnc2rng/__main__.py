@@ -12,7 +12,7 @@ def main():
 
     xml = rnctree.XMLSerializer().toxml(root)
     if len(args) > 1:
-        open(sys.argv[2], 'w').write(xml)
+        open(sys.argv[2], 'w').write(xml + '\n')
     else:
         print xml
 
