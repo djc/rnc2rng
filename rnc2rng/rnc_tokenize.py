@@ -36,8 +36,8 @@ def t_DEFINE(t):
     return t
 
 def t_ANNOTATION(t):
-    r"(?im)^\#\# .*$"
-    t.value = t.value[3:]
+    r"(?im)\#\# .*$"
+    t.value = t.value.lstrip()[3:]
     return t
 
 def t_COMMENT(t):
