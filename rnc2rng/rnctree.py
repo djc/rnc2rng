@@ -260,7 +260,8 @@ def type_bodies(nodes):
             node = Node(nodes[i].type, value, name, quant)
             newnodes.append(node)
             i += 3
-        elif nodes[i].type == DATATAG and nodes[i + 1].type in (PATTERN, BODY):
+        elif (nodes[i].type == DATATAG and (len(nodes) > i + 1 and
+              nodes[i + 1].type in (PATTERN, BODY))):
             params = {}
             if nodes[i + 1].type == PATTERN:
                 params['pattern'] = nodes[i + 1].value
