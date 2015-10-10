@@ -9,7 +9,7 @@ tokens = tuple('''
   ELEM ATTR EMPTY TEXT KEYWORD LITERAL ANNOTATION COMMENT
   BEG_PAREN END_PAREN BEG_BODY END_BODY EQUAL NAME CHOICE SEQ
   INTERLEAVE ANY SOME MAYBE WHITESPACE TODO DATATAG PATTERN
-  DEFAULT_NS NS DATATYPES NS_ANNOTATION DEFINE
+  DEFAULT_NS NS DATATYPES NS_ANNOTATION DEFINE STRING
   '''.split())
 
 reserved = {
@@ -26,7 +26,7 @@ reserved = {
     'mixed': 'TODO',
     'notAllowed': 'TODO',
     'parent': 'TODO',
-    'string': 'TODO',
+    'string': 'STRING',
     'token': 'TODO',
 }
 
