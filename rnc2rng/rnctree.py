@@ -22,9 +22,8 @@ PAIRS = {
 }
 TAGS = {ONE: 'group', SOME: 'oneOrMore', MAYBE: 'optional', ANY: 'zeroOrMore'}
 
-DEFAULT_NAMESPACE = None
-DATATYPE_LIB = [0, '"http://www.w3.org/2001/XMLSchema-datatypes"']
-OTHER_NAMESPACE = {}
+ANNO_NS = 'http://relaxng.org/ns/compatibility/annotations/1.0'
+TYPELIB_NS = 'http://www.w3.org/2001/XMLSchema-datatypes'
 
 try:
     enumerate
@@ -49,15 +48,41 @@ class Node(object):
 
 class XMLSerializer(object):
 
+    def __init__(self):
+        self.needs = {}
+
     def toxml(self, node):
+
         out = []
         write = out.append
-        write('<?xml version="1.0" encoding="UTF-8"?>')
-        write('<grammar>')
-        self.type = None
+        self.needs = {}
         write(self.xmlnode(node, 1))
-        write('</grammar>')
-        return self.add_ns('\n'.join(out))
+
+        default, types, ns = None, None, {}
+        for n in node.value:
+            if n.type == DATATYPES:
+                types = n.value.strip('"')
+            elif n.type == DEFAULT_NS:
+                default = n.value.strip('"')
+            elif n.type == NS:
+                key, val = n.value.split('=')
+                ns[key.strip()] = val.strip(' "')
+
+        prelude = ['<?xml version="1.0" encoding="UTF-8"?>']
+        prelude.append('<grammar xmlns="http://relaxng.org/ns/structure/1.0"')
+        if default is not None:
+            prelude.append('         ns="%s"' % default)
+        if types is not None or self.needs.get('types'):
+            url = types if types is not None else TYPELIB_NS
+            prelude.append('         datatypeLibrary="%s"' % url)
+        for ns, url in ns.items():
+            prelude.append('         xmlns:%s="%s"' % (ns, url))
+        if 'a' not in ns and self.needs.get('anno'):
+            prelude.append('         xmlns:a="%s"' % ANNO_NS)
+
+        prelude[-1] = prelude[-1] + '>'
+        out.append('</grammar>')
+        return '\n'.join(prelude + out)
 
     def quant_start(self, x, write, indent, explicit=False):
         if x.quant == ONE and not explicit:
@@ -96,6 +121,7 @@ class XMLSerializer(object):
             elif x.type == LITERAL:
                 write('  ' * indent + '<value>%s</value>' % x.value)
             elif x.type == ANNOTATION:
+                self.needs['anno'] = True
                 write('  ' * indent +
                       '<a:documentation>%s</a:documentation>' % x.value)
             elif x.type == INTERLEAVE:
@@ -119,7 +145,7 @@ class XMLSerializer(object):
             elif x.type == STRING:
                 write('  ' * indent + '<data type="string"/>')
             elif x.type == DATATAG:
-                DATATYPE_LIB[0] = 1     # Use datatypes
+                self.needs['types'] = True
                 if x.name is None:      # no paramaters
                     write('  ' * indent + '<data type="%s"/>' % x.value)
                 else:
@@ -175,41 +201,6 @@ class XMLSerializer(object):
                     write('  ' * indent + '</%s>' % TAGS[x.quant])
 
         return '\n'.join(out)
-
-    def add_ns(self, xml):
-        "Add namespace attributes to top level element"
-        lines = xml.split('\n')
-        self.nest_annotations(lines)  # annots not allowed before root elem
-        for i, line in enumerate(lines):
-            ltpos = line.find('<')
-            if ltpos >= 0 and line[ltpos + 1] not in ('!', '?'):
-                # We've got an element tag, not PI or comment
-                new = line[:line.find('>')]
-                new += ' xmlns="http://relaxng.org/ns/structure/1.0"'
-                if DEFAULT_NAMESPACE is not None:
-                    new += '\n    ns=%s' % DEFAULT_NAMESPACE
-                if DATATYPE_LIB[0]:
-                    new += '\n    datatypeLibrary=%s' % DATATYPE_LIB[1]
-                for ns, url in OTHER_NAMESPACE.items():
-                    new += '\n    xmlns:%s=%s' % (ns, url)
-                new += '>'
-                lines[i] = new
-                break
-        return '\n'.join(lines)
-
-    def nest_annotations(self, lines):
-        "Nest any top annotation within first element"
-        top_annotations = []
-        for i, line in enumerate(lines[:]):
-            if line.find('<a:') >= 0:
-                top_annotations.append(line)
-                del lines[i]
-            else:
-                ltpos = line.find('<')
-                if ltpos >= 0 and line[ltpos + 1] not in ('!', '?'):
-                    break
-        for line in top_annotations:
-            lines.insert(i, '  ' + line)
 
 def findmatch(beg, nodes, offset):
     level = 1
@@ -339,19 +330,10 @@ def intersperse(nodes):
 
 def scan_NS(nodes):
     "Look for any namespace configuration lines"
-    global DEFAULT_NAMESPACE, OTHER_NAMESPACE
     defines, rules = [], []
     for i, node in enumerate(nodes):
-        if node.type == DEFAULT_NS:
-            DEFAULT_NAMESPACE = node.value
-        elif node.type == NS:
-            ns, url = map(str.strip, node.value.split('='))
-            OTHER_NAMESPACE[ns] = url
-        elif node.type == ANNOTATION and not OTHER_NAMESPACE.has_key('a'):
-            OTHER_NAMESPACE['a'] =\
-                '"http://relaxng.org/ns/compatibility/annotations/1.0"'
-        elif node.type == DATATYPES:
-            DATATYPE_LIB[:] = [1, node.value]
+        if node.type in (DEFAULT_NS, NS, DATATYPES, ANNOTATION):
+            continue
         elif node.type == DEFINE:
             defines.append((i, node))
         elif node.type == ELEM:
