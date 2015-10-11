@@ -26,7 +26,6 @@ reserved = {
     'mixed': 'TODO',
     'notAllowed': 'TODO',
     'parent': 'TODO',
-    'string': 'STRING',
     'token': 'TODO',
 }
 
@@ -56,8 +55,9 @@ def t_DATATYPES(t):
     return t
 
 def t_DATATAG(t):
-    r"xsd:\w+"
-    t.value = t.value.split(':')[1]
+    r"xsd:\w+|string|token"
+    if ':' in t.value:
+        t.value = t.value.split(':')[1]
     return t
 
 def t_PATTERN(t):
