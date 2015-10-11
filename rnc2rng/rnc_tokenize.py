@@ -102,9 +102,3 @@ def token_list(rnc):
             break
         ts.append(t)
     return ts
-
-if __name__ == '__main__':
-    import sys
-    del t_ignore
-    tokens = token_list(sys.stdin.read())
-    print '\n'.join(map(repr, tokens))
