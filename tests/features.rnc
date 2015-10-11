@@ -1,0 +1,24 @@
+Z = element z { empty }
+Foo = "foo"
+start = element a {
+  attribute b { "c" },
+  element d {
+    Z
+  }*,
+  # e
+  element f {
+    "g"
+  }?,
+  element h {
+    (element i { empty } | element j { empty }) &
+    (element k { string { pattern = "x" } })
+  }+,
+  element l {
+    attribute m { "n" },
+    attribute o { "p" | "q" },
+    attribute r { text },
+    attribute s { string { pattern = "t" } },
+    attribute t { empty }?,
+    attribute u { Foo }
+  }
+}

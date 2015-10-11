@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+         datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <define name="Z">
+    <element>
+      <name>z</name>
+      <empty/>
+    </element>
+  </define>
+  <define name="Foo">
+    <value>foo</value>
+  </define>
+  <start>
+    <element>
+      <name>a</name>
+      <attribute name="b">
+        <value>c</value>
+      </attribute>
+      <zeroOrMore>
+        <element>
+          <name>d</name>
+          <ref name="Z"/>
+        </element>
+      </zeroOrMore>
+      <!-- e -->
+      <optional>
+        <element>
+          <name>f</name>
+          <value>g</value>
+        </element>
+      </optional>
+      <oneOrMore>
+        <element>
+          <name>h</name>
+          <interleave>
+            <group>
+              <choice>
+                <element>
+                  <name>i</name>
+                  <empty/>
+                </element>
+                <element>
+                  <name>j</name>
+                  <empty/>
+                </element>
+              </choice>
+            </group>
+            <group>
+              <element>
+                <name>k</name>
+                <data type="string">
+                  <param name="pattern">x</param>
+                </data>
+              </element>
+            </group>
+          </interleave>
+        </element>
+      </oneOrMore>
+      <element>
+        <name>l</name>
+        <attribute name="m">
+          <value>n</value>
+        </attribute>
+        <attribute name="o">
+          <choice>
+            <value>p</value>
+            <value>q</value>
+          </choice>
+        </attribute>
+        <attribute name="r"/>
+        <attribute name="s">
+          <data type="string">
+            <param name="pattern">t</param>
+          </data>
+        </attribute>
+        <optional>
+          <attribute name="t">
+            <empty/>
+          </attribute>
+        </optional>
+        <attribute name="u">
+          <ref name="Foo"/>
+        </attribute>
+      </element>
+    </element>
+  </start>
+</grammar>
