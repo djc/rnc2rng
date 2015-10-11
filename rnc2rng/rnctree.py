@@ -166,6 +166,7 @@ class XMLSerializer(object):
             elif x.type == ATTR:
                 if x.quant == MAYBE:
                     write('  ' * indent + '<%s>' % TAGS[x.quant])
+                    indent += 1
 
                 if isinstance(x.value, Node) and x.value.type == CHOICE:
                     write('  ' * indent + '<attribute name="%s">' % x.name)
@@ -196,6 +197,7 @@ class XMLSerializer(object):
                     assert False, x.value
 
                 if x.quant == MAYBE:
+                    indent -= 1
                     write('  ' * indent + '</%s>' % TAGS[x.quant])
 
         return '\n'.join(out)
