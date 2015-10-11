@@ -9,6 +9,9 @@ class RNCTest(unittest.TestCase):
         unittest.TestCase.__init__(self)
         self.fn = fn
 
+    def __str__(self):
+        return 'TestCase(%r)' % os.path.basename(self.fn)
+
     def runTest(self):
 
         with open(self.fn) as f:
