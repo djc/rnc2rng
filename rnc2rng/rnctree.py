@@ -231,8 +231,6 @@ def match_pairs(nodes):
         else:
             newnodes.append(node)
             i += 1
-        if i >= len(nodes):
-            break
     nodes[:] = newnodes
     return nodes
 
