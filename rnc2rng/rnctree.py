@@ -252,9 +252,6 @@ def type_bodies(nodes):
             params = {}
             cur = []
             for p in nodes[i + 1].value:
-                if p.type == SEQ:
-                    assert not len(cur), cur
-                    continue
                 if len(cur) < 2:
                     cur.append(p)
                     continue
