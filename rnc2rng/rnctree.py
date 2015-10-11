@@ -11,7 +11,7 @@ class ParseError(SyntaxError):
 for t in """
   ANY SOME MAYBE ONE BODY ANNOTATION ELEM EQUAL ATTR GROUP LITERAL
   NAME COMMENT TEXT EMPTY INTERLEAVE CHOICE SEQ ROOT
-  DEFAULT_NS NS DATATYPES DATATAG DEFINE STRING
+  DEFAULT_NS NS DATATYPES DATATAG DEFINE
   """.split():
       globals()[t] = t
 
@@ -142,8 +142,6 @@ class XMLSerializer(object):
                 write('  ' * indent + '<empty/>')
             elif x.type == SEQ:
                 write(self.xmlnode(x, indent))
-            elif x.type == STRING:
-                write('  ' * indent + '<data type="string"/>')
             elif x.type == DATATAG:
                 self.needs['types'] = True
                 if x.name is None:      # no paramaters
@@ -190,7 +188,7 @@ class XMLSerializer(object):
                     write('  ' * indent + '<attribute name="%s">' % x.name)
                     write(self.xmlnode(x, indent + 1))
                     write('  ' * indent + '</attribute>')
-                elif x.value[0].type in (DATATAG, STRING):
+                elif x.value[0].type == DATATAG:
                     write('  ' * indent + '<attribute name="%s">' % x.name)
                     write(self.xmlnode(x, indent + 1))
                     write('  ' * indent + '</attribute>')
