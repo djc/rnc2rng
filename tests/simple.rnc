@@ -1,1 +1,1 @@
-element foo { text }
+element foo { text } # comment
