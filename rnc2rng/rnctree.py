@@ -335,6 +335,8 @@ def scan_NS(nodes):
             defines.append((i, node))
         elif node.type == ELEM:
             rules.append((i, node))
+        elif node.type == COMMENT:
+            continue
         else:
             raise ParseError('no non-element tokens allowed at top level')
 
