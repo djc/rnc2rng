@@ -8,7 +8,7 @@ from . import lex
 tokens = tuple('''
   ELEM ATTR EMPTY TEXT KEYWORD LITERAL ANNOTATION COMMENT
   BEG_PAREN END_PAREN BEG_BODY END_BODY EQUAL NAME CHOICE SEQ
-  INTERLEAVE ANY SOME MAYBE WHITESPACE TODO DATATAG PATTERN
+  INTERLEAVE ANY SOME MAYBE WHITESPACE TODO DATATAG
   DEFAULT_NS NS DATATYPES NS_ANNOTATION DEFINE STRING
   '''.split())
 
@@ -58,11 +58,6 @@ def t_DATATAG(t):
     r"xsd:\w+|string|token"
     if ':' in t.value:
         t.value = t.value.split(':')[1]
-    return t
-
-def t_PATTERN(t):
-    r'{\s*pattern\s*=\s*".*"\s*}'
-    t.value = t.value[:-1].split('=')[1].strip()[1:-1]
     return t
 
 def t_NS(t):

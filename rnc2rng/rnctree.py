@@ -11,7 +11,7 @@ class ParseError(SyntaxError):
 for t in """
   ANY SOME MAYBE ONE BODY ANNOTATION ELEM EQUAL ATTR GROUP LITERAL
   NAME COMMENT TEXT EMPTY INTERLEAVE CHOICE SEQ ROOT
-  DEFAULT_NS NS DATATYPES DATATAG PATTERN DEFINE STRING
+  DEFAULT_NS NS DATATYPES DATATAG DEFINE STRING
   """.split():
       globals()[t] = t
 
@@ -252,26 +252,23 @@ def type_bodies(nodes):
             newnodes.append(node)
             i += 3
         elif (nodes[i].type == DATATAG and (len(nodes) > i + 1 and
-              nodes[i + 1].type in (PATTERN, BODY))):
+              nodes[i + 1].type == BODY)):
             params = {}
-            if nodes[i + 1].type == PATTERN:
-                params['pattern'] = nodes[i + 1].value
-            else:
-                cur = []
-                for p in nodes[i + 1].value:
-                    if p.type == SEQ:
-                        assert not len(cur), cur
-                        continue
-                    if len(cur) < 2:
-                        cur.append(p)
-                        continue
+            cur = []
+            for p in nodes[i + 1].value:
+                if p.type == SEQ:
+                    assert not len(cur), cur
+                    continue
+                if len(cur) < 2:
                     cur.append(p)
-                    assert cur[0].type == NAME, cur[0]
-                    assert cur[1].type == EQUAL, cur[1]
-                    assert cur[2].type == LITERAL, cur[2]
-                    params[cur[0].value] = cur[2].value
-                    cur = []
-                assert not len(cur), cur
+                    continue
+                cur.append(p)
+                assert cur[0].type == NAME, cur[0]
+                assert cur[1].type == EQUAL, cur[1]
+                assert cur[2].type == LITERAL, cur[2]
+                params[cur[0].value] = cur[2].value
+                cur = []
+            assert not len(cur), cur
             node = Node(DATATAG, params, nodes[i].value)
             newnodes.append(node)
             i += 2
