@@ -4,6 +4,7 @@
 from __future__ import generators
 import sys
 from rnc_tokenize import token_list
+from . import parser
 
 class ParseError(SyntaxError):
     pass
@@ -11,7 +12,7 @@ class ParseError(SyntaxError):
 for t in """
   ANY SOME MAYBE ONE BODY ANNOTATION ELEM EQUAL ATTR GROUP LITERAL
   NAME COMMENT TEXT EMPTY INTERLEAVE CHOICE SEQ ROOT
-  DEFAULT_NS NS DATATYPES DATATAG DEFINE
+  DEFAULT_NS NS DATATYPES DATATAG DEFINE DOCUMENTATION
   """.split():
       globals()[t] = t
 
@@ -65,8 +66,7 @@ class XMLSerializer(object):
             elif n.type == DEFAULT_NS:
                 default = n.value.strip('"')
             elif n.type == NS:
-                key, val = n.value.split('=')
-                ns[key.strip()] = val.strip(' "')
+                ns[n.name] = n.value.strip(' "')
 
         prelude = ['<?xml version="1.0" encoding="UTF-8"?>']
         prelude.append('<grammar xmlns="http://relaxng.org/ns/structure/1.0"')
@@ -100,7 +100,7 @@ class XMLSerializer(object):
         out = []
         write = out.append
         for x in node.value:
-            if not isinstance(x, Node):
+            if not (isinstance(x, Node) or isinstance(x, parser.Node)):
                 raise TypeError("Unhappy Node.value: " + repr(x))
             elif x.type == DEFINE:
                 if x.name == 'start':
@@ -119,11 +119,12 @@ class XMLSerializer(object):
             elif x.type == COMMENT:
                 write('  ' * indent + '<!-- %s -->' % x.value)
             elif x.type == LITERAL:
-                write('  ' * indent + '<value>%s</value>' % x.value)
+                write('  ' * indent + '<value>%s</value>' % x.name)
             elif x.type == ANNOTATION:
                 self.needs['anno'] = True
-                write('  ' * indent +
-                      '<a:documentation>%s</a:documentation>' % x.value)
+                fmt = '<a:documentation>%s</a:documentation>'
+                write('  ' * indent + fmt % x.name[2:].strip())
+                write(self.xmlnode(x, indent))
             elif x.type == INTERLEAVE:
                 write('  ' * indent + '<interleave>')
                 write(self.xmlnode(x, indent + 1))
@@ -144,21 +145,25 @@ class XMLSerializer(object):
                 write(self.xmlnode(x, indent))
             elif x.type == DATATAG:
                 self.needs['types'] = True
-                if x.name is None:      # no paramaters
-                    write('  ' * indent + '<data type="%s"/>' % x.value)
+                if x.value is None:      # no paramaters
+                    write('  ' * indent + '<data type="%s"/>' % x.name)
                 else:
-                    write('  ' * indent + '<data type="%s">' % x.name)
-                    for key, val in x.value.iteritems():
+                    name = x.name
+                    if name not in ('string', 'token'):
+                        name = x.name.split(':', 1)[1]
+                    write('  ' * indent + '<data type="%s">' % name)
+                    for param in x.value:
+                        key, val = param.name.value, param.value
                         p = '<param name="%s">%s</param>' % (key, val)
                         write('  ' * (indent + 1) + p)
                     write('  ' * indent + '</data>')
             elif x.type == ELEM:
                 indent = self.quant_start(x, write, indent)
                 write('  ' * indent + '<element>')
-                if x.name == '*':
+                if x.name.value == '*':
                     write('  ' * (indent + 1) + '<anyName/>')
                 else:
-                    name = '<name>%s</name>' % x.name
+                    name = '<name>%s</name>' % x.name.value
                     write('  ' * (indent + 1) + name)
                 write(self.xmlnode(x, indent + 1))
                 write('  ' * indent + '</element>')
@@ -168,29 +173,29 @@ class XMLSerializer(object):
                     write('  ' * indent + '<%s>' % TAGS[x.quant])
                     indent += 1
 
-                if isinstance(x.value, Node) and x.value.type == CHOICE:
-                    write('  ' * indent + '<attribute name="%s">' % x.name)
+                if x.value.type == CHOICE:
+                    write('  ' * indent + '<attribute name="%s">' % x.name.value)
                     write('  ' * (indent + 1) + '<choice>')
                     write(self.xmlnode(x.value, indent + 2))
                     write('  ' * (indent + 1) + '</choice>')
                     write('  ' * indent + '</attribute>')
-                elif x.value[0].type == TEXT:
-                    write('  ' * indent + '<attribute name="%s"/>' % x.name)
-                elif x.value[0].type == EMPTY:
-                    write('  ' * indent + '<attribute name="%s">' % x.name)
+                elif x.value.type == TEXT:
+                    write('  ' * indent + '<attribute name="%s"/>' % x.name.value)
+                elif x.value.type == EMPTY:
+                    write('  ' * indent + '<attribute name="%s">' % x.name.value)
                     write('  ' * (indent + 1) + '<empty/>')
                     write('  ' * indent + '</attribute>')
-                elif x.value[0].type == LITERAL:
-                    write('  ' * indent + '<attribute name="%s">' % x.name)
+                elif x.value.type == LITERAL:
+                    write('  ' * indent + '<attribute name="%s">' % x.name.value)
                     write('  ' * (indent + 1) + '<value>' +
-                          x.value[0].value + '</value>')
+                          x.value.name + '</value>')
                     write('  ' * indent + '</attribute>')
-                elif x.value[0].type == NAME:
-                    write('  ' * indent + '<attribute name="%s">' % x.name)
+                elif x.value.type == NAME:
+                    write('  ' * indent + '<attribute name="%s">' % x.name.value)
                     write(self.xmlnode(x, indent + 1))
                     write('  ' * indent + '</attribute>')
-                elif x.value[0].type == DATATAG:
-                    write('  ' * indent + '<attribute name="%s">' % x.name)
+                elif x.value.type == DATATAG:
+                    write('  ' * indent + '<attribute name="%s">' % x.name.value)
                     write(self.xmlnode(x, indent + 1))
                     write('  ' * indent + '</attribute>')
                 else:
@@ -354,4 +359,4 @@ def make_nodetree(tokens):
     return root
 
 def tree(src):
-    return make_nodetree(token_list(src))
+    return parser.parse(src)

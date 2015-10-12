@@ -22,7 +22,6 @@
           <ref name="Z"/>
         </element>
       </zeroOrMore>
-      <!-- e -->
       <optional>
         <element>
           <name>f</name>
