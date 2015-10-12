@@ -20,4 +20,5 @@ setup(
         ],
     },
     use_2to3=True,
+    install_requires=['rply'],
 )
