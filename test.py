@@ -8,6 +8,7 @@ class RNCTest(unittest.TestCase):
     def __init__(self, fn):
         unittest.TestCase.__init__(self)
         self.fn = fn
+        self.maxDiff = None
 
     def __str__(self):
         return 'TestCase(%r)' % os.path.basename(self.fn)
