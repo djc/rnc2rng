@@ -15,13 +15,7 @@ for t in """
   """.split():
       globals()[t] = t
 
-PAIRS = {
-    'BEG_BODY': ('END_BODY', BODY),
-    'BEG_PAREN': ('END_PAREN', GROUP),
-    'BEG_ANNO': ('END_ANNO', ANNOTATION),
-}
 TAGS = {ONE: 'group', SOME: 'oneOrMore', MAYBE: 'optional', ANY: 'zeroOrMore'}
-
 ANNO_NS = 'http://relaxng.org/ns/compatibility/annotations/1.0'
 TYPELIB_NS = 'http://www.w3.org/2001/XMLSchema-datatypes'
 
@@ -29,22 +23,6 @@ try:
     enumerate
 except:
     enumerate = lambda seq: zip(range(len(seq)), seq)
-
-class Node(object):
-    __slots__ = ('type', 'value', 'name', 'quant')
-
-    def __iter__(self): yield self
-    __len__ = lambda self: 1
-
-    def __init__(self, type='', value=[], name=None, quant=ONE):
-        self.type = type
-        self.value = value
-        self.name = name
-        self.quant = quant
-
-    def __repr__(self):
-        return "Node(%s, %r, %r, %s)" % (self.type, self.name,
-                                         self.value, self.quant)
 
 class XMLSerializer(object):
 
@@ -83,23 +61,11 @@ class XMLSerializer(object):
         out.append('</grammar>')
         return '\n'.join(prelude + out)
 
-    def quant_start(self, x, write, indent, explicit=False):
-        if x.quant == ONE and not explicit:
-            return indent
-        write('  ' * indent + '<%s>' % TAGS[x.quant])
-        return indent + 1
-
-    def quant_end(self, x, write, indent, explicit=False):
-        if x.quant == ONE and not explicit:
-            return indent
-        write('  ' * (indent - 1) + '</%s>' % TAGS[x.quant])
-        return indent - 1
-
     def xmlnode(self, node, indent=0):
         out = []
         write = out.append
         for x in node.value:
-            if not (isinstance(x, Node) or isinstance(x, parser.Node)):
+            if not isinstance(x, parser.Node):
                 raise TypeError("Unhappy Node.value: " + repr(x))
             elif x.type == DEFINE:
                 if x.name == 'start':
