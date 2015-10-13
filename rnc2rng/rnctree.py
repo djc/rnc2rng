@@ -131,34 +131,12 @@ class XMLSerializer(object):
                     write('  ' * (indent + 1) + name)
                 write(self.xmlnode(x, indent + 1))
                 write('  ' * indent + '</element>')
+            elif x.type == ATTR and x.value.type == TEXT:
+                write('  ' * indent + '<attribute name="%s"/>' % x.name.value)
             elif x.type == ATTR:
-                if x.value.type == CHOICE:
-                    write('  ' * indent + '<attribute name="%s">' % x.name.value)
-                    write('  ' * (indent + 1) + '<choice>')
-                    write(self.xmlnode(x.value, indent + 2))
-                    write('  ' * (indent + 1) + '</choice>')
-                    write('  ' * indent + '</attribute>')
-                elif x.value.type == TEXT:
-                    write('  ' * indent + '<attribute name="%s"/>' % x.name.value)
-                elif x.value.type == EMPTY:
-                    write('  ' * indent + '<attribute name="%s">' % x.name.value)
-                    write('  ' * (indent + 1) + '<empty/>')
-                    write('  ' * indent + '</attribute>')
-                elif x.value.type == LITERAL:
-                    write('  ' * indent + '<attribute name="%s">' % x.name.value)
-                    write('  ' * (indent + 1) + '<value>' +
-                          x.value.name + '</value>')
-                    write('  ' * indent + '</attribute>')
-                elif x.value.type == NAME:
-                    write('  ' * indent + '<attribute name="%s">' % x.name.value)
-                    write(self.xmlnode(x, indent + 1))
-                    write('  ' * indent + '</attribute>')
-                elif x.value.type == DATATAG:
-                    write('  ' * indent + '<attribute name="%s">' % x.name.value)
-                    write(self.xmlnode(x, indent + 1))
-                    write('  ' * indent + '</attribute>')
-                else:
-                    assert False, x.value
+                write('  ' * indent + '<attribute name="%s">' % x.name.value)
+                write(self.xmlnode(x, indent + 1))
+                write('  ' * indent + '</attribute>')
 
         return '\n'.join(out)
 
