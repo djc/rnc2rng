@@ -11,7 +11,7 @@ class ParseError(SyntaxError):
 for type in parser.NODE_TYPES:
     globals()[type] = type
 
-TAGS = {SOME: 'oneOrMore', MAYBE: 'optional', ANY: 'zeroOrMore'}
+QUANTS = {SOME: 'oneOrMore', MAYBE: 'optional', ANY: 'zeroOrMore'}
 ANNO_NS = 'http://relaxng.org/ns/compatibility/annotations/1.0'
 TYPELIB_NS = 'http://www.w3.org/2001/XMLSchema-datatypes'
 
@@ -85,9 +85,9 @@ class XMLSerializer(object):
                 else:
                     self.write('</define>')
             elif x.type in set([MAYBE, SOME, ANY]):
-                self.write('<%s>' % TAGS[x.type])
+                self.write('<%s>' % QUANTS[x.type])
                 self.xmlnode(x.value)
-                self.write('</%s>' % TAGS[x.type])
+                self.write('</%s>' % QUANTS[x.type])
             elif x.type in set([INTERLEAVE, CHOICE, EXCEPT, MIXED, LIST]):
                 self.write('<%s>' % x.type.lower())
                 self.xmlnode(x.value)
