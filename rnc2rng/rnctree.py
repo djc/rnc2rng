@@ -38,6 +38,8 @@ class XMLSerializer(object):
                 types = n.value.strip('"')
             elif n.type == DEFAULT_NS:
                 default = n.value.strip('"')
+                if n.name is not None:
+                    ns[n.name] = n.value.strip(' "')
             elif n.type == NS:
                 ns[n.name] = n.value.strip(' "')
 

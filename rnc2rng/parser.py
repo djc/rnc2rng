@@ -96,6 +96,10 @@ def decls_empty(s, p):
 def decl_default_ns(s, p):
     return Node('DEFAULT_NS', None, p[3].value)
 
+@pg.production('decl : DEFAULT NAMESPACE id-or-kw EQUAL LITERAL')
+def decl_default_names_ns(s, p):
+    return Node('DEFAULT_NS', p[2].value, p[4].value)
+
 @pg.production('decl : NAMESPACE id-or-kw EQUAL LITERAL')
 def decl_ns(s, p):
     return Node('NS', p[1].value, p[3].value)
