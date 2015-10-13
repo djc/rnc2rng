@@ -63,6 +63,8 @@ class XMLSerializer(object):
         for x in node.value:
             if not isinstance(x, parser.Node):
                 raise TypeError("Unhappy Node.value: " + repr(x))
+            elif x.type in set([DATATYPES, DEFAULT_NS, NS]):
+                continue
             elif x.type == DEFINE:
                 if x.name == 'start':
                     write('  ' * indent + '<start>')
@@ -134,6 +136,8 @@ class XMLSerializer(object):
                 write('  ' * indent + '<attribute name="%s">' % x.name.value)
                 write(self.xmlnode(x, indent + 1))
                 write('  ' * indent + '</attribute>')
+            else:
+                assert False, x
 
         return '\n'.join(out)
 
