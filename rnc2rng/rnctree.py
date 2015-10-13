@@ -8,14 +8,10 @@ from . import parser
 class ParseError(SyntaxError):
     pass
 
-for t in """
-  ANY SOME MAYBE ONE BODY ANNOTATION ELEM EQUAL ATTR GROUP LITERAL
-  NAME COMMENT TEXT EMPTY INTERLEAVE CHOICE SEQ ROOT
-  DEFAULT_NS NS DATATYPES DATATAG DEFINE DOCUMENTATION
-  """.split():
-      globals()[t] = t
+for type in parser.NODE_TYPES:
+    globals()[type] = type
 
-TAGS = {ONE: 'group', SOME: 'oneOrMore', MAYBE: 'optional', ANY: 'zeroOrMore'}
+TAGS = {SOME: 'oneOrMore', MAYBE: 'optional', ANY: 'zeroOrMore'}
 ANNO_NS = 'http://relaxng.org/ns/compatibility/annotations/1.0'
 TYPELIB_NS = 'http://www.w3.org/2001/XMLSchema-datatypes'
 
@@ -83,8 +79,6 @@ class XMLSerializer(object):
                 write('  ' * indent + '</%s>' % TAGS[x.type])
             elif x.type == NAME:
                 write('  ' * indent + '<ref name="%s"/>' % x.value)
-            elif x.type == COMMENT:
-                write('  ' * indent + '<!-- %s -->' % x.value)
             elif x.type == LITERAL:
                 write('  ' * indent + '<value>%s</value>' % x.name)
             elif x.type == ANNOTATION:

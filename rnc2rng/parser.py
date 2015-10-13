@@ -60,6 +60,12 @@ class Node(object):
         strs = ['%s=%r' % (k, v) for (k, v) in bits if v is not None]
         return 'Node(%s)' % ', '.join(strs)
 
+NODE_TYPES = [
+    'ANNOTATION', 'ANY', 'ATTR', 'CHOICE', 'DATATAG', 'DATATYPES',
+    'DEFAULT_NS', 'DEFINE', 'ELEM', 'EMPTY', 'GROUP', 'INTERLEAVE',
+    'LITERAL', 'MAYBE', 'NAME', 'NS', 'ROOT', 'SEQ', 'SOME', 'TEXT',
+]
+
 @pg.production('start : decls element-primary')
 def start_pattern(s, p):
     start = Node('DEFINE', 'start', p[1])
