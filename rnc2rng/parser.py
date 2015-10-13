@@ -17,7 +17,7 @@ def lexer():
     lg.add('PIPE', '[|]')
     lg.add('COMMA', ',')
     lg.add('AMP', '&')
-    lg.add('EXCEPT', '[-]')
+    lg.add('MINUS', '[-]')
     lg.add('ANY', '[*]')
     lg.add('SOME', '[+]')
     lg.add('MAYBE', '[?]')
@@ -42,8 +42,8 @@ def lex(src):
         yield t
 
 pg = rply.ParserGenerator([
-    'AMP', 'ANY', 'CNAME', 'COMMA', 'DOCUMENTATION', 'EQUAL', 'EXCEPT', 'ID',
-    'LBRACE', 'LBRACKET', 'LPAREN', 'LIST', 'LITERAL', 'MAYBE', 'MIXED',
+    'AMP', 'ANY', 'CNAME', 'COMMA', 'DOCUMENTATION', 'EQUAL', 'ID', 'LBRACE',
+    'LBRACKET', 'LPAREN', 'LIST', 'LITERAL', 'MAYBE', 'MINUS', 'MIXED',
     'PIPE', 'RBRACE', 'RBRACKET', 'RPAREN', 'SOME',
 ] + [s.upper() for s in KEYWORDS])
 
@@ -278,12 +278,12 @@ def name_class_choice(s, p):
 def name_class_except(s, p):
     return p[0]
 
-@pg.production('except-name-class : simple-name-class EXCEPT except-name-class')
+@pg.production('except-name-class : simple-name-class MINUS except-name-class')
 def except_name_class_nested(s, p):
     p[2].value.insert(0, p[0])
     return p[2]
 
-@pg.production('except-name-class : simple-name-class EXCEPT simple-name-class')
+@pg.production('except-name-class : simple-name-class MINUS simple-name-class')
 def except_name_class_simple(s, p):
     return Node('EXCEPT', None, [p[0], p[2]])
 
