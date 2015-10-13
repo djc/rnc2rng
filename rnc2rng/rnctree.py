@@ -81,6 +81,10 @@ class XMLSerializer(object):
                 write('  ' * indent + '<%s>' % TAGS[x.type])
                 write(self.xmlnode(x, indent + 1))
                 write('  ' * indent + '</%s>' % TAGS[x.type])
+            elif x.type in set([INTERLEAVE, CHOICE, EXCEPT]):
+                write('  ' * indent + '<%s>' % x.type.lower())
+                write(self.xmlnode(x, indent + 1))
+                write('  ' * indent + '</%s>' % x.type.lower())
             elif x.type == NAME:
                 if x.value == '*':
                     write('  ' * indent + '<anyName/>')
@@ -98,18 +102,6 @@ class XMLSerializer(object):
                 fmt = '<a:documentation>%s</a:documentation>'
                 write('  ' * indent + fmt % x.name[2:].strip())
                 write(self.xmlnode(x, indent))
-            elif x.type == INTERLEAVE:
-                write('  ' * indent + '<interleave>')
-                write(self.xmlnode(x, indent + 1))
-                write('  ' * indent + '</interleave>')
-            elif x.type == CHOICE:
-                write('  ' * indent + '<choice>')
-                write(self.xmlnode(x, indent + 1))
-                write('  ' * indent + '</choice>')
-            elif x.type == EXCEPT:
-                write('  ' * indent + '<except>')
-                write(self.xmlnode(x, indent + 1))
-                write('  ' * indent + '</except>')
             elif x.type == GROUP:
                 write(self.xmlnode(x, indent))
             elif x.type == TEXT:
