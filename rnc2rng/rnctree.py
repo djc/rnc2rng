@@ -102,7 +102,7 @@ class XMLSerializer(object):
             elif x.type == LITERAL:
                 self.write('<value>%s</value>' % x.name)
             elif x.type == ANNOTATION:
-                params = ['%s="%s"' % (n.name.value, n.value) for n in x.value]
+                params = ['%s="%s"' % (n.name, n.value) for n in x.value]
                 self.write('<%s %s/>' % (x.name, ' '.join(params)))
             elif x.type == DOCUMENTATION:
                 self.needs['anno'] = True
@@ -126,13 +126,10 @@ class XMLSerializer(object):
                     if name not in ('string', 'token'):
                         name = x.name.split(':', 1)[1]
                     self.write('<data type="%s">' % name)
-                    self.level += 1
-                    for param in x.value:
-                        key, val = param.name.value, param.value
-                        p = '<param name="%s">%s</param>' % (key, val)
-                        self.write(p)
-                    self.level -= 1
+                    self.xmlnode(x.value)
                     self.write('</data>')
+            elif x.type == PARAM:
+                self.write('<param name="%s">%s</param>' % (x.name, x.value))
             elif x.type == ELEM:
                 self.write('<element>')
                 wrapper = parser.Node(None, None, x.name)

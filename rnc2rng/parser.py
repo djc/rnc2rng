@@ -63,8 +63,8 @@ class Node(object):
 NODE_TYPES = [
     'ANNOTATION', 'ANY', 'ATTR', 'CHOICE', 'DATATAG', 'DATATYPES', 'DEFAULT_NS',
     'DEFINE', 'DOCUMENTATION', 'ELEM', 'EMPTY', 'EXCEPT', 'GROUP', 'INTERLEAVE',
-    'LIST', 'LITERAL', 'MAYBE', 'MIXED', 'NAME', 'NS', 'REF', 'ROOT', 'SEQ',
-    'SOME', 'TEXT',
+    'LIST', 'LITERAL', 'MAYBE', 'MIXED', 'NAME', 'NS', 'PARAM', 'REF', 'ROOT',
+    'SEQ', 'SOME', 'TEXT',
 ]
 
 @pg.production('start : decls element-primary')
@@ -264,7 +264,7 @@ def params_empty(s, p):
 
 @pg.production('param : id-or-kw EQUAL LITERAL')
 def param_single(s, p):
-    return Node('PARAM', p[0], p[2].value)
+    return Node('PARAM', p[0].value, p[2].value)
 
 @pg.production('name-class : simple-name-class')
 def name_class_name(s, p):
