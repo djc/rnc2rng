@@ -21,7 +21,7 @@ def lexer():
     lg.add('ANY', '[*]')
     lg.add('SOME', '[+]')
     lg.add('MAYBE', '[?]')
-    lg.add('CNAME', '[\w:]+')
+    lg.add('CNAME', '[\w*]+:[\w*]+')
     lg.add('ID', '\w+')
     lg.add('LITERAL', '".*?"')
     lg.add('DOCUMENTATION', '##.*')
@@ -33,10 +33,8 @@ LEXER = lexer()
 
 def lex(src):
     for t in LEXER.lex(src):
-        if t.name == 'CNAME' and t.value in KEYWORDS:
+        if t.name == 'ID' and t.value in KEYWORDS:
             t.name = t.value.upper()
-        elif t.name == 'CNAME' and ':' not in t.value:
-            t.name = 'ID'
         elif t.name == 'LITERAL':
             t.value = t.value[1:-1]
         elif t.name == 'COMMENT':
