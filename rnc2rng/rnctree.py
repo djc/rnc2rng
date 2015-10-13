@@ -23,13 +23,16 @@ except:
 class XMLSerializer(object):
 
     def __init__(self):
+        self.reset()
+
+    def reset(self):
         self.needs = {}
 
     def toxml(self, node):
 
         out = []
         write = out.append
-        self.needs = {}
+        self.reset()
         write(self.xmlnode(node, 1))
 
         default, types, ns = None, None, {}
