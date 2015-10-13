@@ -32,26 +32,22 @@
         <element>
           <name>h</name>
           <interleave>
-            <group>
-              <choice>
-                <element>
-                  <name>i</name>
-                  <empty/>
-                </element>
-                <element>
-                  <name>j</name>
-                  <empty/>
-                </element>
-              </choice>
-            </group>
-            <group>
+            <choice>
               <element>
-                <name>k</name>
-                <data type="string">
-                  <param name="pattern">x</param>
-                </data>
+                <name>i</name>
+                <empty/>
               </element>
-            </group>
+              <element>
+                <name>j</name>
+                <empty/>
+              </element>
+            </choice>
+            <element>
+              <name>k</name>
+              <data type="string">
+                <param name="pattern">x</param>
+              </data>
+            </element>
           </interleave>
         </element>
       </oneOrMore>

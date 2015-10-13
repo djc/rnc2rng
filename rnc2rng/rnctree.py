@@ -77,10 +77,12 @@ class XMLSerializer(object):
                     write('  ' * indent + '</start>')
                 else:
                     write('  ' * indent + '</define>')
+            elif x.type in set([MAYBE, SOME, ANY]):
+                write('  ' * indent + '<%s>' % TAGS[x.type])
+                write(self.xmlnode(x, indent + 1))
+                write('  ' * indent + '</%s>' % TAGS[x.type])
             elif x.type == NAME:
-                indent = self.quant_start(x, write, indent)
                 write('  ' * indent + '<ref name="%s"/>' % x.value)
-                indent = self.quant_end(x, write, indent)
             elif x.type == COMMENT:
                 write('  ' * indent + '<!-- %s -->' % x.value)
             elif x.type == LITERAL:
@@ -99,9 +101,7 @@ class XMLSerializer(object):
                 write(self.xmlnode(x, indent + 1))
                 write('  ' * indent + '</choice>')
             elif x.type == GROUP:
-                indent = self.quant_start(x, write, indent, True)
                 write(self.xmlnode(x, indent))
-                indent = self.quant_end(x, write, indent, True)
             elif x.type == TEXT:
                 write('  ' * indent + '<text/>')
             elif x.type == EMPTY:
@@ -123,7 +123,6 @@ class XMLSerializer(object):
                         write('  ' * (indent + 1) + p)
                     write('  ' * indent + '</data>')
             elif x.type == ELEM:
-                indent = self.quant_start(x, write, indent)
                 write('  ' * indent + '<element>')
                 if x.name.value == '*':
                     write('  ' * (indent + 1) + '<anyName/>')
@@ -132,12 +131,7 @@ class XMLSerializer(object):
                     write('  ' * (indent + 1) + name)
                 write(self.xmlnode(x, indent + 1))
                 write('  ' * indent + '</element>')
-                indent = self.quant_end(x, write, indent)
             elif x.type == ATTR:
-                if x.quant == MAYBE:
-                    write('  ' * indent + '<%s>' % TAGS[x.quant])
-                    indent += 1
-
                 if x.value.type == CHOICE:
                     write('  ' * indent + '<attribute name="%s">' % x.name.value)
                     write('  ' * (indent + 1) + '<choice>')
@@ -165,10 +159,6 @@ class XMLSerializer(object):
                     write('  ' * indent + '</attribute>')
                 else:
                     assert False, x.value
-
-                if x.quant == MAYBE:
-                    indent -= 1
-                    write('  ' * indent + '</%s>' % TAGS[x.quant])
 
         return '\n'.join(out)
 

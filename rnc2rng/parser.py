@@ -48,12 +48,11 @@ pg = rply.ParserGenerator([
 )
 
 class Node(object):
-    __slots__ = 'type', 'name', 'value', 'quant'
-    def __init__(self, type, name, value=None, quant='ONE'):
+    __slots__ = 'type', 'name', 'value'
+    def __init__(self, type, name, value=None):
         self.type = type
         self.name = name
         self.value = value
-        self.quant = quant
     def __iter__(self):
         yield self
     def __repr__(self):
@@ -165,18 +164,15 @@ def pattern_group(s, p):
 
 @pg.production('particle : annotated-primary MAYBE')
 def particle_maybe(s, p):
-    p[0].quant = 'MAYBE'
-    return p[0]
+    return Node('MAYBE', None, p[0])
 
 @pg.production('particle : annotated-primary ANY')
 def particle_any(s, p):
-    p[0].quant = 'ANY'
-    return p[0]
+    return Node('ANY', None, p[0])
 
 @pg.production('particle : annotated-primary SOME')
 def particle_some(s, p):
-    p[0].quant = 'SOME'
-    return p[0]
+    return Node('SOME', None, p[0])
 
 @pg.production('particle : annotated-primary')
 def particle_primary(s, p):
