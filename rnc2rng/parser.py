@@ -168,10 +168,6 @@ def particle_interleave_multi(s, p):
 def particle_interleave_single(s, p):
     return Node('INTERLEAVE', None, [p[0], p[2]])
 
-@pg.production('particle : BEG_PAREN pattern END_PAREN')
-def pattern_group(s, p):
-    return Node('GROUP', None, p[1])
-
 @pg.production('particle : annotated-primary MAYBE')
 def particle_maybe(s, p):
     return Node('MAYBE', None, p[0])
@@ -187,6 +183,10 @@ def particle_some(s, p):
 @pg.production('particle : annotated-primary')
 def particle_primary(s, p):
     return p[0]
+
+@pg.production('annotated-primary : BEG_PAREN pattern END_PAREN')
+def annotated_primary_group(s, p):
+    return Node('GROUP', None, p[1])
 
 @pg.production('annotated-primary : DOCUMENTATION primary')
 def annotated_primary_annotated(s, p):
