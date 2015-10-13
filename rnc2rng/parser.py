@@ -7,10 +7,10 @@ KEYWORDS = set([
 
 def lexer():
     lg = rply.LexerGenerator()
-    lg.add('BEG_PAREN', '\(')
-    lg.add('END_PAREN', '\)')
-    lg.add('BEG_BODY', '{')
-    lg.add('END_BODY', '}')
+    lg.add('LPAREN', '\(')
+    lg.add('RPAREN', '\)')
+    lg.add('LBRACE', '{')
+    lg.add('RBRACE', '}')
     lg.add('LBRACKET', '\[')
     lg.add('RBRACKET', '\]')
     lg.add('EQUAL', '=')
@@ -42,9 +42,9 @@ def lex(src):
         yield t
 
 pg = rply.ParserGenerator([
-    'ANY', 'BEG_PAREN', 'BEG_BODY', 'CHOICE', 'CNAME', 'DOCUMENTATION',
-    'END_BODY', 'END_PAREN', 'EQUAL', 'EXCEPT', 'ID', 'INTERLEAVE',
-    'LBRACKET', 'LIST', 'LITERAL', 'MAYBE', 'MIXED', 'RBRACKET', 'SEQ', 'SOME',
+    'ANY', 'CHOICE', 'CNAME', 'DOCUMENTATION', 'EQUAL', 'EXCEPT', 'ID',
+    'INTERLEAVE', 'LBRACE', 'LBRACKET', 'LPAREN', 'LIST', 'LITERAL', 'MAYBE',
+    'MIXED', 'RBRACE', 'RBRACKET', 'RPAREN', 'SEQ', 'SOME',
 ] + [s.upper() for s in KEYWORDS])
 
 class Node(object):
@@ -189,7 +189,7 @@ def particle_some(s, p):
 def particle_primary(s, p):
     return p[0]
 
-@pg.production('annotated-primary : BEG_PAREN pattern END_PAREN')
+@pg.production('annotated-primary : LPAREN pattern RPAREN')
 def annotated_primary_group(s, p):
     return Node('GROUP', None, p[1])
 
@@ -205,19 +205,19 @@ def annotated_primary_primary(s, p):
 def primary_element(s, p):
     return p[0]
 
-@pg.production('element-primary : ELEMENT name-class BEG_BODY pattern END_BODY')
+@pg.production('element-primary : ELEMENT name-class LBRACE pattern RBRACE')
 def element_primary(s, p):
     return Node('ELEM', p[1], p[3])
 
-@pg.production('primary : ATTRIBUTE name-class BEG_BODY pattern END_BODY')
+@pg.production('primary : ATTRIBUTE name-class LBRACE pattern RBRACE')
 def primary_attrib(s, p):
     return Node('ATTR', p[1], p[3])
 
-@pg.production('primary : MIXED BEG_BODY pattern END_BODY')
+@pg.production('primary : MIXED LBRACE pattern RBRACE')
 def primary_mixed(s, p):
     return Node('MIXED', None, p[2])
 
-@pg.production('primary : LIST BEG_BODY pattern END_BODY')
+@pg.production('primary : LIST LBRACE pattern RBRACE')
 def primary_list(s, p):
     return Node('LIST', None, p[2])
 
@@ -229,7 +229,7 @@ def primary_literal(s, p): # from datatypeValue
 def primary_cname(s, p):
     return Node('DATATAG', p[0].value.split(':', 1)[1])
 
-@pg.production('primary : CNAME BEG_BODY params END_BODY')
+@pg.production('primary : CNAME LBRACE params RBRACE')
 def primary_type_params(s, p):
     return Node('DATATAG', p[0].value, p[2])
 
@@ -237,7 +237,7 @@ def primary_type_params(s, p):
 def primary_string(s, p):
     return Node('DATATAG', 'string')
 
-@pg.production('primary : STRING BEG_BODY params END_BODY')
+@pg.production('primary : STRING LBRACE params RBRACE')
 def primary_string_parametrized(s, p):
     return Node('DATATAG', 'string', p[2])
 
@@ -308,7 +308,7 @@ def simple_name_class_name(s, p):
 def simple_name_class_cname(s, p):
     return Node('NAME', None, p[0].value)
 
-@pg.production('simple-name-class : BEG_PAREN name-class END_PAREN')
+@pg.production('simple-name-class : LPAREN name-class RPAREN')
 def name_class_group(s, p):
     return p[1]
 
