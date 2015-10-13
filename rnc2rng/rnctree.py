@@ -37,7 +37,7 @@ class XMLSerializer(object):
     def toxml(self, node):
 
         self.reset()
-        self.xmlnode(node)
+        self.xmlnode(node.value)
 
         default, types, ns = None, None, {}
         for n in node.value:
@@ -69,7 +69,7 @@ class XMLSerializer(object):
     def xmlnode(self, node, indent=True):
         if indent:
             self.level += 1
-        for x in node.value:
+        for x in node:
             if not isinstance(x, parser.Node):
                 raise TypeError("Unhappy Node.value: " + repr(x))
             elif x.type in set([DATATYPES, DEFAULT_NS, NS]):
@@ -79,18 +79,18 @@ class XMLSerializer(object):
                     self.write('<start>')
                 else:
                     self.write('<define name="%s">' % x.name)
-                self.xmlnode(x)
+                self.xmlnode(x.value)
                 if x.name == 'start':
                     self.write('</start>')
                 else:
                     self.write('</define>')
             elif x.type in set([MAYBE, SOME, ANY]):
                 self.write('<%s>' % TAGS[x.type])
-                self.xmlnode(x)
+                self.xmlnode(x.value)
                 self.write('</%s>' % TAGS[x.type])
             elif x.type in set([INTERLEAVE, CHOICE, EXCEPT, MIXED, LIST]):
                 self.write('<%s>' % x.type.lower())
-                self.xmlnode(x)
+                self.xmlnode(x.value)
                 self.write('</%s>' % x.type.lower())
             elif x.type == NAME:
                 if x.value == '*':
@@ -108,15 +108,15 @@ class XMLSerializer(object):
                 self.needs['anno'] = True
                 fmt = '<a:documentation>%s</a:documentation>'
                 self.write(fmt % x.name[2:].strip())
-                self.xmlnode(x, False)
+                self.xmlnode(x.value, False)
             elif x.type == GROUP:
-                self.xmlnode(x, False)
+                self.xmlnode(x.value, False)
             elif x.type == TEXT:
                 self.write('<text/>')
             elif x.type == EMPTY:
                 self.write('<empty/>')
             elif x.type == SEQ:
-                self.xmlnode(x, False)
+                self.xmlnode(x.value, False)
             elif x.type == DATATAG:
                 self.needs['types'] = True
                 if x.value is None:      # no paramaters
@@ -136,14 +136,14 @@ class XMLSerializer(object):
             elif x.type == ELEM:
                 self.write('<element>')
                 wrapper = parser.Node(None, None, x.name)
-                self.xmlnode(wrapper)
-                self.xmlnode(x)
+                self.xmlnode(wrapper.value)
+                self.xmlnode(x.value)
                 self.write('</element>')
             elif x.type == ATTR:
                 self.write('<attribute>')
                 wrapper = parser.Node(None, None, x.name)
-                self.xmlnode(wrapper)
-                self.xmlnode(x)
+                self.xmlnode(wrapper.value)
+                self.xmlnode(x.value)
                 self.write('</attribute>')
             else:
                 assert False, x
