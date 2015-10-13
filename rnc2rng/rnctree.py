@@ -81,7 +81,7 @@ class XMLSerializer(object):
                 write('  ' * indent + '<ref name="%s"/>' % x.value)
             elif x.type == LITERAL:
                 write('  ' * indent + '<value>%s</value>' % x.name)
-            elif x.type == ANNOTATION:
+            elif x.type == DOCUMENTATION:
                 self.needs['anno'] = True
                 fmt = '<a:documentation>%s</a:documentation>'
                 write('  ' * indent + fmt % x.name[2:].strip())

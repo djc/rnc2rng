@@ -61,9 +61,9 @@ class Node(object):
         return 'Node(%s)' % ', '.join(strs)
 
 NODE_TYPES = [
-    'ANNOTATION', 'ANY', 'ATTR', 'CHOICE', 'DATATAG', 'DATATYPES',
-    'DEFAULT_NS', 'DEFINE', 'ELEM', 'EMPTY', 'GROUP', 'INTERLEAVE',
-    'LITERAL', 'MAYBE', 'NAME', 'NS', 'ROOT', 'SEQ', 'SOME', 'TEXT',
+    'ANY', 'ATTR', 'CHOICE', 'DATATAG', 'DATATYPES', 'DEFAULT_NS', 'DEFINE',
+    'DOCUMENTATION', 'ELEM', 'EMPTY', 'GROUP', 'INTERLEAVE', 'LITERAL',
+    'MAYBE', 'NAME', 'NS', 'ROOT', 'SEQ', 'SOME', 'TEXT',
 ]
 
 @pg.production('start : decls element-primary')
@@ -74,7 +74,7 @@ def start_pattern(s, p):
 
 @pg.production('start : decls DOCUMENTATION element-primary')
 def start_annotated_element(s, p):
-    doc = Node('ANNOTATION', p[1].value, p[2])
+    doc = Node('DOCUMENTATION', p[1].value, p[2])
     start = Node('DEFINE', 'start', doc)
     p[0].append(start)
     return Node('ROOT', None, p[0])
@@ -186,7 +186,7 @@ def particle_primary(s, p):
 
 @pg.production('annotated-primary : DOCUMENTATION primary')
 def annotated_primary_annotated(s, p):
-    return Node('ANNOTATION', p[0].value, p[1])
+    return Node('DOCUMENTATION', p[0].value, p[1])
 
 @pg.production('annotated-primary : primary')
 def annotated_primary_primary(s, p):
