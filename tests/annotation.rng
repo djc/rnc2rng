@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+         xmlns:x="http://www.example.com">
+  <start>
+    <ref name="foo"/>
+  </start>
+  <x:entity name="picture" systemId="picture.jpg" notation="jpg"/>
+  <define name="foo">
+    <element>
+      <name>foo</name>
+      <empty/>
+    </element>
+  </define>
+</grammar>

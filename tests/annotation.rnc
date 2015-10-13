@@ -1,0 +1,7 @@
+namespace x = "http://www.example.com"
+
+start = foo
+
+x:entity [ name="picture" systemId="picture.jpg" notation="jpg" ]
+
+foo = element foo { empty }
