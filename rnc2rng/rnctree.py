@@ -26,14 +26,16 @@ class XMLSerializer(object):
         self.reset()
 
     def reset(self):
+        self.buf = []
         self.needs = {}
+
+    def write(self, s):
+        self.buf.append(s)
 
     def toxml(self, node):
 
-        out = []
-        write = out.append
         self.reset()
-        write(self.xmlnode(node, 1))
+        self.xmlnode(node, 1)
 
         default, types, ns = None, None, {}
         for n in node.value:
@@ -59,12 +61,10 @@ class XMLSerializer(object):
             prelude.append('         xmlns:a="%s"' % ANNO_NS)
 
         prelude[-1] = prelude[-1] + '>'
-        out.append('</grammar>')
-        return '\n'.join(prelude + out)
+        self.write('</grammar>')
+        return '\n'.join(prelude + self.buf)
 
     def xmlnode(self, node, indent=0):
-        out = []
-        write = out.append
         for x in node.value:
             if not isinstance(x, parser.Node):
                 raise TypeError("Unhappy Node.value: " + repr(x))
@@ -72,77 +72,75 @@ class XMLSerializer(object):
                 continue
             elif x.type == DEFINE:
                 if x.name == 'start':
-                    write('  ' * indent + '<start>')
+                    self.write('  ' * indent + '<start>')
                 else:
-                    write('  ' * indent + '<define name="%s">' % x.name)
-                write(self.xmlnode(x, indent + 1))
+                    self.write('  ' * indent + '<define name="%s">' % x.name)
+                self.xmlnode(x, indent + 1)
                 if x.name == 'start':
-                    write('  ' * indent + '</start>')
+                    self.write('  ' * indent + '</start>')
                 else:
-                    write('  ' * indent + '</define>')
+                    self.write('  ' * indent + '</define>')
             elif x.type in set([MAYBE, SOME, ANY]):
-                write('  ' * indent + '<%s>' % TAGS[x.type])
-                write(self.xmlnode(x, indent + 1))
-                write('  ' * indent + '</%s>' % TAGS[x.type])
+                self.write('  ' * indent + '<%s>' % TAGS[x.type])
+                self.xmlnode(x, indent + 1)
+                self.write('  ' * indent + '</%s>' % TAGS[x.type])
             elif x.type in set([INTERLEAVE, CHOICE, EXCEPT, MIXED, LIST]):
-                write('  ' * indent + '<%s>' % x.type.lower())
-                write(self.xmlnode(x, indent + 1))
-                write('  ' * indent + '</%s>' % x.type.lower())
+                self.write('  ' * indent + '<%s>' % x.type.lower())
+                self.xmlnode(x, indent + 1)
+                self.write('  ' * indent + '</%s>' % x.type.lower())
             elif x.type == NAME:
                 if x.value == '*':
-                    write('  ' * indent + '<anyName/>')
+                    self.write('  ' * indent + '<anyName/>')
                 else:
-                    write('  ' * indent + '<name>%s</name>' % x.value)
+                    self.write('  ' * indent + '<name>%s</name>' % x.value)
             elif x.type == REF:
-                write('  ' * indent + '<ref name="%s"/>' % x.value)
+                self.write('  ' * indent + '<ref name="%s"/>' % x.value)
             elif x.type == LITERAL:
-                write('  ' * indent + '<value>%s</value>' % x.name)
+                self.write('  ' * indent + '<value>%s</value>' % x.name)
             elif x.type == ANNOTATION:
                 params = ['%s="%s"' % (n.name.value, n.value) for n in x.value]
-                write('  ' * indent + '<%s %s/>' % (x.name, ' '.join(params)))
+                self.write('  ' * indent + '<%s %s/>' % (x.name, ' '.join(params)))
             elif x.type == DOCUMENTATION:
                 self.needs['anno'] = True
                 fmt = '<a:documentation>%s</a:documentation>'
-                write('  ' * indent + fmt % x.name[2:].strip())
-                write(self.xmlnode(x, indent))
+                self.write('  ' * indent + fmt % x.name[2:].strip())
+                self.xmlnode(x, indent)
             elif x.type == GROUP:
-                write(self.xmlnode(x, indent))
+                self.xmlnode(x, indent)
             elif x.type == TEXT:
-                write('  ' * indent + '<text/>')
+                self.write('  ' * indent + '<text/>')
             elif x.type == EMPTY:
-                write('  ' * indent + '<empty/>')
+                self.write('  ' * indent + '<empty/>')
             elif x.type == SEQ:
-                write(self.xmlnode(x, indent))
+                self.xmlnode(x, indent)
             elif x.type == DATATAG:
                 self.needs['types'] = True
                 if x.value is None:      # no paramaters
-                    write('  ' * indent + '<data type="%s"/>' % x.name)
+                    self.write('  ' * indent + '<data type="%s"/>' % x.name)
                 else:
                     name = x.name
                     if name not in ('string', 'token'):
                         name = x.name.split(':', 1)[1]
-                    write('  ' * indent + '<data type="%s">' % name)
+                    self.write('  ' * indent + '<data type="%s">' % name)
                     for param in x.value:
                         key, val = param.name.value, param.value
                         p = '<param name="%s">%s</param>' % (key, val)
-                        write('  ' * (indent + 1) + p)
-                    write('  ' * indent + '</data>')
+                        self.write('  ' * (indent + 1) + p)
+                    self.write('  ' * indent + '</data>')
             elif x.type == ELEM:
-                write('  ' * indent + '<element>')
+                self.write('  ' * indent + '<element>')
                 wrapper = parser.Node(None, None, x.name)
-                write(self.xmlnode(wrapper, indent + 1))
-                write(self.xmlnode(x, indent + 1))
-                write('  ' * indent + '</element>')
+                self.xmlnode(wrapper, indent + 1)
+                self.xmlnode(x, indent + 1)
+                self.write('  ' * indent + '</element>')
             elif x.type == ATTR:
-                write('  ' * indent + '<attribute>')
+                self.write('  ' * indent + '<attribute>')
                 wrapper = parser.Node(None, None, x.name)
-                write(self.xmlnode(wrapper, indent + 1))
-                write(self.xmlnode(x, indent + 1))
-                write('  ' * indent + '</attribute>')
+                self.xmlnode(wrapper, indent + 1)
+                self.xmlnode(x, indent + 1)
+                self.write('  ' * indent + '</attribute>')
             else:
                 assert False, x
-
-        return '\n'.join(out)
 
 def tree(src):
     return parser.parse(src)
