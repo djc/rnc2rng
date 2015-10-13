@@ -81,6 +81,11 @@ class XMLSerializer(object):
                 write('  ' * indent + '<%s>' % TAGS[x.type])
                 write(self.xmlnode(x, indent + 1))
                 write('  ' * indent + '</%s>' % TAGS[x.type])
+            elif x.type == NAME:
+                if x.value == '*':
+                    write('  ' * indent + '<anyName/>')
+                else:
+                    write('  ' * indent + '<name>%s</name>' % x.value)
             elif x.type == REF:
                 write('  ' * indent + '<ref name="%s"/>' % x.value)
             elif x.type == LITERAL:
@@ -101,6 +106,10 @@ class XMLSerializer(object):
                 write('  ' * indent + '<choice>')
                 write(self.xmlnode(x, indent + 1))
                 write('  ' * indent + '</choice>')
+            elif x.type == EXCEPT:
+                write('  ' * indent + '<except>')
+                write(self.xmlnode(x, indent + 1))
+                write('  ' * indent + '</except>')
             elif x.type == GROUP:
                 write(self.xmlnode(x, indent))
             elif x.type == TEXT:
@@ -125,17 +134,14 @@ class XMLSerializer(object):
                     write('  ' * indent + '</data>')
             elif x.type == ELEM:
                 write('  ' * indent + '<element>')
-                if x.name.value == '*':
-                    write('  ' * (indent + 1) + '<anyName/>')
-                else:
-                    name = '<name>%s</name>' % x.name.value
-                    write('  ' * (indent + 1) + name)
+                wrapper = parser.Node(None, None, x.name)
+                write(self.xmlnode(wrapper, indent + 1))
                 write(self.xmlnode(x, indent + 1))
                 write('  ' * indent + '</element>')
-            elif x.type == ATTR and x.value.type == TEXT:
-                write('  ' * indent + '<attribute name="%s"/>' % x.name.value)
             elif x.type == ATTR:
-                write('  ' * indent + '<attribute name="%s">' % x.name.value)
+                write('  ' * indent + '<attribute>')
+                wrapper = parser.Node(None, None, x.name)
+                write(self.xmlnode(wrapper, indent + 1))
                 write(self.xmlnode(x, indent + 1))
                 write('  ' * indent + '</attribute>')
             else:

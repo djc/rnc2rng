@@ -43,8 +43,8 @@ def lex(src):
 
 pg = rply.ParserGenerator([
     'ANY', 'BEG_PAREN', 'BEG_BODY', 'CHOICE', 'CNAME', 'DOCUMENTATION',
-    'END_BODY', 'END_PAREN', 'EQUAL', 'ID', 'INTERLEAVE', 'LBRACKET',
-    'LITERAL', 'MAYBE', 'RBRACKET', 'SEQ', 'SOME',
+    'END_BODY', 'END_PAREN', 'EQUAL', 'EXCEPT', 'ID', 'INTERLEAVE',
+    'LBRACKET', 'LITERAL', 'MAYBE', 'RBRACKET', 'SEQ', 'SOME',
 ] + [s.upper() for s in KEYWORDS])
 
 class Node(object):
@@ -62,7 +62,7 @@ class Node(object):
 
 NODE_TYPES = [
     'ANNOTATION', 'ANY', 'ATTR', 'CHOICE', 'DATATAG', 'DATATYPES', 'DEFAULT_NS',
-    'DEFINE', 'DOCUMENTATION', 'ELEM', 'EMPTY', 'GROUP', 'INTERLEAVE',
+    'DEFINE', 'DOCUMENTATION', 'ELEM', 'EMPTY', 'EXCEPT', 'GROUP', 'INTERLEAVE',
     'LITERAL', 'MAYBE', 'NAME', 'NS', 'REF', 'ROOT', 'SEQ', 'SOME', 'TEXT',
 ]
 
@@ -261,6 +261,32 @@ def param_single(s, p):
 def name_class_name(s, p):
     return p[0]
 
+@pg.production('name-class : name-class-choice')
+def name_class_choice(s, p):
+    return p[0]
+
+@pg.production('name-class : except-name-class')
+def name_class_except(s, p):
+    return p[0]
+
+@pg.production('except-name-class : simple-name-class EXCEPT except-name-class')
+def except_name_class_nested(s, p):
+    p[2].value.insert(0, p[0])
+    return p[2]
+
+@pg.production('except-name-class : simple-name-class EXCEPT simple-name-class')
+def except_name_class_simple(s, p):
+    return Node('EXCEPT', None, [p[0], p[2]])
+
+@pg.production('name-class-choice : simple-name-class CHOICE name-class-choice')
+def name_class_choice_nested(s, p):
+    p[2].value.insert(0, p[0])
+    return p[2]
+
+@pg.production('name-class-choice : simple-name-class CHOICE simple-name-class')
+def name_class_choice_simple(s, p):
+    return Node('CHOICE', None, [p[0], p[2]])
+
 @pg.production('simple-name-class : ANY')
 def simple_name_class_any(s, p):
     return Node('NAME', None, p[0].value)
@@ -271,7 +297,11 @@ def simple_name_class_name(s, p):
 
 @pg.production('simple-name-class : CNAME')
 def simple_name_class_cname(s, p):
-    return p[0]
+    return Node('NAME', None, p[0].value)
+
+@pg.production('simple-name-class : BEG_PAREN name-class END_PAREN')
+def name_class_group(s, p):
+    return p[1]
 
 @pg.production('name : id-or-kw')
 def name_id(s, p):
@@ -279,6 +309,26 @@ def name_id(s, p):
 
 @pg.production('id-or-kw : ID')
 def id_kw_id(s, p):
+    return Node('NAME', None, p[0].value)
+
+@pg.production('id-or-kw : ELEMENT')
+def id_kw_elem(s, p):
+    return Node('NAME', None, p[0].value)
+
+@pg.production('id-or-kw : ATTRIBUTE')
+def id_kw_elem(s, p):
+    return Node('NAME', None, p[0].value)
+
+@pg.production('id-or-kw : EMPTY')
+def id_kw_empty(s, p):
+    return Node('NAME', None, p[0].value)
+
+@pg.production('id-or-kw : TEXT')
+def id_kw_text(s, p):
+    return Node('NAME', None, p[0].value)
+
+@pg.production('id-or-kw : START')
+def id_kw_start(s, p):
     return Node('NAME', None, p[0].value)
 
 @pg.error

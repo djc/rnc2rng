@@ -13,7 +13,8 @@
   <start>
     <element>
       <name>a</name>
-      <attribute name="b">
+      <attribute>
+        <name>b</name>
         <value>c</value>
       </attribute>
       <zeroOrMore>
@@ -53,27 +54,35 @@
       </oneOrMore>
       <element>
         <name>l</name>
-        <attribute name="m">
+        <attribute>
+          <name>m</name>
           <value>n</value>
         </attribute>
-        <attribute name="o">
+        <attribute>
+          <name>o</name>
           <choice>
             <value>p</value>
             <value>q</value>
           </choice>
         </attribute>
-        <attribute name="r"/>
-        <attribute name="s">
+        <attribute>
+          <name>r</name>
+          <text/>
+        </attribute>
+        <attribute>
+          <name>s</name>
           <data type="string">
             <param name="pattern">t</param>
           </data>
         </attribute>
         <optional>
-          <attribute name="t">
+          <attribute>
+            <name>t</name>
             <empty/>
           </attribute>
         </optional>
-        <attribute name="u">
+        <attribute>
+          <name>u</name>
           <ref name="Foo"/>
         </attribute>
       </element>

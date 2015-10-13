@@ -5,7 +5,8 @@
   <start>
     <element>
       <name>foo</name>
-      <attribute name="bar">
+      <attribute>
+        <name>bar</name>
         <data type="string"/>
       </attribute>
     </element>
