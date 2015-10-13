@@ -18,9 +18,9 @@ def lexer():
     lg.add('COMMA', ',')
     lg.add('AMP', '&')
     lg.add('MINUS', '[-]')
-    lg.add('ANY', '[*]')
-    lg.add('SOME', '[+]')
-    lg.add('MAYBE', '[?]')
+    lg.add('STAR', '[*]')
+    lg.add('PLUS', '[+]')
+    lg.add('QMARK', '[?]')
     lg.add('CNAME', '[\w*]+:[\w*]+')
     lg.add('ID', '\w+')
     lg.add('LITERAL', '".*?"')
@@ -42,9 +42,9 @@ def lex(src):
         yield t
 
 pg = rply.ParserGenerator([
-    'AMP', 'ANY', 'CNAME', 'COMMA', 'DOCUMENTATION', 'EQUAL', 'ID', 'LBRACE',
-    'LBRACKET', 'LPAREN', 'LIST', 'LITERAL', 'MAYBE', 'MINUS', 'MIXED',
-    'PIPE', 'RBRACE', 'RBRACKET', 'RPAREN', 'SOME',
+    'AMP', 'CNAME', 'COMMA', 'DOCUMENTATION', 'EQUAL', 'ID', 'LBRACE',
+    'LBRACKET', 'LPAREN', 'LIST', 'LITERAL', 'MINUS', 'MIXED', 'PLUS', 'PIPE',
+    'QMARK', 'RBRACE', 'RBRACKET', 'RPAREN', 'STAR',
 ] + [s.upper() for s in KEYWORDS])
 
 class Node(object):
@@ -173,15 +173,15 @@ def particle_interleave_multi(s, p):
 def particle_interleave_single(s, p):
     return Node('INTERLEAVE', None, [p[0], p[2]])
 
-@pg.production('particle : annotated-primary MAYBE')
+@pg.production('particle : annotated-primary QMARK')
 def particle_maybe(s, p):
     return Node('MAYBE', None, p[0])
 
-@pg.production('particle : annotated-primary ANY')
+@pg.production('particle : annotated-primary STAR')
 def particle_any(s, p):
     return Node('ANY', None, p[0])
 
-@pg.production('particle : annotated-primary SOME')
+@pg.production('particle : annotated-primary PLUS')
 def particle_some(s, p):
     return Node('SOME', None, p[0])
 
@@ -296,7 +296,7 @@ def name_class_choice_nested(s, p):
 def name_class_choice_simple(s, p):
     return Node('CHOICE', None, [p[0], p[2]])
 
-@pg.production('simple-name-class : ANY')
+@pg.production('simple-name-class : STAR')
 def simple_name_class_any(s, p):
     return Node('NAME', None, p[0].value)
 
