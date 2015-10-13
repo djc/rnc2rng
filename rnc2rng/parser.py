@@ -11,6 +11,8 @@ def lexer():
     lg.add('END_PAREN', '\)')
     lg.add('BEG_BODY', '{')
     lg.add('END_BODY', '}')
+    lg.add('LBRACKET', '\[')
+    lg.add('RBRACKET', '\]')
     lg.add('EQUAL', '=')
     lg.add('CHOICE', '[|]')
     lg.add('SEQ', ',')
@@ -43,9 +45,9 @@ def lex(src):
 
 pg = rply.ParserGenerator([
     'ANY', 'BEG_PAREN', 'BEG_BODY', 'CHOICE', 'CNAME', 'DOCUMENTATION',
-    'END_BODY', 'END_PAREN', 'EQUAL', 'ID', 'INTERLEAVE', 'LITERAL', 'MAYBE',
-    'SEQ', 'SOME'] + [s.upper() for s in KEYWORDS]
-)
+    'END_BODY', 'END_PAREN', 'EQUAL', 'ID', 'INTERLEAVE', 'LBRACKET',
+    'LITERAL', 'MAYBE', 'RBRACKET', 'SEQ', 'SOME',
+] + [s.upper() for s in KEYWORDS])
 
 class Node(object):
     __slots__ = 'type', 'name', 'value'
@@ -61,9 +63,9 @@ class Node(object):
         return 'Node(%s)' % ', '.join(strs)
 
 NODE_TYPES = [
-    'ANY', 'ATTR', 'CHOICE', 'DATATAG', 'DATATYPES', 'DEFAULT_NS', 'DEFINE',
-    'DOCUMENTATION', 'ELEM', 'EMPTY', 'GROUP', 'INTERLEAVE', 'LITERAL',
-    'MAYBE', 'NAME', 'NS', 'ROOT', 'SEQ', 'SOME', 'TEXT',
+    'ANNOTATION', 'ANY', 'ATTR', 'CHOICE', 'DATATAG', 'DATATYPES', 'DEFAULT_NS',
+    'DEFINE', 'DOCUMENTATION', 'ELEM', 'EMPTY', 'GROUP', 'INTERLEAVE',
+    'LITERAL', 'MAYBE', 'NAME', 'NS', 'ROOT', 'SEQ', 'SOME', 'TEXT',
 ]
 
 @pg.production('start : decls element-primary')
@@ -120,6 +122,10 @@ def component_define(s, p):
 @pg.production('component : START EQUAL pattern')
 def component_start(s, p):
     return Node('DEFINE', 'start', p[2])
+
+@pg.production('component : CNAME LBRACKET params RBRACKET')
+def component_annotation_element(s, p):
+    return Node('ANNOTATION', p[0].value, p[2])
 
 @pg.production('pattern : particle')
 def pattern_particle(s, p):
