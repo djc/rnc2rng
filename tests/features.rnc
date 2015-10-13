@@ -20,5 +20,9 @@ start = element a {
     attribute s { string { pattern = "t" } },
     attribute t { empty }?,
     attribute u { Foo }
+  },
+  element v {
+    mixed { element w { empty }, element y { empty } },
+    list { element z { empty } }
   }
 }

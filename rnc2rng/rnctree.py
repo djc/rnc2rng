@@ -81,7 +81,7 @@ class XMLSerializer(object):
                 write('  ' * indent + '<%s>' % TAGS[x.type])
                 write(self.xmlnode(x, indent + 1))
                 write('  ' * indent + '</%s>' % TAGS[x.type])
-            elif x.type in set([INTERLEAVE, CHOICE, EXCEPT]):
+            elif x.type in set([INTERLEAVE, CHOICE, EXCEPT, MIXED, LIST]):
                 write('  ' * indent + '<%s>' % x.type.lower())
                 write(self.xmlnode(x, indent + 1))
                 write('  ' * indent + '</%s>' % x.type.lower())

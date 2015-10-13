@@ -1,8 +1,8 @@
 import rply, sys
 
 KEYWORDS = set([
-    'attribute', 'datatypes', 'default', 'element', 'empty', 'namespace',
-    'start', 'string', 'text',
+    'attribute', 'datatypes', 'default', 'element', 'empty', 'list', 'mixed',
+    'namespace', 'start', 'string', 'text',
 ])
 
 def lexer():
@@ -44,7 +44,7 @@ def lex(src):
 pg = rply.ParserGenerator([
     'ANY', 'BEG_PAREN', 'BEG_BODY', 'CHOICE', 'CNAME', 'DOCUMENTATION',
     'END_BODY', 'END_PAREN', 'EQUAL', 'EXCEPT', 'ID', 'INTERLEAVE',
-    'LBRACKET', 'LITERAL', 'MAYBE', 'RBRACKET', 'SEQ', 'SOME',
+    'LBRACKET', 'LIST', 'LITERAL', 'MAYBE', 'MIXED', 'RBRACKET', 'SEQ', 'SOME',
 ] + [s.upper() for s in KEYWORDS])
 
 class Node(object):
@@ -63,7 +63,8 @@ class Node(object):
 NODE_TYPES = [
     'ANNOTATION', 'ANY', 'ATTR', 'CHOICE', 'DATATAG', 'DATATYPES', 'DEFAULT_NS',
     'DEFINE', 'DOCUMENTATION', 'ELEM', 'EMPTY', 'EXCEPT', 'GROUP', 'INTERLEAVE',
-    'LITERAL', 'MAYBE', 'NAME', 'NS', 'REF', 'ROOT', 'SEQ', 'SOME', 'TEXT',
+    'LIST', 'LITERAL', 'MAYBE', 'MIXED', 'NAME', 'NS', 'REF', 'ROOT', 'SEQ',
+    'SOME', 'TEXT',
 ]
 
 @pg.production('start : decls element-primary')
@@ -212,6 +213,14 @@ def element_primary(s, p):
 def primary_attrib(s, p):
     return Node('ATTR', p[1], p[3])
 
+@pg.production('primary : MIXED BEG_BODY pattern END_BODY')
+def primary_mixed(s, p):
+    return Node('MIXED', None, p[2])
+
+@pg.production('primary : LIST BEG_BODY pattern END_BODY')
+def primary_list(s, p):
+    return Node('LIST', None, p[2])
+
 @pg.production('primary : LITERAL')
 def primary_literal(s, p): # from datatypeValue
     return Node('LITERAL', p[0].value)
@@ -329,6 +338,14 @@ def id_kw_text(s, p):
 
 @pg.production('id-or-kw : START')
 def id_kw_start(s, p):
+    return Node('NAME', None, p[0].value)
+
+@pg.production('id-or-kw : LIST')
+def id_kw_list(s, p):
+    return Node('NAME', None, p[0].value)
+
+@pg.production('id-or-kw : MIXED')
+def id_kw_mixed(s, p):
     return Node('NAME', None, p[0].value)
 
 @pg.error

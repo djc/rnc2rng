@@ -86,6 +86,25 @@
           <ref name="Foo"/>
         </attribute>
       </element>
+      <element>
+        <name>v</name>
+        <mixed>
+          <element>
+            <name>w</name>
+            <empty/>
+          </element>
+          <element>
+            <name>y</name>
+            <empty/>
+          </element>
+        </mixed>
+        <list>
+          <element>
+            <name>z</name>
+            <empty/>
+          </element>
+        </list>
+      </element>
     </element>
   </start>
 </grammar>
