@@ -65,7 +65,7 @@ class Node(object):
 NODE_TYPES = [
     'ANNOTATION', 'ANY', 'ATTR', 'CHOICE', 'DATATAG', 'DATATYPES', 'DEFAULT_NS',
     'DEFINE', 'DOCUMENTATION', 'ELEM', 'EMPTY', 'GROUP', 'INTERLEAVE',
-    'LITERAL', 'MAYBE', 'NAME', 'NS', 'ROOT', 'SEQ', 'SOME', 'TEXT',
+    'LITERAL', 'MAYBE', 'NAME', 'NS', 'REF', 'ROOT', 'SEQ', 'SOME', 'TEXT',
 ]
 
 @pg.production('start : decls element-primary')
@@ -240,7 +240,7 @@ def primary_empty(s, p):
 
 @pg.production('primary : ID')
 def primary_id(s, p):
-    return Node('NAME', None, p[0].value)
+    return Node('REF', None, p[0].value)
 
 @pg.production('params : params param')
 def params_multi(s, p):

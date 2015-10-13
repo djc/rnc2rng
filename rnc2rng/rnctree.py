@@ -77,7 +77,7 @@ class XMLSerializer(object):
                 write('  ' * indent + '<%s>' % TAGS[x.type])
                 write(self.xmlnode(x, indent + 1))
                 write('  ' * indent + '</%s>' % TAGS[x.type])
-            elif x.type == NAME:
+            elif x.type == REF:
                 write('  ' * indent + '<ref name="%s"/>' % x.value)
             elif x.type == LITERAL:
                 write('  ' * indent + '<value>%s</value>' % x.name)
