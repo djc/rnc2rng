@@ -14,9 +14,9 @@ def lexer():
     lg.add('LBRACKET', '\[')
     lg.add('RBRACKET', '\]')
     lg.add('EQUAL', '=')
-    lg.add('CHOICE', '[|]')
-    lg.add('SEQ', ',')
-    lg.add('INTERLEAVE', '&')
+    lg.add('PIPE', '[|]')
+    lg.add('COMMA', ',')
+    lg.add('AMP', '&')
     lg.add('EXCEPT', '[-]')
     lg.add('ANY', '[*]')
     lg.add('SOME', '[+]')
@@ -42,9 +42,9 @@ def lex(src):
         yield t
 
 pg = rply.ParserGenerator([
-    'ANY', 'CHOICE', 'CNAME', 'DOCUMENTATION', 'EQUAL', 'EXCEPT', 'ID',
-    'INTERLEAVE', 'LBRACE', 'LBRACKET', 'LPAREN', 'LIST', 'LITERAL', 'MAYBE',
-    'MIXED', 'RBRACE', 'RBRACKET', 'RPAREN', 'SEQ', 'SOME',
+    'AMP', 'ANY', 'CNAME', 'COMMA', 'DOCUMENTATION', 'EQUAL', 'EXCEPT', 'ID',
+    'LBRACE', 'LBRACKET', 'LPAREN', 'LIST', 'LITERAL', 'MAYBE', 'MIXED',
+    'PIPE', 'RBRACE', 'RBRACKET', 'RPAREN', 'SOME',
 ] + [s.upper() for s in KEYWORDS])
 
 class Node(object):
@@ -138,12 +138,12 @@ def pattern_particle(s, p):
 def pattern_choice(s, p):
     return p[0]
 
-@pg.production('particle-choice : particle CHOICE particle-choice')
+@pg.production('particle-choice : particle PIPE particle-choice')
 def particle_choice_multi(s, p):
     p[2].value.insert(0, p[0])
     return p[2]
 
-@pg.production('particle-choice : particle CHOICE particle')
+@pg.production('particle-choice : particle PIPE particle')
 def particle_choice_single(s, p):
     return Node('CHOICE', None, [p[0], p[2]])
 
@@ -151,12 +151,12 @@ def particle_choice_single(s, p):
 def pattern_seq(s, p):
     return p[0]
 
-@pg.production('particle-group : particle SEQ particle-group')
+@pg.production('particle-group : particle COMMA particle-group')
 def particle_group_multi(s, p):
     p[2].value.insert(0, p[0])
     return p[2]
 
-@pg.production('particle-group : particle SEQ particle')
+@pg.production('particle-group : particle COMMA particle')
 def particle_group_single(s, p):
     return Node('SEQ', None, [p[0], p[2]])
 
@@ -164,12 +164,12 @@ def particle_group_single(s, p):
 def pattern_interleave(s, p):
     return p[0]
 
-@pg.production('particle-interleave : particle INTERLEAVE particle-interleave')
+@pg.production('particle-interleave : particle AMP particle-interleave')
 def particle_interleave_multi(s, p):
     p[2].value.insert(0, p[0])
     return p[2]
 
-@pg.production('particle-interleave : particle INTERLEAVE particle')
+@pg.production('particle-interleave : particle AMP particle')
 def particle_interleave_single(s, p):
     return Node('INTERLEAVE', None, [p[0], p[2]])
 
@@ -287,12 +287,12 @@ def except_name_class_nested(s, p):
 def except_name_class_simple(s, p):
     return Node('EXCEPT', None, [p[0], p[2]])
 
-@pg.production('name-class-choice : simple-name-class CHOICE name-class-choice')
+@pg.production('name-class-choice : simple-name-class PIPE name-class-choice')
 def name_class_choice_nested(s, p):
     p[2].value.insert(0, p[0])
     return p[2]
 
-@pg.production('name-class-choice : simple-name-class CHOICE simple-name-class')
+@pg.production('name-class-choice : simple-name-class PIPE simple-name-class')
 def name_class_choice_simple(s, p):
     return Node('CHOICE', None, [p[0], p[2]])
 
