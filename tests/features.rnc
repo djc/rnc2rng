@@ -14,9 +14,9 @@ start = element a {
     (element k { xsd:integer { maxInclusive = "65535" } })
   }+,
   element l {
-    attribute m { "n" },
-    attribute o { "p" | "q" },
-    attribute r { text },
+    (attribute m { "n" } &
+      attribute o { "p" | "q" } &
+      attribute r { text }),
     attribute s { string { pattern = "t" } },
     attribute t { empty }?,
     attribute u { Foo }
