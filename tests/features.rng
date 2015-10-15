@@ -109,4 +109,12 @@
       </element>
     </element>
   </start>
+  <div>
+    <start>
+      <element>
+        <name>X</name>
+        <empty/>
+      </element>
+    </start>
+  </div>
 </grammar>

@@ -26,3 +26,6 @@ start = element a {
     list { element z { notAllowed } }
   }
 }
+div {
+  start = element X { empty }
+}
