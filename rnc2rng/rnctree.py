@@ -106,7 +106,7 @@ class XMLSerializer(object):
                 self.xmlnode(x.value, False)
             elif x.type == GROUP:
                 self.xmlnode(x.value, False)
-            elif x.type in set([TEXT, EMPTY]):
+            elif x.type in set([TEXT, EMPTY, NOTALLOWED]):
                 self.write('<%s/>' % x.type.lower())
             elif x.type == SEQ:
                 self.xmlnode(x.value, False)

@@ -2,7 +2,7 @@ import rply, sys
 
 KEYWORDS = set([
     'attribute', 'datatypes', 'default', 'element', 'empty', 'list', 'mixed',
-    'namespace', 'start', 'string', 'text',
+    'namespace', 'notAllowed', 'start', 'string', 'text',
 ])
 
 def lexer():
@@ -63,8 +63,8 @@ class Node(object):
 NODE_TYPES = [
     'ANNOTATION', 'ANY', 'ATTR', 'CHOICE', 'DATATAG', 'DATATYPES', 'DEFAULT_NS',
     'DEFINE', 'DOCUMENTATION', 'ELEM', 'EMPTY', 'EXCEPT', 'GROUP', 'INTERLEAVE',
-    'LIST', 'LITERAL', 'MAYBE', 'MIXED', 'NAME', 'NS', 'PARAM', 'REF', 'ROOT',
-    'SEQ', 'SOME', 'TEXT',
+    'LIST', 'LITERAL', 'MAYBE', 'MIXED', 'NAME', 'NOTALLOWED', 'NS', 'PARAM',
+    'REF', 'ROOT', 'SEQ', 'SOME', 'TEXT',
 ]
 
 @pg.production('start : decls element-primary')
@@ -253,6 +253,10 @@ def primary_empty(s, p):
 def primary_id(s, p):
     return Node('REF', None, p[0].value)
 
+@pg.production('primary : NOTALLOWED')
+def primary_notallowed(s, p):
+    return Node('NOTALLOWED', None, p[0].value)
+
 @pg.production('params : params param')
 def params_multi(s, p):
     p[0].append(p[1])
@@ -346,6 +350,10 @@ def id_kw_list(s, p):
 
 @pg.production('id-or-kw : MIXED')
 def id_kw_mixed(s, p):
+    return Node('NAME', None, p[0].value)
+
+@pg.production('id-or-kw : NOTALLOWED')
+def id_kw_notallowed(s, p):
     return Node('NAME', None, p[0].value)
 
 @pg.error
