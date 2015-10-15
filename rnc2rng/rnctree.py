@@ -127,14 +127,12 @@ class XMLSerializer(object):
                 self.write('<param name="%s">%s</param>' % (x.name, x.value))
             elif x.type == ELEM:
                 self.write('<element>')
-                wrapper = parser.Node(None, None, x.name)
-                self.xmlnode(wrapper.value)
+                self.xmlnode(x.name)
                 self.xmlnode(x.value)
                 self.write('</element>')
             elif x.type == ATTR:
                 self.write('<attribute>')
-                wrapper = parser.Node(None, None, x.name)
-                self.xmlnode(wrapper.value)
+                self.xmlnode(x.name)
                 self.xmlnode(x.value)
                 self.write('</attribute>')
             else:
