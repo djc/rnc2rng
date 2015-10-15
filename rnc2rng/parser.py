@@ -80,7 +80,7 @@ def start_annotated_element(s, p):
     p[0].append(start)
     return Node('ROOT', None, p[0])
 
-@pg.production('start : decls members')
+@pg.production('start : decls include-content')
 def start_rules(s, p):
     return Node('ROOT', None, p[0] + p[1])
 
@@ -109,13 +109,13 @@ def decl_ns(s, p):
 def decl_datatypes(s, p):
     return Node('DATATYPES', p[1].value, p[3].value)
 
-@pg.production('members : members component')
-def members_multi(s, p):
+@pg.production('include-content : include-content component')
+def include_content_multi(s, p):
     p[0].append(p[1])
     return p[0]
 
-@pg.production('members : ')
-def members_empty(s, p):
+@pg.production('include-content : ')
+def include_content_empty(s, p):
     return []
 
 @pg.production('component : ID EQUAL pattern')
