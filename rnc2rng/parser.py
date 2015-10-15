@@ -1,8 +1,8 @@
 import rply, sys
 
 KEYWORDS = set([
-    'attribute', 'datatypes', 'default', 'element', 'empty', 'list', 'mixed',
-    'namespace', 'notAllowed', 'parent', 'start', 'string', 'text',
+    'attribute', 'datatypes', 'default', 'div', 'element', 'empty', 'list',
+    'mixed', 'namespace', 'notAllowed', 'parent', 'start', 'string', 'text',
 ])
 
 def lexer():
@@ -61,10 +61,11 @@ class Node(object):
         return 'Node(%s)' % ', '.join(strs)
 
 NODE_TYPES = [
-    'ANNOTATION', 'ANY', 'ATTR', 'CHOICE', 'DATATAG', 'DATATYPES', 'DEFAULT_NS',
-    'DEFINE', 'DOCUMENTATION', 'ELEM', 'EMPTY', 'EXCEPT', 'GROUP', 'INTERLEAVE',
-    'LIST', 'LITERAL', 'MAYBE', 'MIXED', 'NAME', 'NOTALLOWED', 'NS', 'PARAM',
-    'PARENT', 'REF', 'ROOT', 'SEQ', 'SOME', 'TEXT',
+    'ANNOTATION', 'ANY', 'ATTR', 'CHOICE', 'DATATAG', 'DATATYPES',
+    'DEFAULT_NS', 'DEFINE', 'DIV', 'DOCUMENTATION', 'ELEM', 'EMPTY', 'EXCEPT',
+    'GROUP', 'INTERLEAVE', 'LIST', 'LITERAL', 'MAYBE', 'MIXED', 'NAME',
+    'NOTALLOWED', 'NS', 'PARAM', 'PARENT', 'REF', 'ROOT', 'SEQ', 'SOME',
+    'TEXT',
 ]
 
 @pg.production('start : decls element-primary')
@@ -125,6 +126,10 @@ def component_define(s, p):
 @pg.production('component : START EQUAL pattern')
 def component_start(s, p):
     return Node('DEFINE', 'start', p[2])
+
+@pg.production('component : DIV LBRACE include-content RBRACE')
+def component_div(s, p):
+    return Node('DIV', None, p[2])
 
 @pg.production('component : CNAME LBRACKET params RBRACKET')
 def component_annotation_element(s, p):
@@ -358,6 +363,10 @@ def id_kw_mixed(s, p):
 
 @pg.production('id-or-kw : NOTALLOWED')
 def id_kw_notallowed(s, p):
+    return Node('NAME', None, p[0].value)
+
+@pg.production('id-or-kw : DIV')
+def id_kw_div(s, p):
     return Node('NAME', None, p[0].value)
 
 @pg.error

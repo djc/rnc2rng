@@ -83,7 +83,7 @@ class XMLSerializer(object):
                 self.write('<%s>' % QUANTS[x.type])
                 self.xmlnode(x.value)
                 self.write('</%s>' % QUANTS[x.type])
-            elif x.type in set([INTERLEAVE, CHOICE, EXCEPT, MIXED, LIST]):
+            elif x.type in set([INTERLEAVE, CHOICE, EXCEPT, MIXED, LIST, DIV]):
                 self.write('<%s>' % x.type.lower())
                 self.xmlnode(x.value)
                 self.write('</%s>' % x.type.lower())
