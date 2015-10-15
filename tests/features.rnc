@@ -23,6 +23,6 @@ start = element a {
   },
   element v {
     mixed { element w { empty }, element y { empty } },
-    list { element z { empty } }
+    list { element z { notAllowed } }
   }
 }
