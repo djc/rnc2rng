@@ -45,8 +45,8 @@
             </choice>
             <element>
               <name>k</name>
-              <data type="string">
-                <param name="pattern">x</param>
+              <data type="integer">
+                <param name="maxInclusive">65535</param>
               </data>
             </element>
           </interleave>

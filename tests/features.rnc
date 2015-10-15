@@ -11,7 +11,7 @@ start = element a {
   }?,
   element h {
     (element i { empty } | element j { empty }) &
-    (element k { string { pattern = "x" } })
+    (element k { xsd:integer { maxInclusive = "65535" } })
   }+,
   element l {
     attribute m { "n" },
