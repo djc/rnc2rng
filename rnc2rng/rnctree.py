@@ -15,11 +15,6 @@ QUANTS = {SOME: 'oneOrMore', MAYBE: 'optional', ANY: 'zeroOrMore'}
 ANNO_NS = 'http://relaxng.org/ns/compatibility/annotations/1.0'
 TYPELIB_NS = 'http://www.w3.org/2001/XMLSchema-datatypes'
 
-try:
-    enumerate
-except:
-    enumerate = lambda seq: zip(range(len(seq)), seq)
-
 class XMLSerializer(object):
 
     def __init__(self, indent='  '):
