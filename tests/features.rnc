@@ -18,7 +18,7 @@ start = element a {
       attribute o { "p" | "q" } &
       attribute r { text }),
     attribute s { string { pattern = "t" } },
-    attribute t { empty }?,
+    attribute t { parent Z }?,
     attribute u { Foo }
   },
   element v {

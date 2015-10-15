@@ -80,7 +80,7 @@
         <optional>
           <attribute>
             <name>t</name>
-            <empty/>
+            <parent name="Z"/>
           </attribute>
         </optional>
         <attribute>
