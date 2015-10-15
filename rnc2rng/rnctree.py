@@ -94,6 +94,8 @@ class XMLSerializer(object):
                     self.write('<name>%s</name>' % x.value)
             elif x.type == REF:
                 self.write('<ref name="%s"/>' % x.value)
+            elif x.type == PARENT:
+                self.write('<parent name="%s"/>' % x.value)
             elif x.type == LITERAL:
                 self.write('<value>%s</value>' % x.name)
             elif x.type == ANNOTATION:

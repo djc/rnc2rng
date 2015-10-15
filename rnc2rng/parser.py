@@ -2,7 +2,7 @@ import rply, sys
 
 KEYWORDS = set([
     'attribute', 'datatypes', 'default', 'element', 'empty', 'list', 'mixed',
-    'namespace', 'notAllowed', 'start', 'string', 'text',
+    'namespace', 'notAllowed', 'parent', 'start', 'string', 'text',
 ])
 
 def lexer():
@@ -64,7 +64,7 @@ NODE_TYPES = [
     'ANNOTATION', 'ANY', 'ATTR', 'CHOICE', 'DATATAG', 'DATATYPES', 'DEFAULT_NS',
     'DEFINE', 'DOCUMENTATION', 'ELEM', 'EMPTY', 'EXCEPT', 'GROUP', 'INTERLEAVE',
     'LIST', 'LITERAL', 'MAYBE', 'MIXED', 'NAME', 'NOTALLOWED', 'NS', 'PARAM',
-    'REF', 'ROOT', 'SEQ', 'SOME', 'TEXT',
+    'PARENT', 'REF', 'ROOT', 'SEQ', 'SOME', 'TEXT',
 ]
 
 @pg.production('start : decls element-primary')
@@ -256,6 +256,10 @@ def primary_id(s, p):
 @pg.production('primary : NOTALLOWED')
 def primary_notallowed(s, p):
     return Node('NOTALLOWED', None, p[0].value)
+
+@pg.production('primary : PARENT ID')
+def primary_parent(s, p):
+    return Node('PARENT', None, p[1].value)
 
 @pg.production('params : params param')
 def params_multi(s, p):
