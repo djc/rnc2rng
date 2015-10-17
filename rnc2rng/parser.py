@@ -100,15 +100,15 @@ def decl_default_ns(s, p):
 
 @pg.production('decl : DEFAULT NAMESPACE id-or-kw EQUAL LITERAL')
 def decl_default_names_ns(s, p):
-    return Node('DEFAULT_NS', p[2].value, p[4].value)
+    return Node('DEFAULT_NS', p[2].name, p[4].value)
 
 @pg.production('decl : NAMESPACE id-or-kw EQUAL LITERAL')
 def decl_ns(s, p):
-    return Node('NS', p[1].value, p[3].value)
+    return Node('NS', p[1].name, p[3].value)
 
 @pg.production('decl : DATATYPES id-or-kw EQUAL LITERAL')
 def decl_datatypes(s, p):
-    return Node('DATATYPES', p[1].value, p[3].value)
+    return Node('DATATYPES', p[1].name, p[3].value)
 
 @pg.production('include-content : include-content component')
 def include_content_multi(s, p):
@@ -277,7 +277,7 @@ def params_empty(s, p):
 
 @pg.production('param : id-or-kw EQUAL LITERAL')
 def param_single(s, p):
-    return Node('PARAM', p[0].value, p[2].value)
+    return Node('PARAM', p[0].name, p[2].value)
 
 @pg.production('name-class : simple-name-class')
 def name_class_name(s, p):
@@ -311,7 +311,7 @@ def name_class_choice_simple(s, p):
 
 @pg.production('simple-name-class : STAR')
 def simple_name_class_any(s, p):
-    return Node('NAME', None, p[0].value)
+    return Node('NAME', p[0].value)
 
 @pg.production('simple-name-class : name')
 def simple_name_class_name(s, p):
@@ -319,7 +319,7 @@ def simple_name_class_name(s, p):
 
 @pg.production('simple-name-class : CNAME')
 def simple_name_class_cname(s, p):
-    return Node('NAME', None, p[0].value)
+    return Node('NAME', p[0].value)
 
 @pg.production('simple-name-class : LPAREN name-class RPAREN')
 def name_class_group(s, p):
@@ -331,43 +331,43 @@ def name_id(s, p):
 
 @pg.production('id-or-kw : ID')
 def id_kw_id(s, p):
-    return Node('NAME', None, p[0].value)
+    return Node('NAME', p[0].value)
 
 @pg.production('id-or-kw : ELEMENT')
 def id_kw_elem(s, p):
-    return Node('NAME', None, p[0].value)
+    return Node('NAME', p[0].value)
 
 @pg.production('id-or-kw : ATTRIBUTE')
 def id_kw_elem(s, p):
-    return Node('NAME', None, p[0].value)
+    return Node('NAME', p[0].value)
 
 @pg.production('id-or-kw : EMPTY')
 def id_kw_empty(s, p):
-    return Node('NAME', None, p[0].value)
+    return Node('NAME', p[0].value)
 
 @pg.production('id-or-kw : TEXT')
 def id_kw_text(s, p):
-    return Node('NAME', None, p[0].value)
+    return Node('NAME', p[0].value)
 
 @pg.production('id-or-kw : START')
 def id_kw_start(s, p):
-    return Node('NAME', None, p[0].value)
+    return Node('NAME', p[0].value)
 
 @pg.production('id-or-kw : LIST')
 def id_kw_list(s, p):
-    return Node('NAME', None, p[0].value)
+    return Node('NAME', p[0].value)
 
 @pg.production('id-or-kw : MIXED')
 def id_kw_mixed(s, p):
-    return Node('NAME', None, p[0].value)
+    return Node('NAME', p[0].value)
 
 @pg.production('id-or-kw : NOTALLOWED')
 def id_kw_notallowed(s, p):
-    return Node('NAME', None, p[0].value)
+    return Node('NAME', p[0].value)
 
 @pg.production('id-or-kw : DIV')
 def id_kw_div(s, p):
-    return Node('NAME', None, p[0].value)
+    return Node('NAME', p[0].value)
 
 @pg.error
 def error(s, t):

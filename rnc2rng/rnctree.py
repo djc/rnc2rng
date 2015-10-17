@@ -88,10 +88,10 @@ class XMLSerializer(object):
                 self.xmlnode(x.value)
                 self.write('</%s>' % x.type.lower())
             elif x.type == NAME:
-                if x.value == '*':
+                if x.name == '*':
                     self.write('<anyName/>')
                 else:
-                    self.write('<name>%s</name>' % x.value)
+                    self.write('<name>%s</name>' % x.name)
             elif x.type == REF:
                 self.write('<ref name="%s"/>' % x.value)
             elif x.type == PARENT:
