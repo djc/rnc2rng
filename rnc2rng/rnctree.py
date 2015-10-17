@@ -24,6 +24,7 @@ class XMLSerializer(object):
     def reset(self):
         self.buf = []
         self.needs = {}
+        self.ns = {}
         self.level = 0
 
     def write(self, s):
@@ -32,30 +33,30 @@ class XMLSerializer(object):
     def toxml(self, node):
 
         self.reset()
-        self.xmlnode(node.value)
-
-        default, types, ns = None, None, {}
+        default, types = None, None
         for n in node.value:
             if n.type == DATATYPES:
                 types = n.value.strip('"')
             elif n.type == DEFAULT_NS:
                 default = n.value.strip('"')
                 if n.name is not None:
-                    ns[n.name] = n.value.strip(' "')
+                    self.ns[n.name] = n.value.strip(' "')
             elif n.type == NS:
-                ns[n.name] = n.value.strip(' "')
+                self.ns[n.name] = n.value.strip(' "')
 
         prelude = ['<?xml version="1.0" encoding="UTF-8"?>']
         prelude.append('<grammar xmlns="http://relaxng.org/ns/structure/1.0"')
         if default is not None:
             prelude.append('         ns="%s"' % default)
+        for ns, url in self.ns.items():
+            prelude.append('         xmlns:%s="%s"' % (ns, url))
+
+        self.xmlnode(node.value)
+        if 'a' not in self.ns and self.needs.get('anno'):
+            prelude.append('         xmlns:a="%s"' % ANNO_NS)
         if types is not None or self.needs.get('types'):
             url = types if types is not None else TYPELIB_NS
             prelude.append('         datatypeLibrary="%s"' % url)
-        for ns, url in ns.items():
-            prelude.append('         xmlns:%s="%s"' % (ns, url))
-        if 'a' not in ns and self.needs.get('anno'):
-            prelude.append('         xmlns:a="%s"' % ANNO_NS)
 
         prelude[-1] = prelude[-1] + '>'
         self.write('</grammar>')
