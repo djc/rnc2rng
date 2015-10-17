@@ -25,6 +25,7 @@ class XMLSerializer(object):
         self.buf = []
         self.needs = {}
         self.ns = {}
+        self.default = ''
         self.level = 0
 
     def write(self, s):
@@ -33,12 +34,12 @@ class XMLSerializer(object):
     def toxml(self, node):
 
         self.reset()
-        default, types = None, None
+        types = None
         for n in node.value:
             if n.type == DATATYPES:
                 types = n.value.strip('"')
             elif n.type == DEFAULT_NS:
-                default = n.value.strip('"')
+                self.default = n.value.strip('"')
                 if n.name is not None:
                     self.ns[n.name] = n.value.strip(' "')
             elif n.type == NS:
@@ -46,8 +47,8 @@ class XMLSerializer(object):
 
         prelude = ['<?xml version="1.0" encoding="UTF-8"?>']
         prelude.append('<grammar xmlns="http://relaxng.org/ns/structure/1.0"')
-        if default is not None:
-            prelude.append('         ns="%s"' % default)
+        if self.default:
+            prelude.append('         ns="%s"' % self.default)
         for ns, url in self.ns.items():
             prelude.append('         xmlns:%s="%s"' % (ns, url))
 
