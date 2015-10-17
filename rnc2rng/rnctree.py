@@ -49,7 +49,7 @@ class XMLSerializer(object):
         prelude.append('<grammar xmlns="http://relaxng.org/ns/structure/1.0"')
         if self.default:
             prelude.append('         ns="%s"' % self.default)
-        for ns, url in self.ns.items():
+        for ns, url in sorted(self.ns.items()):
             prelude.append('         xmlns:%s="%s"' % (ns, url))
 
         self.xmlnode(node.value)
