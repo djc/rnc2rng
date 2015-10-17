@@ -4,7 +4,7 @@
   <start>
     <a:documentation>Represents a language</a:documentation>
     <element>
-      <name>lang</name>
+      <name ns="">lang</name>
       <choice>
         <a:documentation>English</a:documentation>
         <value>en</value>

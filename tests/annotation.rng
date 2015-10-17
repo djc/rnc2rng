@@ -7,7 +7,7 @@
   <x:entity name="picture" systemId="picture.jpg" notation="jpg"/>
   <define name="foo">
     <element>
-      <name>foo</name>
+      <name ns="">foo</name>
       <empty/>
     </element>
   </define>

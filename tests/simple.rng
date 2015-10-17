@@ -2,7 +2,7 @@
 <grammar xmlns="http://relaxng.org/ns/structure/1.0">
   <start>
     <element>
-      <name>foo</name>
+      <name ns="">foo</name>
       <text/>
     </element>
   </start>

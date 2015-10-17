@@ -94,14 +94,30 @@ class XMLSerializer(object):
                 self.xmlnode(x.value)
                 self.write('</except>')
             elif x.type == NAME:
-                if x.value is not None:
-                    self.write('<anyName>')
+                if x.value is None and '*' in x.name:
+                    if x.name == '*':
+                        self.write('<anyName/>')
+                    else:
+                        uri = self.ns[x.name.split(':', 1)[0]]
+                        self.write('<nsName ns="%s"/>' % uri)
+                elif x.value is not None:
+                    if x.name == '*':
+                        self.write('<anyName>')
+                    else:
+                        uri = self.ns[x.name.split(':', 1)[0]]
+                        self.write('<nsName ns="%s">' % uri)
                     self.xmlnode(x.value)
-                    self.write('</anyName>')
-                elif x.name == '*':
-                    self.write('<anyName/>')
+                    if x.name == '*':
+                        self.write('</anyName>')
+                    else:
+                        self.write('</nsName>')
                 else:
-                    self.write('<name>%s</name>' % x.name)
+                    ns, name = self.default, x.name
+                    if ':' in x.name:
+                        parts = x.name.split(':', 1)
+                        ns = self.ns[parts[0]]
+                        name = parts[1]
+                    self.write('<name ns="%s">%s</name>' % (ns, name))
             elif x.type == REF:
                 self.write('<ref name="%s"/>' % x.value)
             elif x.type == PARENT:

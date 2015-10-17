@@ -4,9 +4,9 @@
          datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <start>
     <element>
-      <name>foo</name>
+      <name ns="http://example.com">foo</name>
       <attribute>
-        <name>bar</name>
+        <name ns="http://example.com">bar</name>
         <data type="string"/>
       </attribute>
     </element>

@@ -3,7 +3,7 @@
          xmlns:rng="http://relaxng.org/ns/structure/1.0">
   <start>
     <element>
-      <name>rng:text</name>
+      <name ns="http://relaxng.org/ns/structure/1.0">text</name>
       <empty/>
     </element>
   </start>

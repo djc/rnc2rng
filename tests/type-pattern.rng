@@ -3,7 +3,7 @@
          datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <start>
     <element>
-      <name>foo</name>
+      <name ns="">foo</name>
       <data type="string">
         <param name="pattern">[abc]+</param>
       </data>

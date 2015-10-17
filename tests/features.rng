@@ -3,7 +3,7 @@
          datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <define name="Z">
     <element>
-      <name>z</name>
+      <name ns="">z</name>
       <empty/>
     </element>
   </define>
@@ -12,39 +12,39 @@
   </define>
   <start>
     <element>
-      <name>a</name>
+      <name ns="">a</name>
       <attribute>
-        <name>b</name>
+        <name ns="">b</name>
         <value>c</value>
       </attribute>
       <zeroOrMore>
         <element>
-          <name>d</name>
+          <name ns="">d</name>
           <ref name="Z"/>
         </element>
       </zeroOrMore>
       <optional>
         <element>
-          <name>f</name>
+          <name ns="">f</name>
           <value>g</value>
         </element>
       </optional>
       <oneOrMore>
         <element>
-          <name>h</name>
+          <name ns="">h</name>
           <interleave>
             <choice>
               <element>
-                <name>i</name>
+                <name ns="">i</name>
                 <empty/>
               </element>
               <element>
-                <name>j</name>
+                <name ns="">j</name>
                 <empty/>
               </element>
             </choice>
             <element>
-              <name>k</name>
+              <name ns="">k</name>
               <data type="integer">
                 <param name="maxInclusive">65535</param>
               </data>
@@ -53,56 +53,56 @@
         </element>
       </oneOrMore>
       <element>
-        <name>l</name>
+        <name ns="">l</name>
         <interleave>
           <attribute>
-            <name>m</name>
+            <name ns="">m</name>
             <value>n</value>
           </attribute>
           <attribute>
-            <name>o</name>
+            <name ns="">o</name>
             <choice>
               <value>p</value>
               <value>q</value>
             </choice>
           </attribute>
           <attribute>
-            <name>r</name>
+            <name ns="">r</name>
             <text/>
           </attribute>
         </interleave>
         <attribute>
-          <name>s</name>
+          <name ns="">s</name>
           <data type="string">
             <param name="pattern">t</param>
           </data>
         </attribute>
         <optional>
           <attribute>
-            <name>t</name>
+            <name ns="">t</name>
             <parent name="Z"/>
           </attribute>
         </optional>
         <attribute>
-          <name>u</name>
+          <name ns="">u</name>
           <ref name="Foo"/>
         </attribute>
       </element>
       <element>
-        <name>v</name>
+        <name ns="">v</name>
         <mixed>
           <element>
-            <name>w</name>
+            <name ns="">w</name>
             <empty/>
           </element>
           <element>
-            <name>y</name>
+            <name ns="">y</name>
             <empty/>
           </element>
         </mixed>
         <list>
           <element>
-            <name>z</name>
+            <name ns="">z</name>
             <notallowed/>
           </element>
         </list>
@@ -112,7 +112,7 @@
   <div>
     <start>
       <element>
-        <name>X</name>
+        <name ns="">X</name>
         <empty/>
       </element>
     </start>
