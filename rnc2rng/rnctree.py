@@ -83,12 +83,20 @@ class XMLSerializer(object):
                 self.write('<%s>' % QUANTS[x.type])
                 self.xmlnode(x.value)
                 self.write('</%s>' % QUANTS[x.type])
-            elif x.type in set([INTERLEAVE, CHOICE, EXCEPT, MIXED, LIST, DIV]):
+            elif x.type in set([INTERLEAVE, CHOICE, MIXED, LIST, DIV]):
                 self.write('<%s>' % x.type.lower())
                 self.xmlnode(x.value)
                 self.write('</%s>' % x.type.lower())
+            elif x.type == EXCEPT:
+                self.write('<except>')
+                self.xmlnode(x.value)
+                self.write('</except>')
             elif x.type == NAME:
-                if x.name == '*':
+                if x.value is not None:
+                    self.write('<anyName>')
+                    self.xmlnode(x.value)
+                    self.write('</anyName>')
+                elif x.name == '*':
                     self.write('<anyName/>')
                 else:
                     self.write('<name>%s</name>' % x.name)

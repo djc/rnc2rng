@@ -297,10 +297,11 @@
   </define>
   <define name="foreignElement">
     <element>
-      <except>
-        <anyName/>
-        <name>rng:*</name>
-      </except>
+      <anyName>
+        <except>
+          <name>rng:*</name>
+        </except>
+      </anyName>
       <zeroOrMore>
         <choice>
           <ref name="anyAttribute"/>
@@ -312,13 +313,14 @@
   </define>
   <define name="foreignAttribute">
     <attribute>
-      <except>
-        <anyName/>
-        <choice>
-          <name>rng:*</name>
-          <name>local:*</name>
-        </choice>
-      </except>
+      <anyName>
+        <except>
+          <choice>
+            <name>rng:*</name>
+            <name>local:*</name>
+          </choice>
+        </except>
+      </anyName>
       <text/>
     </attribute>
   </define>

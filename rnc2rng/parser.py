@@ -293,12 +293,13 @@ def name_class_except(s, p):
 
 @pg.production('except-name-class : simple-name-class MINUS except-name-class')
 def except_name_class_nested(s, p):
-    p[2].value.insert(0, p[0])
-    return p[2]
+    p[0].value = p[2]
+    return p[0]
 
 @pg.production('except-name-class : simple-name-class MINUS simple-name-class')
 def except_name_class_simple(s, p):
-    return Node('EXCEPT', None, [p[0], p[2]])
+    p[0].value = Node('EXCEPT', None, [p[2]])
+    return p[0]
 
 @pg.production('name-class-choice : simple-name-class PIPE name-class-choice')
 def name_class_choice_nested(s, p):
