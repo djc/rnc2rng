@@ -11,6 +11,12 @@ class RNCTest(unittest.TestCase):
     def __str__(self):
         return 'TestCase(%r)' % os.path.basename(self.fn)
 
+    def assertBestEqual(self, expected, actual):
+        if hasattr(self, 'assertMultiLineEqual'):
+            self.assertMultiLineEqual(expected, actual)
+        else:
+            self.assertEqual(expected, actual)
+
     def runTest(self):
 
         with open(self.fn) as f:
@@ -19,7 +25,7 @@ class RNCTest(unittest.TestCase):
             expected = f.read().rstrip()
 
         actual = rnc2rng.dumps(rnc2rng.loads(src)).strip()
-        self.assertMultiLineEqual(expected, actual)
+        self.assertBestEqual(expected, actual)
 
 def suite():
     suite = unittest.TestSuite()
