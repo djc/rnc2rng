@@ -1,7 +1,5 @@
-from rnc2rng import rnctree
+import rnc2rng
 import unittest, os
-
-SERIALIZER = rnctree.XMLSerializer()
 
 class RNCTest(unittest.TestCase):
 
@@ -20,7 +18,7 @@ class RNCTest(unittest.TestCase):
         with open(self.fn.replace('.rnc', '.rng')) as f:
             expected = f.read().rstrip()
 
-        actual = SERIALIZER.toxml(rnctree.tree(src)).rstrip()
+        actual = rnc2rng.dumps(rnc2rng.loads(src)).strip()
         self.assertMultiLineEqual(expected, actual)
 
 def suite():
