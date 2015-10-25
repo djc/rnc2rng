@@ -8,8 +8,8 @@ RELAX NG Compact to RELAX NG conversion library
 
 Is what it says on the tin. Dependencies:
 
-- Python 2.7
-- Python 3.x (currently tested with 3.4)
+- Python 2.x (tested with 2.6, 2.7)
+- Python 3.x (tested with 3.3, 3.4, 3.5)
 
 Feedback welcome on `GitHub`_.
 
