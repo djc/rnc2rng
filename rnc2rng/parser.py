@@ -380,4 +380,6 @@ class State(object):
     pass
 
 def parse(src):
+    if not isinstance(src, basestring):
+        src = src.read()
     return parser.parse(lex(src), state=State())
