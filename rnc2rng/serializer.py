@@ -46,7 +46,7 @@ class XMLSerializer(object):
         for ns, url in sorted(self.ns.items()):
             prelude.append('         xmlns:%s="%s"' % (ns, url))
 
-        self.xmlnode(node.value)
+        self.visit(node.value)
         if 'a' not in self.ns and self.needs.get('anno'):
             prelude.append('         xmlns:a="%s"' % ANNO_NS)
         if types is not None or self.needs.get('types'):
@@ -57,7 +57,7 @@ class XMLSerializer(object):
         self.write('</grammar>')
         return '\n'.join(prelude + self.buf)
 
-    def xmlnode(self, node, indent=True):
+    def visit(self, node, indent=True):
         if indent:
             self.level += 1
         for x in node:
@@ -70,22 +70,22 @@ class XMLSerializer(object):
                     self.write('<start>')
                 else:
                     self.write('<define name="%s">' % x.name)
-                self.xmlnode(x.value)
+                self.visit(x.value)
                 if x.name == 'start':
                     self.write('</start>')
                 else:
                     self.write('</define>')
             elif x.type in set([MAYBE, SOME, ANY]):
                 self.write('<%s>' % QUANTS[x.type])
-                self.xmlnode(x.value)
+                self.visit(x.value)
                 self.write('</%s>' % QUANTS[x.type])
             elif x.type in set([INTERLEAVE, CHOICE, MIXED, LIST, DIV]):
                 self.write('<%s>' % x.type.lower())
-                self.xmlnode(x.value)
+                self.visit(x.value)
                 self.write('</%s>' % x.type.lower())
             elif x.type == EXCEPT:
                 self.write('<except>')
-                self.xmlnode(x.value)
+                self.visit(x.value)
                 self.write('</except>')
             elif x.type == NAME:
                 if x.value is None and '*' in x.name:
@@ -100,7 +100,7 @@ class XMLSerializer(object):
                     else:
                         uri = self.ns[x.name.split(':', 1)[0]]
                         self.write('<nsName ns="%s">' % uri)
-                    self.xmlnode(x.value)
+                    self.visit(x.value)
                     if x.name == '*':
                         self.write('</anyName>')
                     else:
@@ -125,13 +125,13 @@ class XMLSerializer(object):
                 self.needs['anno'] = True
                 fmt = '<a:documentation>%s</a:documentation>'
                 self.write(fmt % x.name[2:].strip())
-                self.xmlnode(x.value, False)
+                self.visit(x.value, False)
             elif x.type == GROUP:
-                self.xmlnode(x.value, False)
+                self.visit(x.value, False)
             elif x.type in set([TEXT, EMPTY, NOTALLOWED]):
                 self.write('<%s/>' % x.type.lower())
             elif x.type == SEQ:
-                self.xmlnode(x.value, False)
+                self.visit(x.value, False)
             elif x.type == DATATAG:
                 self.needs['types'] = True
                 if x.value is None:      # no paramaters
@@ -141,19 +141,19 @@ class XMLSerializer(object):
                     if name not in ('string', 'token'):
                         name = x.name.split(':', 1)[1]
                     self.write('<data type="%s">' % name)
-                    self.xmlnode(x.value)
+                    self.visit(x.value)
                     self.write('</data>')
             elif x.type == PARAM:
                 self.write('<param name="%s">%s</param>' % (x.name, x.value))
             elif x.type == ELEM:
                 self.write('<element>')
-                self.xmlnode(x.name)
-                self.xmlnode(x.value)
+                self.visit(x.name)
+                self.visit(x.value)
                 self.write('</element>')
             elif x.type == ATTR:
                 self.write('<attribute>')
-                self.xmlnode(x.name)
-                self.xmlnode(x.value)
+                self.visit(x.name)
+                self.visit(x.value)
                 self.write('</attribute>')
             else:
                 assert False, x
