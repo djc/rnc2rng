@@ -379,7 +379,12 @@ parser = pg.build()
 class State(object):
     pass
 
+if sys.version_info[0] < 3:
+    str_types = str, bytes, unicode
+else:
+    str_types = str, bytes
+
 def parse(src):
-    if not isinstance(src, basestring):
+    if not isinstance(src, str_types):
         src = src.read()
     return parser.parse(lex(src), state=State())
