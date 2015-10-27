@@ -376,6 +376,10 @@ def id_kw_notallowed(s, p):
 def id_kw_div(s, p):
     return Node('NAME', p[0].value)
 
+@pg.production('id-or-kw : INCLUDE')
+def id_kw_div(s, p):
+    return Node('NAME', p[0].value)
+
 @pg.error
 def error(s, t):
     raise Exception(s, t)
