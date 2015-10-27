@@ -2,14 +2,14 @@
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">
   <start>
-    <a:documentation>Represents a language</a:documentation>
     <element>
+      <a:documentation>Represents a language</a:documentation>
       <name ns="">lang</name>
       <choice>
-        <a:documentation>English</a:documentation>
         <value>en</value>
-        <a:documentation>Japanese</a:documentation>
+        <a:documentation>English</a:documentation>
         <value>jp</value>
+        <a:documentation>Japanese</a:documentation>
       </choice>
     </element>
   </start>

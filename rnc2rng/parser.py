@@ -75,9 +75,8 @@ def start_pattern(s, p):
 
 @pg.production('start : decls DOCUMENTATION element-primary')
 def start_annotated_element(s, p):
-    doc = Node('DOCUMENTATION', p[1].value, [p[2]])
-    start = Node('DEFINE', 'start', [doc])
-    p[0].append(start)
+    p[2].value.insert(0, Node('DOCUMENTATION', p[1].value))
+    p[0].append(Node('DEFINE', 'start', [p[2]]))
     return Node('ROOT', None, p[0])
 
 @pg.production('start : decls include-content')
@@ -204,7 +203,8 @@ def annotated_primary_group(s, p):
 
 @pg.production('annotated-primary : DOCUMENTATION primary')
 def annotated_primary_annotated(s, p):
-    return Node('DOCUMENTATION', p[0].value, [p[1]])
+    p[1].value.insert(0, Node('DOCUMENTATION', p[0].value))
+    return p[1]
 
 @pg.production('annotated-primary : primary')
 def annotated_primary_primary(s, p):
@@ -232,7 +232,7 @@ def primary_list(s, p):
 
 @pg.production('primary : LITERAL')
 def primary_literal(s, p): # from datatypeValue
-    return Node('LITERAL', p[0].value)
+    return Node('LITERAL', p[0].value, [])
 
 @pg.production('primary : CNAME')
 def primary_cname(s, p):

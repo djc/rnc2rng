@@ -118,6 +118,7 @@ class XMLSerializer(object):
                 self.write('<parent name="%s"/>' % x.value)
             elif x.type == LITERAL:
                 self.write('<value>%s</value>' % x.name)
+                self.visit(x.value, False)
             elif x.type == ANNOTATION:
                 params = ['%s="%s"' % (n.name, n.value) for n in x.value]
                 self.write('<%s %s/>' % (x.name, ' '.join(params)))
@@ -125,7 +126,6 @@ class XMLSerializer(object):
                 self.needs['anno'] = True
                 fmt = '<a:documentation>%s</a:documentation>'
                 self.write(fmt % x.name[2:].strip())
-                self.visit(x.value, False)
             elif x.type == GROUP:
                 self.visit(x.value, False)
             elif x.type in set([TEXT, EMPTY, NOTALLOWED]):
