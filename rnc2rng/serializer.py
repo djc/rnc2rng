@@ -134,7 +134,7 @@ class XMLSerializer(object):
                 self.visit(x.value, False)
             elif x.type == DATATAG:
                 self.needs['types'] = True
-                if x.value is None:      # no paramaters
+                if x.value is None: # no parameters
                     self.write('<data type="%s"/>' % x.name)
                 else:
                     name = x.name
