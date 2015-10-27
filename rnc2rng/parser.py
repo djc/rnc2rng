@@ -1,4 +1,4 @@
-import rply, sys
+import rply, sys, os
 
 KEYWORDS = set([
     'attribute', 'datatypes', 'default', 'div', 'element', 'empty', 'list',
@@ -377,7 +377,8 @@ def error(s, t):
 parser = pg.build()
 
 class State(object):
-    pass
+    def __init__(self, path):
+        self.path = path
 
 if sys.version_info[0] < 3:
     str_types = str, bytes, unicode
@@ -385,6 +386,9 @@ else:
     str_types = str, bytes
 
 def parse(src):
+    path = os.getcwd()
     if not isinstance(src, str_types):
+        if hasattr(src, 'name'):
+            path = os.path.dirname(os.path.abspath(src.name))
         src = src.read()
-    return parser.parse(lex(src), state=State())
+    return parser.parse(lex(src), state=State(path))
