@@ -20,11 +20,11 @@ class RNCTest(unittest.TestCase):
     def runTest(self):
 
         with open(self.fn) as f:
-            src = f.read()
+            root = rnc2rng.load(f)
         with open(self.fn.replace('.rnc', '.rng')) as f:
             expected = f.read().rstrip()
 
-        actual = rnc2rng.dumps(rnc2rng.loads(src)).strip()
+        actual = rnc2rng.dumps(root).strip()
         self.assertBestEqual(expected, actual)
 
 def suite():
