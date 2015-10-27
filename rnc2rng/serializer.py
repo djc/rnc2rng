@@ -147,12 +147,10 @@ class XMLSerializer(object):
                 self.write('<param name="%s">%s</param>' % (x.name, x.value))
             elif x.type == ELEM:
                 self.write('<element>')
-                self.visit(x.name)
                 self.visit(x.value)
                 self.write('</element>')
             elif x.type == ATTR:
                 self.write('<attribute>')
-                self.visit(x.name)
                 self.visit(x.value)
                 self.write('</attribute>')
             elif x.type == ROOT:

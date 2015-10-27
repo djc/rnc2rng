@@ -216,11 +216,11 @@ def primary_element(s, p):
 
 @pg.production('element-primary : ELEMENT name-class LBRACE pattern RBRACE')
 def element_primary(s, p):
-    return Node('ELEM', p[1], p[3])
+    return Node('ELEM', None, p[1] + p[3])
 
 @pg.production('primary : ATTRIBUTE name-class LBRACE pattern RBRACE')
 def primary_attrib(s, p):
-    return Node('ATTR', p[1], p[3])
+    return Node('ATTR', None, p[1] + p[3])
 
 @pg.production('primary : MIXED LBRACE pattern RBRACE')
 def primary_mixed(s, p):
