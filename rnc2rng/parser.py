@@ -252,11 +252,11 @@ def primary_string_parametrized(s, p):
 
 @pg.production('primary : TEXT')
 def primary_text(s, p):
-    return Node('TEXT', None, p[0].value)
+    return Node('TEXT', None)
 
 @pg.production('primary : EMPTY')
 def primary_empty(s, p):
-    return Node('EMPTY', None, p[0].value)
+    return Node('EMPTY', None)
 
 @pg.production('primary : ID')
 def primary_id(s, p):
@@ -264,7 +264,7 @@ def primary_id(s, p):
 
 @pg.production('primary : NOTALLOWED')
 def primary_notallowed(s, p):
-    return Node('NOTALLOWED', None, p[0].value)
+    return Node('NOTALLOWED', None)
 
 @pg.production('primary : PARENT ID')
 def primary_parent(s, p):
