@@ -54,8 +54,6 @@ class Node(object):
         self.type = type
         self.name = name
         self.value = value
-    def __iter__(self):
-        yield self
     def __repr__(self):
         bits = [(k, getattr(self, k, None)) for k in self.__slots__]
         strs = ['%s=%r' % (k, v) for (k, v) in bits if v is not None]
@@ -71,14 +69,14 @@ NODE_TYPES = [
 
 @pg.production('start : decls element-primary')
 def start_pattern(s, p):
-    start = Node('DEFINE', 'start', p[1])
+    start = Node('DEFINE', 'start', [p[1]])
     p[0].append(start)
     return Node('ROOT', None, p[0])
 
 @pg.production('start : decls DOCUMENTATION element-primary')
 def start_annotated_element(s, p):
-    doc = Node('DOCUMENTATION', p[1].value, p[2])
-    start = Node('DEFINE', 'start', doc)
+    doc = Node('DOCUMENTATION', p[1].value, [p[2]])
+    start = Node('DEFINE', 'start', [doc])
     p[0].append(start)
     return Node('ROOT', None, p[0])
 
@@ -143,11 +141,11 @@ def component_annotation_element(s, p):
 
 @pg.production('pattern : particle')
 def pattern_particle(s, p):
-    return p[0]
+    return [p[0]]
 
 @pg.production('pattern : particle-choice')
 def pattern_choice(s, p):
-    return p[0]
+    return [p[0]]
 
 @pg.production('particle-choice : particle PIPE particle-choice')
 def particle_choice_multi(s, p):
@@ -160,7 +158,7 @@ def particle_choice_single(s, p):
 
 @pg.production('pattern : particle-group')
 def pattern_seq(s, p):
-    return p[0]
+    return [p[0]]
 
 @pg.production('particle-group : particle COMMA particle-group')
 def particle_group_multi(s, p):
@@ -173,7 +171,7 @@ def particle_group_single(s, p):
 
 @pg.production('pattern : particle-interleave')
 def pattern_interleave(s, p):
-    return p[0]
+    return [p[0]]
 
 @pg.production('particle-interleave : particle AMP particle-interleave')
 def particle_interleave_multi(s, p):
@@ -186,15 +184,15 @@ def particle_interleave_single(s, p):
 
 @pg.production('particle : annotated-primary QMARK')
 def particle_maybe(s, p):
-    return Node('MAYBE', None, p[0])
+    return Node('MAYBE', None, [p[0]])
 
 @pg.production('particle : annotated-primary STAR')
 def particle_any(s, p):
-    return Node('ANY', None, p[0])
+    return Node('ANY', None, [p[0]])
 
 @pg.production('particle : annotated-primary PLUS')
 def particle_some(s, p):
-    return Node('SOME', None, p[0])
+    return Node('SOME', None, [p[0]])
 
 @pg.production('particle : annotated-primary')
 def particle_primary(s, p):
@@ -206,7 +204,7 @@ def annotated_primary_group(s, p):
 
 @pg.production('annotated-primary : DOCUMENTATION primary')
 def annotated_primary_annotated(s, p):
-    return Node('DOCUMENTATION', p[0].value, p[1])
+    return Node('DOCUMENTATION', p[0].value, [p[1]])
 
 @pg.production('annotated-primary : primary')
 def annotated_primary_primary(s, p):
@@ -304,29 +302,29 @@ def except_name_class_nested(s, p):
 
 @pg.production('except-name-class : simple-name-class MINUS simple-name-class')
 def except_name_class_simple(s, p):
-    p[0].value = Node('EXCEPT', None, [p[2]])
+    p[0][0].value = [Node('EXCEPT', None, p[2])]
     return p[0]
 
 @pg.production('name-class-choice : simple-name-class PIPE name-class-choice')
 def name_class_choice_nested(s, p):
-    p[2].value.insert(0, p[0])
+    p[2][0].value.insert(0, p[0][0])
     return p[2]
 
 @pg.production('name-class-choice : simple-name-class PIPE simple-name-class')
 def name_class_choice_simple(s, p):
-    return Node('CHOICE', None, [p[0], p[2]])
+    return [Node('CHOICE', None, p[0] + p[2])]
 
 @pg.production('simple-name-class : STAR')
 def simple_name_class_any(s, p):
-    return Node('NAME', p[0].value)
+    return [Node('NAME', p[0].value)]
 
 @pg.production('simple-name-class : name')
 def simple_name_class_name(s, p):
-    return p[0]
+    return [p[0]]
 
 @pg.production('simple-name-class : CNAME')
 def simple_name_class_cname(s, p):
-    return Node('NAME', p[0].value)
+    return [Node('NAME', p[0].value)]
 
 @pg.production('simple-name-class : LPAREN name-class RPAREN')
 def name_class_group(s, p):

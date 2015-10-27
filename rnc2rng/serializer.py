@@ -57,10 +57,10 @@ class XMLSerializer(object):
         self.write('</grammar>')
         return '\n'.join(prelude + self.buf)
 
-    def visit(self, node, indent=True):
+    def visit(self, nodes, indent=True):
         if indent:
             self.level += 1
-        for x in node:
+        for x in nodes:
             if not isinstance(x, parser.Node):
                 raise TypeError("Unhappy Node.value: " + repr(x))
             elif x.type in set([DATATYPES, DEFAULT_NS, NS]):
