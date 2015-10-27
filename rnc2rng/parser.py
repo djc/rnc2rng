@@ -1,8 +1,9 @@
 import rply, sys, os
 
 KEYWORDS = set([
-    'attribute', 'datatypes', 'default', 'div', 'element', 'empty', 'list',
-    'mixed', 'namespace', 'notAllowed', 'parent', 'start', 'string', 'text',
+    'attribute', 'datatypes', 'default', 'div', 'element', 'empty', 'include',
+    'list', 'mixed', 'namespace', 'notAllowed', 'parent', 'start', 'string',
+    'text',
 ])
 
 def lexer():
@@ -130,6 +131,11 @@ def component_start(s, p):
 @pg.production('component : DIV LBRACE include-content RBRACE')
 def component_div(s, p):
     return Node('DIV', None, p[2])
+
+@pg.production('component : INCLUDE LITERAL')
+def component_include(s, p):
+    with open(os.path.join(s.path, p[1].value)) as f:
+        return parse(f)
 
 @pg.production('component : CNAME LBRACKET params RBRACKET')
 def component_annotation_element(s, p):

@@ -155,6 +155,10 @@ class XMLSerializer(object):
                 self.visit(x.name)
                 self.visit(x.value)
                 self.write('</attribute>')
+            elif x.type == ROOT:
+                src = XMLSerializer(self.indent).toxml(x)
+                for ln in src.splitlines()[1:]:
+                    self.write(ln)
             else:
                 assert False, x
         if indent:
