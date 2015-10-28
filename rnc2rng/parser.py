@@ -67,23 +67,17 @@ NODE_TYPES = [
     'TEXT',
 ]
 
-@pg.production('start : decls documentations element-primary')
-def start_annotated_element(s, p):
-    p[2].value = p[1] + p[2].value
-    p[0].append(Node('DEFINE', 'start', [p[2]]))
-    return Node('ROOT', None, p[0])
-
-@pg.production('start : decls include-content')
-def start_rules(s, p):
+@pg.production('start : preamble top-level-body')
+def start(s, p):
     return Node('ROOT', None, p[0] + p[1])
 
-@pg.production('decls : decls decl')
-def decls_multi(s, p):
-    p[0].append(p[1])
-    return p[0]
+@pg.production('preamble : decl preamble')
+def preamble_multi(s, p):
+    p[1].insert(0, p[0])
+    return p[1]
 
-@pg.production('decls : ')
-def decls_empty(s, p):
+@pg.production('preamble : ')
+def preamble_empty(s, p):
     return []
 
 @pg.production('decl : DEFAULT NAMESPACE EQUAL LITERAL')
@@ -101,6 +95,15 @@ def decl_ns(s, p):
 @pg.production('decl : DATATYPES id-or-kw EQUAL LITERAL')
 def decl_datatypes(s, p):
     return Node('DATATYPES', p[1].name, [p[3].value])
+
+@pg.production('top-level-body : documentations element-primary')
+def top_level_body_pattern(s, p):
+    p[1].value = p[0] + p[1].value
+    return [Node('DEFINE', 'start', [p[1]])]
+
+@pg.production('top-level-body : include-content')
+def top_level_body_grammar(s, p):
+    return p[0]
 
 @pg.production('include-content : include-content component')
 def include_content_multi(s, p):
