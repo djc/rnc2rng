@@ -94,19 +94,19 @@ def decls_empty(s, p):
 
 @pg.production('decl : DEFAULT NAMESPACE EQUAL LITERAL')
 def decl_default_ns(s, p):
-    return Node('DEFAULT_NS', None, p[3].value)
+    return Node('DEFAULT_NS', None, [p[3].value])
 
 @pg.production('decl : DEFAULT NAMESPACE id-or-kw EQUAL LITERAL')
 def decl_default_names_ns(s, p):
-    return Node('DEFAULT_NS', p[2].name, p[4].value)
+    return Node('DEFAULT_NS', p[2].name, [p[4].value])
 
 @pg.production('decl : NAMESPACE id-or-kw EQUAL LITERAL')
 def decl_ns(s, p):
-    return Node('NS', p[1].name, p[3].value)
+    return Node('NS', p[1].name, [p[3].value])
 
 @pg.production('decl : DATATYPES id-or-kw EQUAL LITERAL')
 def decl_datatypes(s, p):
-    return Node('DATATYPES', p[1].name, p[3].value)
+    return Node('DATATYPES', p[1].name, [p[3].value])
 
 @pg.production('include-content : include-content component')
 def include_content_multi(s, p):
@@ -281,7 +281,7 @@ def params_empty(s, p):
 
 @pg.production('param : id-or-kw EQUAL LITERAL')
 def param_single(s, p):
-    return Node('PARAM', p[0].name, p[2].value)
+    return Node('PARAM', p[0].name, [p[2].value])
 
 @pg.production('name-class : simple-name-class')
 def name_class_name(s, p):

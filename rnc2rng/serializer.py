@@ -31,13 +31,13 @@ class XMLSerializer(object):
         types = None
         for n in node.value:
             if n.type == DATATYPES:
-                types = n.value.strip('"')
+                types = n.value[0].strip('"')
             elif n.type == DEFAULT_NS:
-                self.default = n.value.strip('"')
+                self.default = n.value[0].strip('"')
                 if n.name is not None:
-                    self.ns[n.name] = n.value.strip(' "')
+                    self.ns[n.name] = n.value[0].strip(' "')
             elif n.type == NS:
-                self.ns[n.name] = n.value.strip(' "')
+                self.ns[n.name] = n.value[0].strip(' "')
 
         prelude = ['<?xml version="1.0" encoding="UTF-8"?>']
         prelude.append('<grammar xmlns="http://relaxng.org/ns/structure/1.0"')
@@ -118,7 +118,7 @@ class XMLSerializer(object):
                 self.write('<value>%s</value>' % x.name)
                 self.visit(x.value, False)
             elif x.type == ANNOTATION:
-                params = ['%s="%s"' % (n.name, n.value) for n in x.value]
+                params = ['%s="%s"' % (n.name, n.value[0]) for n in x.value]
                 self.write('<%s %s/>' % (x.name, ' '.join(params)))
             elif x.type == DOCUMENTATION:
                 self.needs['anno'] = True
@@ -142,7 +142,8 @@ class XMLSerializer(object):
                     self.visit(x.value)
                     self.write('</data>')
             elif x.type == PARAM:
-                self.write('<param name="%s">%s</param>' % (x.name, x.value))
+                bits = x.name, x.value[0]
+                self.write('<param name="%s">%s</param>' % bits)
             elif x.type == ELEM:
                 self.write('<element>')
                 self.visit(x.value)
