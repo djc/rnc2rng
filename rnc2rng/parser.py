@@ -101,18 +101,23 @@ def top_level_body_pattern(s, p):
     p[1].value = p[0] + p[1].value
     return [Node('DEFINE', 'start', [p[1]])]
 
-@pg.production('top-level-body : include-content')
+@pg.production('top-level-body : grammar')
 def top_level_body_grammar(s, p):
     return p[0]
 
-@pg.production('include-content : include-content component')
-def include_content_multi(s, p):
-    p[0].append(p[1])
-    return p[0]
+@pg.production('grammar : member grammar')
+def grammar_multi(s, p):
+    p[1].insert(0, p[0])
+    return p[1]
 
-@pg.production('include-content : ')
-def include_content_empty(s, p):
+@pg.production('grammar : ')
+def grammar_empty(s, p):
     return []
+
+@pg.production('member : documentations component')
+def annotated_component(s, p):
+    p[1].value = p[0] + p[1].value
+    return p[1]
 
 @pg.production('component : ID EQUAL pattern')
 def component_define(s, p):
@@ -122,7 +127,7 @@ def component_define(s, p):
 def component_start(s, p):
     return Node('DEFINE', 'start', p[2])
 
-@pg.production('component : DIV LBRACE include-content RBRACE')
+@pg.production('component : DIV LBRACE grammar RBRACE')
 def component_div(s, p):
     return Node('DIV', None, p[2])
 
