@@ -115,9 +115,13 @@ def grammar_empty(s, p):
     return []
 
 @pg.production('member : documentations component')
-def annotated_component(s, p):
+def member_annotated_component(s, p):
     p[1].value = p[0] + p[1].value
     return p[1]
+
+@pg.production('member : CNAME LBRACKET params annotation-content RBRACKET')
+def member_foreign_element_annotation(s, p):
+    return Node('ANNOTATION', p[0].value, p[2] + p[3])
 
 @pg.production('component : ID EQUAL pattern')
 def component_define(s, p):
@@ -136,9 +140,21 @@ def component_include(s, p):
     with open(os.path.join(s.path, p[1].value)) as f:
         return parse(f)
 
-@pg.production('component : CNAME LBRACKET params RBRACKET')
-def component_annotation_element(s, p):
-    return Node('ANNOTATION', p[0].value, p[2])
+@pg.production('nested-annotation-element : CNAME LBRACKET params annotation-content RBRACKET')
+def nested_annotation_element(s, p):
+    return Node('ANNOTATION', p[0].value, p[2] + p[3])
+
+@pg.production('annotation-content : nested-annotation-element annotation-content')
+def annotation_content_nested(s, p):
+    return [p[0]] + p[1]
+
+@pg.production('annotation-content : LITERAL annotation-content')
+def annotation_content_literal(s, p):
+    return [Node('LITERAL', p[0].value)] + p[1]
+
+@pg.production('annotation-content : ')
+def annotation_content_empty(s, p):
+    return []
 
 @pg.production('pattern : particle')
 def pattern_particle(s, p):
