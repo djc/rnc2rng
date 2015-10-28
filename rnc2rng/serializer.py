@@ -112,10 +112,8 @@ class XMLSerializer(object):
                         ns = self.ns[parts[0]]
                         name = parts[1]
                     self.write('<name ns="%s">%s</name>' % (ns, name))
-            elif x.type == REF:
-                self.write('<ref name="%s"/>' % x.name)
-            elif x.type == PARENT:
-                self.write('<parent name="%s"/>' % x.name)
+            elif x.type in set([REF, PARENT]):
+                self.write('<%s name="%s"/>' % (x.type.lower(), x.name))
             elif x.type == LITERAL:
                 self.write('<value>%s</value>' % x.name)
                 self.visit(x.value, False)
