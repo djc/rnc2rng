@@ -62,7 +62,7 @@ class XMLSerializer(object):
             self.level += 1
         for x in nodes:
             if not isinstance(x, parser.Node):
-                raise TypeError("Unhappy Node.value: " + repr(x))
+                raise TypeError("Not a Node: " + repr(x))
             elif x.type in set([DATATYPES, DEFAULT_NS, NS]):
                 continue
             elif x.type == DEFINE:
