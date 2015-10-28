@@ -53,7 +53,7 @@ class Node(object):
     def __init__(self, type, name, value=None):
         self.type = type
         self.name = name
-        self.value = value
+        self.value = value or []
     def __repr__(self):
         bits = [(k, getattr(self, k, None)) for k in self.__slots__]
         strs = ['%s=%r' % (k, v) for (k, v) in bits if v is not None]
@@ -232,7 +232,7 @@ def primary_list(s, p):
 
 @pg.production('primary : LITERAL')
 def primary_literal(s, p): # from datatypeValue
-    return Node('LITERAL', p[0].value, [])
+    return Node('LITERAL', p[0].value)
 
 @pg.production('primary : CNAME')
 def primary_cname(s, p):

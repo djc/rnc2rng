@@ -88,13 +88,13 @@ class XMLSerializer(object):
                 self.visit(x.value)
                 self.write('</except>')
             elif x.type == NAME:
-                if x.value is None and '*' in x.name:
+                if not x.value and '*' in x.name:
                     if x.name == '*':
                         self.write('<anyName/>')
                     else:
                         uri = self.ns[x.name.split(':', 1)[0]]
                         self.write('<nsName ns="%s"/>' % uri)
-                elif x.value is not None:
+                elif x.value:
                     if x.name == '*':
                         self.write('<anyName>')
                     else:
@@ -132,7 +132,7 @@ class XMLSerializer(object):
                 self.visit(x.value, False)
             elif x.type == DATATAG:
                 self.needs['types'] = True
-                if x.value is None: # no parameters
+                if not x.value: # no parameters
                     self.write('<data type="%s"/>' % x.name)
                 else:
                     name = x.name
