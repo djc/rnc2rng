@@ -260,7 +260,7 @@ def primary_empty(s, p):
 
 @pg.production('primary : ID')
 def primary_id(s, p):
-    return Node('REF', None, p[0].value)
+    return Node('REF', p[0].value)
 
 @pg.production('primary : NOTALLOWED')
 def primary_notallowed(s, p):
@@ -268,7 +268,7 @@ def primary_notallowed(s, p):
 
 @pg.production('primary : PARENT ID')
 def primary_parent(s, p):
-    return Node('PARENT', None, p[1].value)
+    return Node('PARENT', p[1].value)
 
 @pg.production('params : params param')
 def params_multi(s, p):
