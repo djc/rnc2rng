@@ -67,15 +67,9 @@ NODE_TYPES = [
     'TEXT',
 ]
 
-@pg.production('start : decls element-primary')
-def start_pattern(s, p):
-    start = Node('DEFINE', 'start', [p[1]])
-    p[0].append(start)
-    return Node('ROOT', None, p[0])
-
-@pg.production('start : decls DOCUMENTATION element-primary')
+@pg.production('start : decls documentations element-primary')
 def start_annotated_element(s, p):
-    p[2].value.insert(0, Node('DOCUMENTATION', p[1].value))
+    p[2].value = p[1] + p[2].value
     p[0].append(Node('DEFINE', 'start', [p[2]]))
     return Node('ROOT', None, p[0])
 
@@ -201,14 +195,10 @@ def particle_primary(s, p):
 def annotated_primary_group(s, p):
     return Node('GROUP', None, p[1])
 
-@pg.production('annotated-primary : DOCUMENTATION primary')
+@pg.production('annotated-primary : documentations primary')
 def annotated_primary_annotated(s, p):
-    p[1].value.insert(0, Node('DOCUMENTATION', p[0].value))
+    p[1].value = p[0] + p[1].value
     return p[1]
-
-@pg.production('annotated-primary : primary')
-def annotated_primary_primary(s, p):
-    return p[0]
 
 @pg.production('primary : element-primary')
 def primary_element(s, p):
@@ -329,6 +319,15 @@ def simple_name_class_cname(s, p):
 @pg.production('simple-name-class : LPAREN name-class RPAREN')
 def name_class_group(s, p):
     return p[1]
+
+@pg.production('documentations : DOCUMENTATION documentations')
+def documentations_multi(s, p):
+    p[1].insert(0, Node('DOCUMENTATION', p[0].value))
+    return p[1]
+
+@pg.production('documentations : ')
+def documentations_empty(s, p):
+    return []
 
 @pg.production('name : id-or-kw')
 def name_id(s, p):
