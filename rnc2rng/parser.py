@@ -23,7 +23,7 @@ def lexer():
     lg.add('PLUS', '[+]')
     lg.add('QMARK', '[?]')
     lg.add('CNAME', '[\w*]+:[\w*]+')
-    lg.add('ID', '\w+')
+    lg.add('ID', '\w[\w.-]*')
     lg.add('LITERAL', '".*?"')
     lg.add('DOCUMENTATION', '##.*')
     lg.add('COMMENT', '#.*')
