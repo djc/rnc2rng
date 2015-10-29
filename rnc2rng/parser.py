@@ -114,7 +114,7 @@ def grammar_multi(s, p):
 def grammar_empty(s, p):
     return []
 
-@pg.production('member : documentations component')
+@pg.production('member : annotations component')
 def member_annotated_component(s, p):
     p[1].value = p[0] + p[1].value
     return p[1]
@@ -140,11 +140,28 @@ def component_include(s, p):
     with open(os.path.join(s.path, p[1].value)) as f:
         return parse(f)
 
-@pg.production('nested-annotation-element : CNAME LBRACKET params annotation-content RBRACKET')
+@pg.production('annotations : documentations LBRACKET params annotation-elements RBRACKET')
+def annotations_with_annotation(s, p):
+    return p[0] + p[2] + p[3]
+
+@pg.production('annotations : documentations')
+def annotations_documentations(s, p):
+    return p[0]
+
+@pg.production('annotation-elements : annotation-element annotation-elements')
+def annotation_elements_multi(s, p):
+    p[1].insert(0, p[0])
+    return p[1]
+
+@pg.production('annotation-elements : ')
+def annotation_elements_empty(s, p):
+    return []
+
+@pg.production('annotation-element : CNAME LBRACKET params annotation-content RBRACKET')
 def nested_annotation_element(s, p):
     return Node('ANNOTATION', p[0].value, p[2] + p[3])
 
-@pg.production('annotation-content : nested-annotation-element annotation-content')
+@pg.production('annotation-content : annotation-element annotation-content')
 def annotation_content_nested(s, p):
     return [p[0]] + p[1]
 
