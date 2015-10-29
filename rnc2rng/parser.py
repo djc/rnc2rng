@@ -236,7 +236,7 @@ def particle_primary(s, p):
 def annotated_primary_group(s, p):
     return Node('GROUP', None, p[1])
 
-@pg.production('annotated-primary : documentations primary')
+@pg.production('annotated-primary : annotations primary')
 def annotated_primary_annotated(s, p):
     p[1].value = p[0] + p[1].value
     return p[1]
