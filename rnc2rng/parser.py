@@ -119,9 +119,9 @@ def member_annotated_component(s, p):
     p[1].value = p[0] + p[1].value
     return p[1]
 
-@pg.production('member : CNAME LBRACKET params annotation-content RBRACKET')
+@pg.production('member : CNAME annotation-attributes-content')
 def member_foreign_element_annotation(s, p):
-    return Node('ANNOTATION', p[0].value, p[2] + p[3])
+    return Node('ANNOTATION', p[0].value, p[1])
 
 @pg.production('component : ID EQUAL pattern')
 def component_define(s, p):
@@ -140,26 +140,59 @@ def component_include(s, p):
     with open(os.path.join(s.path, p[1].value)) as f:
         return parse(f)
 
-@pg.production('annotations : documentations LBRACKET params annotation-elements RBRACKET')
-def annotations_with_annotation(s, p):
-    return p[0] + p[2] + p[3]
-
-@pg.production('annotations : documentations')
-def annotations_documentations(s, p):
-    return p[0]
-
-@pg.production('annotation-elements : annotation-element annotation-elements')
-def annotation_elements_multi(s, p):
-    p[1].insert(0, p[0])
+@pg.production('annotation-attributes-content : LBRACKET start-annotation-content RBRACKET')
+def annotation_attributes_content(s, p):
     return p[1]
 
-@pg.production('annotation-elements : ')
-def annotation_elements_empty(s, p):
+@pg.production('annotations : documentations LBRACKET start-annotations RBRACKET')
+def annotations_multi(s, p):
+    return p[0] + p[2]
+
+@pg.production('annotations : documentations')
+def annotations_empty(s, p):
+    return p[0]
+
+@pg.production('start-annotation-content : CNAME cname-annotation-content')
+def start_annotation_content_cname(s, p):
+    p[1][0].name = p[0].value
+    return p[1]
+
+@pg.production('start-annotation-content : ID EQUAL LITERAL start-annotation-content')
+def start_annotation_content_id(s, p):
+    return [Node('PARAM', p[0].value, [p[2].value])] + p[3]
+
+@pg.production('start-annotation-content : LITERAL annotation-content')
+def start_annotation_content_literal(s, p):
+    return [Node('LITERAL', p[0].value)] + p[1]
+
+@pg.production('start-annotation-content : ')
+def start_annotation_content_empty(s, p):
     return []
 
-@pg.production('annotation-element : CNAME LBRACKET params annotation-content RBRACKET')
-def nested_annotation_element(s, p):
-    return Node('ANNOTATION', p[0].value, p[2] + p[3])
+@pg.production('cname-annotation-content : EQUAL LITERAL start-annotation-content')
+def cname_annotation_content_attribute(s, p):
+    return [Node('PARAM', None, [p[1].value])] + p[2]
+
+@pg.production('cname-annotation-content : annotation-attributes-content annotation-content')
+def cname_annotation_content_element(s, p):
+    return [Node('ANNOTATION', None, p[0])] + p[1]
+
+@pg.production('start-annotations : CNAME cname-annotations')
+def start_annotations_cname(s, p):
+    p[1][0].name = p[0].value
+    return p[1]
+
+@pg.production('start-annotations : ')
+def start_annotations_empty(s, p):
+    return []
+
+@pg.production('cname-annotations : EQUAL LITERAL start-annotations')
+def cname_annotations_attrib(s, p):
+    return [Node('PARAM', None, [p[1].value])] + p[2]
+
+@pg.production('cname-annotations : annotation-attributes-content annotation-elements')
+def cname_annotations_element(s, p):
+    return [Node('ANNOTATION', None, p[0])] + p[1]
 
 @pg.production('annotation-content : annotation-element annotation-content')
 def annotation_content_nested(s, p):
@@ -172,6 +205,19 @@ def annotation_content_literal(s, p):
 @pg.production('annotation-content : ')
 def annotation_content_empty(s, p):
     return []
+
+@pg.production('annotation-elements : annotation-element annotation-elements')
+def annotation_elements_multi(s, p):
+    p[1].insert(0, p[0])
+    return p[1]
+
+@pg.production('annotation-elements : ')
+def annotation_elements_empty(s, p):
+    return []
+
+@pg.production('annotation-element : CNAME annotation-attributes-content')
+def nested_annotation_element(s, p):
+    return Node('ANNOTATION', p[0].value, p[1])
 
 @pg.production('pattern : particle')
 def pattern_particle(s, p):
