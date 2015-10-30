@@ -125,8 +125,37 @@ class XMLSerializer(object):
                 self.write('<value>%s</value>' % x.name)
                 self.visit(x.value, False)
             elif x.type == ANNOTATION:
-                params = ['%s="%s"' % (n.name, n.value[0]) for n in x.value]
-                self.write('<%s %s/>' % (x.name, ' '.join(params)))
+
+                params, literals, rest = [], [], []
+                for n in x.value:
+                    if n.type == PARAM:
+                        params.append('%s="%s"' % (n.name, n.value[0]))
+                    elif n.type == LITERAL:
+                        literals.append(n.name)
+                    else:
+                        rest.append(n)
+
+                inter = ' ' if params else ''
+                end = '/' if not (literals or rest) else ''
+                tail = ''
+                if literals and not rest:
+                    tail = ''.join(literals) + '</%s>' % x.name
+
+                bits = x.name, inter, ' '.join(params), end, tail
+                self.write('<%s%s%s%s>%s' % bits)
+                if tail:
+                    continue
+
+                for n in x.value:
+                    if n.type == PARAM:
+                        continue
+                    elif n.type == LITERAL:
+                        self.level += 1
+                        self.write(n.name)
+                        self.level -= 1
+                    else:
+                        self.visit([n])
+
             elif x.type == DOCUMENTATION:
                 self.namespace('a')
                 fmt = '<a:documentation>%s</a:documentation>'
