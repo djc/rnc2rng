@@ -9,6 +9,7 @@ QUANTS = {SOME: 'oneOrMore', MAYBE: 'optional', ANY: 'zeroOrMore'}
 TYPELIB_NS = 'http://www.w3.org/2001/XMLSchema-datatypes'
 NAMESPACES = {
     'a': 'http://relaxng.org/ns/compatibility/annotations/1.0',
+    'xml': 'http://www.w3.org/XML/1998/namespace',
 }
 
 class XMLSerializer(object):
