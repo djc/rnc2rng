@@ -6,8 +6,10 @@ for type in parser.NODE_TYPES:
     globals()[type] = type
 
 QUANTS = {SOME: 'oneOrMore', MAYBE: 'optional', ANY: 'zeroOrMore'}
-ANNO_NS = 'http://relaxng.org/ns/compatibility/annotations/1.0'
 TYPELIB_NS = 'http://www.w3.org/2001/XMLSchema-datatypes'
+NAMESPACES = {
+    'a': 'http://relaxng.org/ns/compatibility/annotations/1.0',
+}
 
 class XMLSerializer(object):
 
@@ -24,6 +26,12 @@ class XMLSerializer(object):
 
     def write(self, s):
         self.buf.append(self.indent * self.level + s)
+
+    def namespace(self, ns):
+        assert ns in self.ns or ns in NAMESPACES, ns
+        if ns not in self.ns:
+            self.ns[ns] = NAMESPACES[ns]
+        return self.ns[ns]
 
     def toxml(self, node):
 
@@ -43,12 +51,10 @@ class XMLSerializer(object):
         prelude.append('<grammar xmlns="http://relaxng.org/ns/structure/1.0"')
         if self.default:
             prelude.append('         ns="%s"' % self.default)
-        for ns, url in sorted(self.ns.items()):
-            prelude.append('         xmlns:%s="%s"' % (ns, url))
 
         self.visit(node.value)
-        if 'a' not in self.ns and self.needs.get('anno'):
-            prelude.append('         xmlns:a="%s"' % ANNO_NS)
+        for ns, url in sorted(self.ns.items()):
+            prelude.append('         xmlns:%s="%s"' % (ns, url))
         if types is not None or self.needs.get('types'):
             url = types if types is not None else TYPELIB_NS
             prelude.append('         datatypeLibrary="%s"' % url)
@@ -109,7 +115,7 @@ class XMLSerializer(object):
                     ns, name = self.default, x.name
                     if ':' in x.name:
                         parts = x.name.split(':', 1)
-                        ns = self.ns[parts[0]]
+                        ns = self.namespace(parts[0])
                         name = parts[1]
                     self.write('<name ns="%s">%s</name>' % (ns, name))
             elif x.type in set([REF, PARENT]):
@@ -121,7 +127,7 @@ class XMLSerializer(object):
                 params = ['%s="%s"' % (n.name, n.value[0]) for n in x.value]
                 self.write('<%s %s/>' % (x.name, ' '.join(params)))
             elif x.type == DOCUMENTATION:
-                self.needs['anno'] = True
+                self.namespace('a')
                 fmt = '<a:documentation>%s</a:documentation>'
                 self.write(fmt % x.name[2:].strip())
             elif x.type == GROUP:
