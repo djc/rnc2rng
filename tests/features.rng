@@ -116,5 +116,17 @@
         <empty/>
       </element>
     </start>
+    <start combine="choice">
+      <element>
+        <name ns="">Y</name>
+        <empty/>
+      </element>
+    </start>
+    <define name="Z" combine="interleave">
+      <element>
+        <name ns="">zz</name>
+        <empty/>
+      </element>
+    </define>
   </div>
 </grammar>

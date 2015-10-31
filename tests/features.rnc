@@ -28,4 +28,6 @@ start = element a {
 }
 div {
   start = element X { empty }
+  start |= element Y { empty }
+  Z &= element zz { empty }
 }
