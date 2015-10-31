@@ -471,8 +471,12 @@ def error(s, t):
 parser = pg.build()
 
 class State(object):
-    def __init__(self, path):
-        self.path = path
+    def __init__(self, fn, src):
+        self.fn = fn
+        self.path = os.getcwd()
+        if fn is not None:
+            self.path = os.path.dirname(os.path.abspath(fn))
+        self.lines = src.splitlines()
 
 if sys.version_info[0] < 3:
     str_types = str, bytes, unicode
@@ -480,9 +484,9 @@ else:
     str_types = str, bytes
 
 def parse(src):
-    path = os.getcwd()
+    fn = None
     if not isinstance(src, str_types):
         if hasattr(src, 'name'):
-            path = os.path.dirname(os.path.abspath(src.name))
+            fn = src.name
         src = src.read()
-    return parser.parse(lex(src), state=State(path))
+    return parser.parse(lex(src), state=State(fn, src))
