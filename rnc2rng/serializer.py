@@ -126,28 +126,28 @@ class XMLSerializer(object):
                 self.visit(x.value, False)
             elif x.type == ANNOTATION:
 
-                params, literals, rest = [], [], []
+                attribs, literals, rest = [], [], []
                 for n in x.value:
-                    if n.type == PARAM:
-                        params.append('%s="%s"' % (n.name, n.value[0]))
+                    if n.type == ANNOATTR:
+                        attribs.append('%s="%s"' % (n.name, n.value[0]))
                     elif n.type == LITERAL:
                         literals.append(n.name)
                     else:
                         rest.append(n)
 
-                inter = ' ' if params else ''
+                inter = ' ' if attribs else ''
                 end = '/' if not (literals or rest) else ''
                 tail = ''
                 if literals and not rest:
                     tail = ''.join(literals) + '</%s>' % x.name
 
-                bits = x.name, inter, ' '.join(params), end, tail
+                bits = x.name, inter, ' '.join(attribs), end, tail
                 self.write('<%s%s%s%s>%s' % bits)
                 if tail:
                     continue
 
                 for n in x.value:
-                    if n.type == PARAM:
+                    if n.type == ANNOATTR:
                         continue
                     elif n.type == LITERAL:
                         self.level += 1
