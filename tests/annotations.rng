@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
+         xmlns:dc="http://purl.org/dc/elements/1.1/"
+         xmlns:sch="http://www.ascc.net/xml/schematron"
          xmlns:x="http://www.example.com">
   <start>
     <ref name="foo"/>
   </start>
   <x:entity name="picture" systemId="picture.jpg" notation="jpg"/>
+  <dc:title>Foo without contents</dc:title>
+  <sch:ns uri="http://purl.org/dc/elements/1.1" prefix="dc"/>
+  <sch:pattern name="Some thing">
+    <sch:rule context="//foo">
+      <sch:assert test="@bar = /@bar">attrib matches top-level attribute</sch:assert>
+    </sch:rule>
+    <sch:rule context="//barfoo">
+      <sch:assert test="@quick = @fast">tautology of speediness</sch:assert>
+    </sch:rule>
+  </sch:pattern>
   <define name="foo">
     <element>
       <name ns="">foo</name>

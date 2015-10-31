@@ -1,7 +1,28 @@
 namespace x = "http://www.example.com"
+namespace dc = "http://purl.org/dc/elements/1.1/"
+namespace sch = "http://www.ascc.net/xml/schematron"
 
 start = foo
 
 x:entity [ name="picture" systemId="picture.jpg" notation="jpg" ]
+dc:title [ "Foo without contents" ]
+sch:ns [ uri = "http://purl.org/dc/elements/1.1" prefix = "dc" ]
+sch:pattern [
+  name = "Some thing"
+  sch:rule [
+    context = "//foo"
+    sch:assert [
+      test = "@bar = /@bar"
+      "attrib matches top-level attribute"
+    ]
+  ]
+  sch:rule [
+    context = "//barfoo"
+    sch:assert [
+      test = "@quick = @fast"
+      "tautology of speediness"
+    ]
+  ]
+]
 
 foo = element foo { empty }
