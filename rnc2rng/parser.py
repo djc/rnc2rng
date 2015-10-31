@@ -155,7 +155,7 @@ def annotation_attributes_content(s, p):
 
 @pg.production('annotations : documentations LBRACKET start-annotations RBRACKET')
 def annotations_multi(s, p):
-    p[0].append(Node('ANNOTATION', None, p[2]))
+    p[0] += p[2]
     return p[0]
 
 @pg.production('annotations : documentations')

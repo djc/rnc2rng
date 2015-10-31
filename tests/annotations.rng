@@ -17,10 +17,15 @@
       <sch:assert test="@quick = @fast">tautology of speediness</sch:assert>
     </sch:rule>
   </sch:pattern>
-  <define name="foo">
-    <element>
-      <name ns="">foo</name>
-      <empty/>
-    </element>
-  </define>
+  <div>
+    <a:documentation>
+      <dc:title>schema starts here</dc:title>
+    </a:documentation>
+    <define name="foo">
+      <element>
+        <name ns="">foo</name>
+        <empty/>
+      </element>
+    </define>
+  </div>
 </grammar>

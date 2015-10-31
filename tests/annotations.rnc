@@ -25,4 +25,11 @@ sch:pattern [
   ]
 ]
 
-foo = element foo { empty }
+[
+  a:documentation [
+    dc:title [ "schema starts here" ]
+  ]
+]
+div {
+  foo = element foo { empty }
+}
