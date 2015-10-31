@@ -464,9 +464,29 @@ def id_kw_div(s, p):
 def id_kw_div(s, p):
     return Node('NAME', p[0].value)
 
+class ParseError(Exception):
+
+    def __init__(self, t, fn, ln, col, line):
+
+        self.token = t
+        self.location = fn, ln, col
+        self.line = line
+
+        fn = fn if fn is not None else '(unknown)'
+        loc = 'in %s [%s:%s]' % (fn, ln, col)
+        spaces = col + 3 * min(col, line.count('\t'))
+        line = line.replace('\t', ' ' * 4).rstrip()
+        self.msg = '\n'.join((loc, line, ' ' * spaces + '^'))
+        Exception.__init__(self, self.msg)
+
 @pg.error
 def error(s, t):
-    raise Exception(s, t)
+    ln = t.source_pos.lineno - 1
+    if t.value and t.value[0] == '\n':
+        ln -= 1
+    col = t.source_pos.colno - 1
+    line = s.lines[ln] if ln < len(s.lines) else ''
+    raise ParseError(t, s.fn, ln, col, line)
 
 parser = pg.build()
 
