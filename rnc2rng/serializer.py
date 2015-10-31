@@ -143,7 +143,7 @@ class XMLSerializer(object):
 
                 bits = x.name, inter, ' '.join(attribs), end, tail
                 self.write('<%s%s%s%s>%s' % bits)
-                if tail:
+                if not rest:
                     continue
 
                 for n in x.value:
@@ -155,6 +155,8 @@ class XMLSerializer(object):
                         self.level -= 1
                     else:
                         self.visit([n])
+
+                self.write('</%s>' % x.name)
 
             elif x.type == DOCUMENTATION:
                 self.namespace('a')
