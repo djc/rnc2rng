@@ -73,15 +73,24 @@ class XMLSerializer(object):
             elif x.type in set([DATATYPES, DEFAULT_NS, NS]):
                 continue
             elif x.type == DEFINE:
+
+                assert x.value[0].type == ASSIGN, x.value
+                op, attrib = x.value[0].name, ''
+                if op in set(['|=', '&=']):
+                    modes = {'|': 'choice', '&': 'interleave'}
+                    attrib = ' combine="%s"' % modes[op[0]]
+
                 if x.name == 'start':
-                    self.write('<start>')
+                    self.write('<start%s>' % attrib)
                 else:
-                    self.write('<define name="%s">' % x.name)
-                self.visit(x.value)
+                    self.write('<define name="%s"%s>' % (x.name, attrib))
+
+                self.visit(x.value[0].value)
                 if x.name == 'start':
                     self.write('</start>')
                 else:
                     self.write('</define>')
+
             elif x.type in set([MAYBE, SOME, ANY]):
                 self.write('<%s>' % QUANTS[x.type])
                 self.visit(x.value)

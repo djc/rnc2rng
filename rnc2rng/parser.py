@@ -14,6 +14,7 @@ def lexer():
     lg.add('RBRACE', '}')
     lg.add('LBRACKET', '\[')
     lg.add('RBRACKET', '\]')
+    lg.add('COMBINE', '\|=|&=')
     lg.add('EQUAL', '=')
     lg.add('PIPE', '[|]')
     lg.add('COMMA', ',')
@@ -43,9 +44,9 @@ def lex(src):
         yield t
 
 pg = rply.ParserGenerator([
-    'AMP', 'CNAME', 'COMMA', 'DOCUMENTATION', 'EQUAL', 'ID', 'LBRACE',
-    'LBRACKET', 'LPAREN', 'LIST', 'LITERAL', 'MINUS', 'MIXED', 'PLUS', 'PIPE',
-    'QMARK', 'RBRACE', 'RBRACKET', 'RPAREN', 'STAR',
+    'AMP', 'CNAME', 'COMBINE', 'COMMA', 'DOCUMENTATION', 'EQUAL', 'ID',
+    'LBRACE', 'LBRACKET', 'LPAREN', 'LIST', 'LITERAL', 'MINUS', 'MIXED',
+    'PLUS', 'PIPE', 'QMARK', 'RBRACE', 'RBRACKET', 'RPAREN', 'STAR',
 ] + [s.upper() for s in KEYWORDS])
 
 class Node(object):
@@ -60,11 +61,11 @@ class Node(object):
         return 'Node(%s)' % ', '.join(strs)
 
 NODE_TYPES = [
-    'ANNOATTR', 'ANNOTATION', 'ANY', 'ATTR', 'CHOICE', 'DATATAG', 'DATATYPES',
-    'DEFAULT_NS', 'DEFINE', 'DIV', 'DOCUMENTATION', 'ELEM', 'EMPTY', 'EXCEPT',
-    'GROUP', 'INTERLEAVE', 'LIST', 'LITERAL', 'MAYBE', 'MIXED', 'NAME',
-    'NOTALLOWED', 'NS', 'PARAM', 'PARENT', 'REF', 'ROOT', 'SEQ', 'SOME',
-    'TEXT',
+    'ANNOATTR', 'ANNOTATION', 'ANY', 'ASSIGN', 'ATTR', 'CHOICE', 'DATATAG',
+    'DATATYPES', 'DEFAULT_NS', 'DEFINE', 'DIV', 'DOCUMENTATION', 'ELEM',
+    'EMPTY', 'EXCEPT', 'GROUP', 'INTERLEAVE', 'LIST', 'LITERAL', 'MAYBE',
+    'MIXED', 'NAME', 'NOTALLOWED', 'NS', 'PARAM', 'PARENT', 'REF', 'ROOT',
+    'SEQ', 'SOME', 'TEXT',
 ]
 
 @pg.production('start : preamble top-level-body')
@@ -99,7 +100,7 @@ def decl_datatypes(s, p):
 @pg.production('top-level-body : documentations element-primary')
 def top_level_body_pattern(s, p):
     p[1].value = p[0] + p[1].value
-    return [Node('DEFINE', 'start', [p[1]])]
+    return [Node('DEFINE', 'start', [Node('ASSIGN', '=', [p[1]])])]
 
 @pg.production('top-level-body : grammar')
 def top_level_body_grammar(s, p):
@@ -123,13 +124,21 @@ def member_annotated_component(s, p):
 def member_foreign_element_annotation(s, p):
     return Node('ANNOTATION', p[0].value, p[1])
 
-@pg.production('component : ID EQUAL pattern')
+@pg.production('component : ID definition')
 def component_define(s, p):
-    return Node('DEFINE', p[0].value, p[2])
+    return Node('DEFINE', p[0].value, [p[1]])
 
-@pg.production('component : START EQUAL pattern')
+@pg.production('component : START definition')
 def component_start(s, p):
-    return Node('DEFINE', 'start', p[2])
+    return Node('DEFINE', 'start', [p[1]])
+
+@pg.production('definition : EQUAL pattern')
+def definition(s, p):
+    return Node('ASSIGN', p[0].value, p[1])
+
+@pg.production('definition : COMBINE pattern')
+def definition(s, p):
+    return Node('ASSIGN', p[0].value, p[1])
 
 @pg.production('component : DIV LBRACE grammar RBRACE')
 def component_div(s, p):
