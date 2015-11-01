@@ -31,5 +31,7 @@ sch:pattern [
   ]
 ]
 div {
-  foo = element foo { empty }
+  foo = element foo {
+    [ a:defaultValue = "1.0" ] attribute version { "1.0" }
+  }
 }
