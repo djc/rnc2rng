@@ -6,6 +6,8 @@ KEYWORDS = set([
     'text',
 ])
 
+NCNAME = '[A-Za-z_][\w.-]*'
+
 def lexer():
     lg = rply.LexerGenerator()
     lg.add('LPAREN', '\(')
@@ -23,8 +25,8 @@ def lexer():
     lg.add('STAR', '[*]')
     lg.add('PLUS', '[+]')
     lg.add('QMARK', '[?]')
-    lg.add('CNAME', '[\w*]+:[\w*]+')
-    lg.add('ID', '\w[\w.-]*')
+    lg.add('CNAME', '%s:(%s|\*)' % (NCNAME, NCNAME))
+    lg.add('ID', NCNAME)
     lg.add('LITERAL', '".*?"')
     lg.add('DOCUMENTATION', '##.*')
     lg.add('COMMENT', '#.*')
