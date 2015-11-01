@@ -189,7 +189,9 @@ class XMLSerializer(object):
                     self.write('<%s>' % x.type.lower())
                     self.visit(x.value)
                     self.write('</%s>' % x.type.lower())
-            elif x.type in set([TEXT, EMPTY, NOTALLOWED]):
+            elif x.type == NOTALLOWED:
+                self.write('<notAllowed/>')
+            elif x.type in set([TEXT, EMPTY]):
                 self.write('<%s/>' % x.type.lower())
             elif x.type == SEQ:
                 self.visit(x.value, False)

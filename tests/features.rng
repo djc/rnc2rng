@@ -103,7 +103,7 @@
         <list>
           <element>
             <name ns="">z</name>
-            <notallowed/>
+            <notAllowed/>
           </element>
         </list>
       </element>
