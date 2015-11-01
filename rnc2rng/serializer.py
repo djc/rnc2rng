@@ -181,7 +181,7 @@ class XMLSerializer(object):
             elif x.type == DOCUMENTATION:
                 self.namespace('a')
                 fmt = '<a:documentation>%s</a:documentation>'
-                self.write(fmt % x.name.strip())
+                self.write(fmt % '\n'.join(x.value))
             elif x.type == GROUP:
                 self.visit(x.value, False)
             elif x.type in set([TEXT, EMPTY, NOTALLOWED]):

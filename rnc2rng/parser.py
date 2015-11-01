@@ -419,9 +419,8 @@ def name_class_group(s, p):
 
 @pg.production('documentations : DOCUMENTATION documentations')
 def documentations_multi(s, p):
-    s = p[0].value.lstrip('# ')
-    cur = Node('DOCUMENTATION', '') if not p[1] else p[1][0]
-    cur.name = s + (' ' if cur.name else '') + cur.name
+    cur = Node('DOCUMENTATION', None, []) if not p[1] else p[1][0]
+    cur.value.insert(0, p[0].value.lstrip('# '))
     return [cur]
 
 @pg.production('documentations : ')
