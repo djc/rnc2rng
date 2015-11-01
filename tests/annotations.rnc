@@ -35,3 +35,6 @@ div {
     [ a:defaultValue = "1.0" ] attribute version { "1.0" }
   }
 }
+
+## documentation for definition
+bar = element bar { empty }
