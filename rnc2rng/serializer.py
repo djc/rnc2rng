@@ -183,7 +183,12 @@ class XMLSerializer(object):
                 fmt = '<a:documentation>%s</a:documentation>'
                 self.write(fmt % '\n'.join(x.value))
             elif x.type == GROUP:
-                self.visit(x.value, False)
+                if len(x.value) == 1 and x.value[0].type != SEQ:
+                    self.visit(x.value, False)
+                else:
+                    self.write('<%s>' % x.type.lower())
+                    self.visit(x.value)
+                    self.write('</%s>' % x.type.lower())
             elif x.type in set([TEXT, EMPTY, NOTALLOWED]):
                 self.write('<%s/>' % x.type.lower())
             elif x.type == SEQ:
