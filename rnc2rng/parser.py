@@ -198,7 +198,7 @@ def start_annotations_empty(s, p):
 
 @pg.production('cname-annotations : EQUAL LITERAL start-annotations')
 def cname_annotations_attrib(s, p):
-    return [Node('PARAM', None, [p[1].value])] + p[2]
+    return [Node('ANNOATTR', None, [p[1].value])] + p[2]
 
 @pg.production('cname-annotations : annotation-attributes-content annotation-elements')
 def cname_annotations_element(s, p):
