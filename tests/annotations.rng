@@ -17,6 +17,8 @@
     <sch:rule context="//barfoo">
       <sch:assert test="@quick = @fast">tautology of speediness</sch:assert>
     </sch:rule>
+    one literal
+    two literal
   </sch:pattern>
   <div>
     <a:documentation>
