@@ -24,7 +24,10 @@
     <define name="foo">
       <element>
         <name ns="">foo</name>
-        <empty/>
+        <attribute a:defaultValue="1.0">
+          <name ns="">version</name>
+          <value>1.0</value>
+        </attribute>
       </element>
     </define>
   </div>
