@@ -64,15 +64,25 @@ class XMLSerializer(object):
         self.write('</grammar>')
         return '\n'.join(prelude + self.buf)
 
+    def anno_attrs(self, nodes):
+        select = lambda n: isinstance(n, parser.Node) and n.type == ANNOATTR
+        pairs = [(n.name, n.value[0]) for n in nodes if select(n)]
+        if not pairs:
+            return ''
+        return ' ' + ' '.join('%s="%s"' % attr for attr in pairs)
+
     def visit(self, nodes, indent=True):
         if indent:
             self.level += 1
         for x in nodes:
+
             if not isinstance(x, parser.Node):
                 raise TypeError("Not a Node: " + repr(x))
-            elif x.type in set([DATATYPES, DEFAULT_NS, NS]):
+            elif x.type in set([ANNOATTR, DATATYPES, DEFAULT_NS, NS]):
                 continue
-            elif x.type == DEFINE:
+
+            attribs = self.anno_attrs(x.value)
+            if x.type == DEFINE:
 
                 assert x.value[0].type == ASSIGN, x.value
                 op, attrib = x.value[0].name, ''
@@ -81,9 +91,10 @@ class XMLSerializer(object):
                     attrib = ' combine="%s"' % modes[op[0]]
 
                 if x.name == 'start':
-                    self.write('<start%s>' % attrib)
+                    self.write('<start%s%s>' % (attrib, attribs))
                 else:
-                    self.write('<define name="%s"%s>' % (x.name, attrib))
+                    bits = x.name, attrib, attribs
+                    self.write('<define name="%s"%s%s>' % bits)
 
                 self.visit(x.value[0].value)
                 if x.name == 'start':
@@ -129,29 +140,28 @@ class XMLSerializer(object):
                         name = parts[1]
                     self.write('<name ns="%s">%s</name>' % (ns, name))
             elif x.type in set([REF, PARENT]):
-                self.write('<%s name="%s"/>' % (x.type.lower(), x.name))
+                bits = x.type.lower(), x.name, attribs
+                self.write('<%s name="%s"%s/>' % bits)
             elif x.type == LITERAL:
-                self.write('<value>%s</value>' % x.name)
+                bits = attribs, x.name
+                self.write('<value%s>%s</value>' % bits)
                 self.visit(x.value, False)
             elif x.type == ANNOTATION:
 
-                attribs, literals, rest = [], [], []
+                literals, rest = [], []
                 for n in x.value:
-                    if n.type == ANNOATTR:
-                        attribs.append('%s="%s"' % (n.name, n.value[0]))
-                    elif n.type == LITERAL:
+                    if n.type == LITERAL:
                         literals.append(n.name)
-                    else:
+                    elif n.type != ANNOATTR:
                         rest.append(n)
 
-                inter = ' ' if attribs else ''
                 end = '/' if not (literals or rest) else ''
                 tail = ''
                 if literals and not rest:
                     tail = ''.join(literals) + '</%s>' % x.name
 
-                bits = x.name, inter, ' '.join(attribs), end, tail
-                self.write('<%s%s%s%s>%s' % bits)
+                bits = x.name, attribs, end, tail
+                self.write('<%s%s%s>%s' % bits)
                 if not rest:
                     continue
 
@@ -192,11 +202,11 @@ class XMLSerializer(object):
                 bits = x.name, x.value[0]
                 self.write('<param name="%s">%s</param>' % bits)
             elif x.type == ELEM:
-                self.write('<element>')
+                self.write('<element%s>' % attribs)
                 self.visit(x.value)
                 self.write('</element>')
             elif x.type == ATTR:
-                self.write('<attribute>')
+                self.write('<attribute%s>' % attribs)
                 self.visit(x.value)
                 self.write('</attribute>')
             elif x.type == ROOT:
