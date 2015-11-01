@@ -84,7 +84,6 @@ class XMLSerializer(object):
             attribs = self.anno_attrs(x.value)
             if x.type == DEFINE:
 
-                assert x.value[0].type == ASSIGN, x.value
                 op, attrib = x.value[0].name, ''
                 if op in set(['|=', '&=']):
                     modes = {'|': 'choice', '&': 'interleave'}
