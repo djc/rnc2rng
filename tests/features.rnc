@@ -31,3 +31,6 @@ div {
   start |= element Y { empty }
   Z &= element zz { empty }
 }
+aa = element aa {
+  (attribute ab { empty }, attribute ac { empty }?)
+}

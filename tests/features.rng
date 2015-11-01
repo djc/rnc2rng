@@ -129,4 +129,21 @@
       </element>
     </define>
   </div>
+  <define name="aa">
+    <element>
+      <name ns="">aa</name>
+      <group>
+        <attribute>
+          <name ns="">ab</name>
+          <empty/>
+        </attribute>
+        <optional>
+          <attribute>
+            <name ns="">ac</name>
+            <empty/>
+          </attribute>
+        </optional>
+      </group>
+    </element>
+  </define>
 </grammar>
