@@ -10,10 +10,12 @@ Is what it says on the tin. Dependencies:
 
 - Python 2.x (tested with 2.6, 2.7)
 - Python 3.x (tested with 3.3, 3.4, 3.5)
+- `rply`_
 
 Feedback welcome on `GitHub`_.
 
 .. _GitHub: https://github.com/djc/rnc2rng
+.. _rply: https://pypi.python.org/pypi/rply
 
 History
 -------
