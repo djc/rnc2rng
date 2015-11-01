@@ -95,12 +95,14 @@ class XMLSerializer(object):
                     bits = x.name, attrib, attribs
                     self.write('<define name="%s"%s%s>' % bits)
 
-                self.visit(x.value[0].value)
+                self.visit(x.value)
                 if x.name == 'start':
                     self.write('</start>')
                 else:
                     self.write('</define>')
 
+            elif x.type == ASSIGN:
+                self.visit(x.value, False)
             elif x.type in set([MAYBE, SOME, ANY]):
                 self.write('<%s>' % QUANTS[x.type])
                 self.visit(x.value)
