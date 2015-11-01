@@ -63,10 +63,10 @@ class Node(object):
         return 'Node(%s)' % ', '.join(strs)
 
 NODE_TYPES = [
-    'ANNOATTR', 'ANNOTATION', 'ANY', 'ASSIGN', 'ATTR', 'CHOICE', 'DATATAG',
+    'ANNO_ATTR', 'ANNOTATION', 'ANY', 'ASSIGN', 'ATTR', 'CHOICE', 'DATATAG',
     'DATATYPES', 'DEFAULT_NS', 'DEFINE', 'DIV', 'DOCUMENTATION', 'ELEM',
     'EMPTY', 'EXCEPT', 'GROUP', 'INTERLEAVE', 'LIST', 'LITERAL', 'MAYBE',
-    'MIXED', 'NAME', 'NOTALLOWED', 'NS', 'PARAM', 'PARENT', 'REF', 'ROOT',
+    'MIXED', 'NAME', 'NOT_ALLOWED', 'NS', 'PARAM', 'PARENT', 'REF', 'ROOT',
     'SEQ', 'SOME', 'TEXT',
 ]
 
@@ -171,7 +171,7 @@ def start_annotation_content_cname(s, p):
 
 @pg.production('start-annotation-content : ID EQUAL LITERAL start-annotation-content')
 def start_annotation_content_id(s, p):
-    return [Node('ANNOATTR', p[0].value, [p[2].value])] + p[3]
+    return [Node('ANNO_ATTR', p[0].value, [p[2].value])] + p[3]
 
 @pg.production('start-annotation-content : LITERAL annotation-content')
 def start_annotation_content_literal(s, p):
@@ -183,7 +183,7 @@ def start_annotation_content_empty(s, p):
 
 @pg.production('cname-annotation-content : EQUAL LITERAL start-annotation-content')
 def cname_annotation_content_attribute(s, p):
-    return [Node('ANNOATTR', None, [p[1].value])] + p[2]
+    return [Node('ANNO_ATTR', None, [p[1].value])] + p[2]
 
 @pg.production('cname-annotation-content : annotation-attributes-content annotation-content')
 def cname_annotation_content_element(s, p):
@@ -200,7 +200,7 @@ def start_annotations_empty(s, p):
 
 @pg.production('cname-annotations : EQUAL LITERAL start-annotations')
 def cname_annotations_attrib(s, p):
-    return [Node('ANNOATTR', None, [p[1].value])] + p[2]
+    return [Node('ANNO_ATTR', None, [p[1].value])] + p[2]
 
 @pg.production('cname-annotations : annotation-attributes-content annotation-elements')
 def cname_annotations_element(s, p):
@@ -353,7 +353,7 @@ def primary_id(s, p):
 
 @pg.production('primary : NOTALLOWED')
 def primary_notallowed(s, p):
-    return Node('NOTALLOWED', None)
+    return Node('NOT_ALLOWED', None)
 
 @pg.production('primary : PARENT ID')
 def primary_parent(s, p):

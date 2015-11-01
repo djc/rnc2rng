@@ -65,7 +65,7 @@ class XMLSerializer(object):
         return '\n'.join(prelude + self.buf)
 
     def anno_attrs(self, nodes):
-        select = lambda n: isinstance(n, parser.Node) and n.type == ANNOATTR
+        select = lambda n: isinstance(n, parser.Node) and n.type == ANNO_ATTR
         pairs = [(n.name, n.value[0]) for n in nodes if select(n)]
         if not pairs:
             return ''
@@ -78,7 +78,7 @@ class XMLSerializer(object):
 
             if not isinstance(x, parser.Node):
                 raise TypeError("Not a Node: " + repr(x))
-            elif x.type in set([ANNOATTR, DATATYPES, DEFAULT_NS, NS]):
+            elif x.type in set([ANNO_ATTR, DATATYPES, DEFAULT_NS, NS]):
                 continue
 
             attribs = self.anno_attrs(x.value)
@@ -153,7 +153,7 @@ class XMLSerializer(object):
                 for n in x.value:
                     if n.type == LITERAL:
                         literals.append(n.name)
-                    elif n.type != ANNOATTR:
+                    elif n.type != ANNO_ATTR:
                         rest.append(n)
 
                 end = '/' if not (literals or rest) else ''
@@ -167,7 +167,7 @@ class XMLSerializer(object):
                     continue
 
                 for n in x.value:
-                    if n.type == ANNOATTR:
+                    if n.type == ANNO_ATTR:
                         continue
                     elif n.type == LITERAL:
                         self.level += 1
@@ -189,7 +189,7 @@ class XMLSerializer(object):
                     self.write('<%s>' % x.type.lower())
                     self.visit(x.value)
                     self.write('</%s>' % x.type.lower())
-            elif x.type == NOTALLOWED:
+            elif x.type == NOT_ALLOWED:
                 self.write('<notAllowed/>')
             elif x.type in set([TEXT, EMPTY]):
                 self.write('<%s/>' % x.type.lower())
