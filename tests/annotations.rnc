@@ -37,4 +37,5 @@ div {
 }
 
 ## documentation for definition
+## continues on the next line
 bar = element bar { empty }
