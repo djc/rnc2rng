@@ -53,5 +53,4 @@ Getting started
 License
 -------
 
-All of the code is released into the Public Domain, unless indicated otherwise
-within the file (this is true for PLY's lex.py distributed with this package).
+All of the code is released into the Public Domain.
