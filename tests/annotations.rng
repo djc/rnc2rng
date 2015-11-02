@@ -8,16 +8,16 @@
     <ref name="foo"/>
   </start>
   <x:entity name="picture" systemId="picture.jpg" notation="jpg"/>
-  <dc:title>Foo without contents</dc:title>
+  <dc:title>Foo without contents &amp; escaped</dc:title>
   <sch:ns uri="http://purl.org/dc/elements/1.1" prefix="dc"/>
-  <sch:pattern name="Some thing">
+  <sch:pattern name="Some thing &amp; other">
     <sch:rule context="//foo">
       <sch:assert test="@bar = /@bar">attrib matches top-level attribute</sch:assert>
     </sch:rule>
     <sch:rule context="//barfoo">
       <sch:assert test="@quick = @fast">tautology of speediness</sch:assert>
     </sch:rule>
-    one literal
+    one literal &amp; next:
     two literal
   </sch:pattern>
   <div>

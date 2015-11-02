@@ -5,10 +5,10 @@ namespace sch = "http://www.ascc.net/xml/schematron"
 start = foo
 
 x:entity [ name="picture" systemId="picture.jpg" notation="jpg" ]
-dc:title [ "Foo without contents" ]
+dc:title [ "Foo without contents & escaped" ]
 sch:ns [ uri = "http://purl.org/dc/elements/1.1" prefix = "dc" ]
 sch:pattern [
-  name = "Some thing"
+  name = "Some thing & other"
   sch:rule [
     context = "//foo"
     sch:assert [
@@ -23,7 +23,7 @@ sch:pattern [
       "tautology of speediness"
     ]
   ]
-  "one literal"
+  "one literal & next:"
   "two literal"
 ]
 

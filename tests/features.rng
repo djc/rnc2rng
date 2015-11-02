@@ -26,7 +26,7 @@
       <optional>
         <element>
           <name ns="">f</name>
-          <value>g</value>
+          <value>g &amp; gg</value>
         </element>
       </optional>
       <oneOrMore>

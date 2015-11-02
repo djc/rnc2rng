@@ -7,7 +7,7 @@ start = element a {
   }*,
   # e
   element f {
-    "g"
+    "g & gg"
   }?,
   element h {
     (element i { empty } | element j { empty }) &
