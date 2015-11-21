@@ -148,8 +148,7 @@ def component_div(s, p):
 
 @pg.production('component : INCLUDE LITERAL')
 def component_include(s, p):
-    with open(os.path.join(s.path, p[1].value)) as f:
-        return parse(f)
+    return parse(f=os.path.join(s.path, p[1].value))
 
 @pg.production('annotation-attributes-content : LBRACKET start-annotation-content RBRACKET')
 def annotation_attributes_content(s, p):
@@ -516,10 +515,13 @@ if sys.version_info[0] < 3:
 else:
     str_types = str, bytes
 
-def parse(src):
+def parse(src=None, f=None):
+    assert src is None or f is None
     fn = None
-    if not isinstance(src, str_types):
-        if hasattr(src, 'name'):
-            fn = src.name
-        src = src.read()
+    if f is not None:
+        if isinstance(f, str_types):
+            fn, f = f, open(f)
+        elif hasattr(f, 'name'):
+            fn = f.name
+        src = f.read()
     return parser.parse(lex(src), state=State(fn, src))
