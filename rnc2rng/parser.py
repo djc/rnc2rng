@@ -485,7 +485,7 @@ class ParseError(Exception):
         self.line = line
 
         fn = fn if fn is not None else '(unknown)'
-        loc = 'in %s [%s:%s]' % (fn, ln, col)
+        loc = 'in %s [%s:%s]' % (fn, ln + 1, col + 1)
         spaces = col + 3 * min(col, line.count('\t'))
         line = line.replace('\t', ' ' * 4).rstrip()
         self.msg = '\n'.join((loc, line, ' ' * spaces + '^'))
