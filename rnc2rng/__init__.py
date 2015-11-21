@@ -1,7 +1,7 @@
 from . import parser, serializer
 
 def load(f):
-    return parser.parse(f)
+    return parser.parse(f=f)
 
 def loads(src):
     return parser.parse(src)
