@@ -8,7 +8,7 @@ setup(
     maintainer='Dirkjan Ochtman',
     maintainer_email='dirkjan@ochtman.nl',
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
         'License :: Public Domain',
