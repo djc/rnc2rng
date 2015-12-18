@@ -70,6 +70,9 @@ NODE_TYPES = [
     'SEQ', 'SOME', 'TEXT',
 ]
 
+for _node_type in NODE_TYPES:
+    globals()[_node_type] = _node_type
+
 @pg.production('start : preamble top-level-body')
 def start(s, p):
     return Node('ROOT', None, p[0] + p[1])
