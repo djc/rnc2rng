@@ -514,7 +514,7 @@ class State(object):
         self.lines = src.splitlines()
 
 if sys.version_info[0] < 3:
-    str_types = str, bytes, unicode
+    str_types = str, bytes, unicode  # noqa: unicode not defined in Python 3
 else:
     str_types = str, bytes
 
