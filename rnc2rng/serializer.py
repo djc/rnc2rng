@@ -25,6 +25,7 @@ class XMLSerializer(object):
     def reset(self):
         self.buf = []
         self.needs = {}
+        self.types = None
         self.ns = {}
         self.default = ''
         self.level = 0
@@ -45,6 +46,7 @@ class XMLSerializer(object):
         for n in node.value:
             if n.type == DATATYPES:
                 types = n.value[0].strip('"')
+                self.types = types
             elif n.type == DEFAULT_NS:
                 self.default = n.value[0].strip('"')
                 if n.name is not None:
@@ -222,9 +224,20 @@ class XMLSerializer(object):
                 self.visit(x.value)
                 self.write('</attribute>')
             elif x.type == ROOT:
-                src = XMLSerializer(self.indent).toxml(x)
-                for ln in src.splitlines()[1:]:
-                    self.write(ln)
+                # Verify the included document has the same metadata
+                for n in x.value:
+                    if n.type == DATATYPES:
+                        types = n.value[0].strip('"')
+                        assert types == self.types
+                    elif n.type == DEFAULT_NS:
+                        default = n.value[0].strip('"')
+                        assert default == self.default
+                    elif n.type == NS:
+                        assert n.name in self.ns
+                        assert n.value[0].strip(' "') == self.ns[n.name]
+                self.level -= 1
+                self.visit(x.value)
+                self.level += 1
             else:
                 assert False, x
         if indent:
