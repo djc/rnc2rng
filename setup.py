@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='rnc2rng',
-    version='2.1',
+    version='2.2',
     url='https://github.com/djc/rnc2rng',
     author='David Mertz',
     maintainer='Dirkjan Ochtman',
