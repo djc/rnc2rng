@@ -88,19 +88,19 @@ def preamble_empty(s, p):
 
 @pg.production('decl : DEFAULT NAMESPACE EQUAL LITERAL')
 def decl_default_ns(s, p):
-    return Node('DEFAULT_NS', None, [p[3].value])
+    return Node('DEFAULT_NS', None, [p[3].value.strip('"')])
 
 @pg.production('decl : DEFAULT NAMESPACE id-or-kw EQUAL LITERAL')
 def decl_default_names_ns(s, p):
-    return Node('DEFAULT_NS', p[2].name, [p[4].value])
+    return Node('DEFAULT_NS', p[2].name, [p[4].value.strip(' "')])
 
 @pg.production('decl : NAMESPACE id-or-kw EQUAL LITERAL')
 def decl_ns(s, p):
-    return Node('NS', p[1].name, [p[3].value])
+    return Node('NS', p[1].name, [p[3].value.strip(' "')])
 
 @pg.production('decl : DATATYPES id-or-kw EQUAL LITERAL')
 def decl_datatypes(s, p):
-    return Node('DATATYPES', p[1].name, [p[3].value])
+    return Node('DATATYPES', p[1].name, [p[3].value.strip('"')])
 
 @pg.production('top-level-body : documentations element-primary')
 def top_level_body_pattern(s, p):

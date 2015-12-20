@@ -45,14 +45,14 @@ class XMLSerializer(object):
         types = None
         for n in node.value:
             if n.type == DATATYPES:
-                types = n.value[0].strip('"')
+                types = n.value[0]
                 self.types = types
             elif n.type == DEFAULT_NS:
-                self.default = n.value[0].strip('"')
+                self.default = n.value[0]
                 if n.name is not None:
-                    self.ns[n.name] = n.value[0].strip(' "')
+                    self.ns[n.name] = n.value[0]
             elif n.type == NS:
-                self.ns[n.name] = n.value[0].strip(' "')
+                self.ns[n.name] = n.value[0]
 
         prelude = ['<?xml version="1.0" encoding="UTF-8"?>']
         prelude.append('<grammar xmlns="http://relaxng.org/ns/structure/1.0"')
@@ -227,14 +227,12 @@ class XMLSerializer(object):
                 # Verify the included document has the same metadata
                 for n in x.value:
                     if n.type == DATATYPES:
-                        types = n.value[0].strip('"')
-                        assert types == self.types
+                        assert self.types == n.value[0]
                     elif n.type == DEFAULT_NS:
-                        default = n.value[0].strip('"')
-                        assert default == self.default
+                        assert self.default == n.value[0]
                     elif n.type == NS:
                         assert n.name in self.ns
-                        assert n.value[0].strip(' "') == self.ns[n.name]
+                        assert self.ns[n.name] == n.value[0]
                 self.level -= 1
                 self.visit(x.value)
                 self.level += 1
