@@ -78,6 +78,10 @@ class XMLSerializer(object):
         return ' ' + ' '.join('%s="%s"' % attr for attr in pairs)
 
     def visit(self, nodes, indent=True):
+        '''Visiting a list of nodes, writes out the XML content to the internal
+        line-based buffer. By default, adds one level of indentation to the
+        output compared to the caller's level; passing False as the second
+        argument will prevent this from happening.'''
         if indent:
             self.level += 1
         for x in nodes:
