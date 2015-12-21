@@ -233,9 +233,7 @@ class XMLSerializer(object):
                     elif n.type == NS:
                         assert n.name in self.ns
                         assert self.ns[n.name] == n.value[0]
-                self.level -= 1
-                self.visit(x.value)
-                self.level += 1
+                self.visit(x.value, False)
             else:
                 assert False, x
         if indent:
