@@ -7,7 +7,12 @@ from rnc2rng.parser import (
     INTERLEAVE, LIST, LITERAL, MAYBE, MIXED, NAME, NOT_ALLOWED, NS, PARAM,
     PARENT, REF, ROOT, SEQ, SOME, TEXT,
 )
-import cgi
+
+import sys
+if sys.version_info[0] < 3:
+    import cgi as html
+else:
+    import html
 
 QUANTS = {SOME: 'oneOrMore', MAYBE: 'optional', ANY: 'zeroOrMore'}
 TYPELIB_NS = 'http://www.w3.org/2001/XMLSchema-datatypes'
@@ -72,7 +77,7 @@ class XMLSerializer(object):
 
     def anno_attrs(self, nodes):
         select = lambda n: isinstance(n, parser.Node) and n.type == ANNO_ATTR
-        pairs = [(n.name, cgi.escape(n.value[0])) for n in nodes if select(n)]
+        pairs = [(n.name, html.escape(n.value[0])) for n in nodes if select(n)]
         if not pairs:
             return ''
         return ' ' + ' '.join('%s="%s"' % attr for attr in pairs)
@@ -154,7 +159,7 @@ class XMLSerializer(object):
                 bits = x.type.lower(), x.name, attribs
                 self.write('<%s name="%s"%s/>' % bits)
             elif x.type == LITERAL:
-                bits = attribs, cgi.escape(x.name)
+                bits = attribs, html.escape(x.name)
                 self.write('<value%s>%s</value>' % bits)
                 self.visit(x.value, False)
             elif x.type == ANNOTATION:
@@ -169,7 +174,7 @@ class XMLSerializer(object):
                 end = '/' if not (literals or rest) else ''
                 tail = ''
                 if literals and not rest:
-                    tail = cgi.escape(''.join(literals)) + '</%s>' % x.name
+                    tail = html.escape(''.join(literals)) + '</%s>' % x.name
 
                 bits = x.name, attribs, end, tail
                 self.write('<%s%s%s>%s' % bits)
@@ -181,7 +186,7 @@ class XMLSerializer(object):
                         continue
                     elif n.type == LITERAL:
                         self.level += 1
-                        self.write(cgi.escape(n.name))
+                        self.write(html.escape(n.name))
                         self.level -= 1
                     else:
                         self.visit([n])
@@ -191,7 +196,7 @@ class XMLSerializer(object):
             elif x.type == DOCUMENTATION:
                 self.namespace('a')
                 fmt = '<a:documentation>%s</a:documentation>'
-                self.write(fmt % cgi.escape('\n'.join(x.value)))
+                self.write(fmt % html.escape('\n'.join(x.value)))
             elif x.type == GROUP:
                 if len(x.value) == 1 and x.value[0].type != SEQ:
                     self.visit(x.value, False)
@@ -217,7 +222,7 @@ class XMLSerializer(object):
                     self.visit(x.value)
                     self.write('</data>')
             elif x.type == PARAM:
-                bits = x.name, cgi.escape(x.value[0])
+                bits = x.name, html.escape(x.value[0])
                 self.write('<param name="%s">%s</param>' % bits)
             elif x.type == ELEM:
                 self.write('<element%s>' % attribs)
