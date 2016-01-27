@@ -520,11 +520,10 @@ else:
 
 def parse(src=None, f=None):
     assert src is None or f is None
-    fn = None
-    if f is not None:
-        if isinstance(f, str_types):
-            fn, f = f, open(f)
-        elif hasattr(f, 'name'):
-            fn = f.name
-        src = f.read()
+    if f is not None and isinstance(f, str_types):
+        fn = f
+        with open(fn) as f:
+            src = f.read()
+    elif f is not None:
+        fn, src = f.name, f.read()
     return parser.parse(lex(src), state=State(fn, src))
