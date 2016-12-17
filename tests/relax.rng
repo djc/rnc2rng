@@ -194,7 +194,7 @@
   </define>
   <define name="combine">
     <attribute>
-      <name ns="http://relaxng.org/ns/structure/1.0">combine</name>
+      <name ns="">combine</name>
       <choice>
         <value>choice</value>
         <value>interleave</value>
@@ -250,25 +250,25 @@
   </define>
   <define name="nameQName">
     <attribute>
-      <name ns="http://relaxng.org/ns/structure/1.0">name</name>
+      <name ns="">name</name>
       <data type="QName"/>
     </attribute>
   </define>
   <define name="nameNCName">
     <attribute>
-      <name ns="http://relaxng.org/ns/structure/1.0">name</name>
+      <name ns="">name</name>
       <data type="NCName"/>
     </attribute>
   </define>
   <define name="href">
     <attribute>
-      <name ns="http://relaxng.org/ns/structure/1.0">href</name>
+      <name ns="">href</name>
       <data type="anyURI"/>
     </attribute>
   </define>
   <define name="type">
     <attribute>
-      <name ns="http://relaxng.org/ns/structure/1.0">type</name>
+      <name ns="">type</name>
       <data type="NCName"/>
     </attribute>
   </define>
@@ -281,13 +281,13 @@
   <define name="commonAttributes">
     <optional>
       <attribute>
-        <name ns="http://relaxng.org/ns/structure/1.0">ns</name>
+        <name ns="">ns</name>
         <data type="string"/>
       </attribute>
     </optional>
     <optional>
       <attribute>
-        <name ns="http://relaxng.org/ns/structure/1.0">datatypeLibrary</name>
+        <name ns="">datatypeLibrary</name>
         <data type="anyURI"/>
       </attribute>
     </optional>

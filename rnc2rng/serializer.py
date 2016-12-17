@@ -82,7 +82,7 @@ class XMLSerializer(object):
             return ''
         return ' ' + ' '.join('%s="%s"' % attr for attr in pairs)
 
-    def visit(self, nodes, indent=True):
+    def visit(self, nodes, ctx=None, indent=True):
         '''Visiting a list of nodes, writes out the XML content to the internal
         line-based buffer. By default, adds one level of indentation to the
         output compared to the caller's level; passing False as the second
@@ -149,8 +149,9 @@ class XMLSerializer(object):
                     else:
                         self.write('</nsName>')
                 else:
-                    ns, name = self.default, x.name
-                    if ':' in x.name:
+                    ns = '' if ctx == 'ATTR' else self.default
+                    name = x.name
+                    if ':' in name:
                         parts = x.name.split(':', 1)
                         ns = self.namespace(parts[0])
                         name = parts[1]
@@ -230,7 +231,7 @@ class XMLSerializer(object):
                 self.write('</element>')
             elif x.type == ATTR:
                 self.write('<attribute%s>' % attribs)
-                self.visit(x.value)
+                self.visit(x.value, ctx=x.type)
                 self.write('</attribute>')
             elif x.type == ROOT:
                 # Verify the included document has the same metadata

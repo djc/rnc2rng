@@ -6,7 +6,7 @@
     <element>
       <name ns="http://example.com">foo</name>
       <attribute>
-        <name ns="http://example.com">bar</name>
+        <name ns="">bar</name>
         <data type="string"/>
       </attribute>
     </element>
