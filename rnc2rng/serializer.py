@@ -117,7 +117,7 @@ class XMLSerializer(object):
                     self.write('</define>')
 
             elif x.type == ASSIGN:
-                self.visit(x.value, False)
+                self.visit(x.value, indent=False)
             elif x.type in set([MAYBE, SOME, ANY]):
                 self.write('<%s>' % QUANTS[x.type])
                 self.visit(x.value)
@@ -161,7 +161,7 @@ class XMLSerializer(object):
             elif x.type == LITERAL:
                 bits = attribs, html.escape(x.name)
                 self.write('<value%s>%s</value>' % bits)
-                self.visit(x.value, False)
+                self.visit(x.value, indent=False)
             elif x.type == ANNOTATION:
 
                 literals, rest = [], []
@@ -199,7 +199,7 @@ class XMLSerializer(object):
                 self.write(fmt % html.escape('\n'.join(x.value)))
             elif x.type == GROUP:
                 if len(x.value) == 1 and x.value[0].type != SEQ:
-                    self.visit(x.value, False)
+                    self.visit(x.value, indent=False)
                 else:
                     self.write('<%s>' % x.type.lower())
                     self.visit(x.value)
@@ -209,7 +209,7 @@ class XMLSerializer(object):
             elif x.type in set([TEXT, EMPTY]):
                 self.write('<%s/>' % x.type.lower())
             elif x.type == SEQ:
-                self.visit(x.value, False)
+                self.visit(x.value, indent=False)
             elif x.type == DATATAG:
                 self.needs['types'] = True
                 if not x.value: # no parameters
@@ -242,7 +242,7 @@ class XMLSerializer(object):
                     elif n.type == NS:
                         assert n.name in self.ns
                         assert self.ns[n.name] == n.value[0]
-                self.visit(x.value, False)
+                self.visit(x.value, indent=False)
             else:
                 assert False, x
         if indent:
