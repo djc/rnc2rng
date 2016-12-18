@@ -128,7 +128,7 @@ class XMLSerializer(object):
                 self.write('</%s>' % x.type.lower())
             elif x.type == EXCEPT:
                 self.write('<except>')
-                self.visit(x.value)
+                self.visit(x.value, ctx=ctx)
                 self.write('</except>')
             elif x.type == NAME:
                 if not x.value and '*' in x.name:
@@ -143,7 +143,7 @@ class XMLSerializer(object):
                     else:
                         uri = self.ns[x.name.split(':', 1)[0]]
                         self.write('<nsName ns="%s">' % uri)
-                    self.visit(x.value)
+                    self.visit(x.value, ctx=ctx)
                     if x.name == '*':
                         self.write('</anyName>')
                     else:

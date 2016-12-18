@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+         ns="https://namespace.com">
+  <define name="MyEl">
+    <element>
+      <name ns="https://namespace.com">elem</name>
+      <attribute>
+        <anyName>
+          <except>
+            <name ns="">utils</name>
+          </except>
+        </anyName>
+        <text/>
+      </attribute>
+    </element>
+  </define>
+</grammar>
