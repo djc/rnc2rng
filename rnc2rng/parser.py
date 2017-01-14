@@ -443,6 +443,14 @@ def id_kw_id(s, p):
 def id_kw_attr(s, p):
     return Node('NAME', p[0].value)
 
+@pg.production('id-or-kw : DATATYPES')
+def id_kw_dtypes(s, p):
+    return Node('NAME', p[0].value)
+
+@pg.production('id-or-kw : DEFAULT')
+def id_kw_default(s, p):
+    return Node('NAME', p[0].value)
+
 @pg.production('id-or-kw : DIV')
 def id_kw_div(s, p):
     return Node('NAME', p[0].value)
@@ -467,8 +475,16 @@ def id_kw_list(s, p):
 def id_kw_mixed(s, p):
     return Node('NAME', p[0].value)
 
+@pg.production('id-or-kw : NAMESPACE')
+def id_kw_namespace(s, p):
+    return Node('NAME', p[0].value)
+
 @pg.production('id-or-kw : NOTALLOWED')
 def id_kw_notallowed(s, p):
+    return Node('NAME', p[0].value)
+
+@pg.production('id-or-kw : PARENT')
+def id_kw_parent(s, p):
     return Node('NAME', p[0].value)
 
 @pg.production('id-or-kw : START')
