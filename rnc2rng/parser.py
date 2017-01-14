@@ -439,28 +439,24 @@ def name_id(s, p):
 def id_kw_id(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : STRING')
-def id_kw_string(s, p):
+@pg.production('id-or-kw : ATTRIBUTE')
+def id_kw_attr(s, p):
+    return Node('NAME', p[0].value)
+
+@pg.production('id-or-kw : DIV')
+def id_kw_div(s, p):
     return Node('NAME', p[0].value)
 
 @pg.production('id-or-kw : ELEMENT')
 def id_kw_elem(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : ATTRIBUTE')
-def id_kw_attr(s, p):
-    return Node('NAME', p[0].value)
-
 @pg.production('id-or-kw : EMPTY')
 def id_kw_empty(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : TEXT')
-def id_kw_text(s, p):
-    return Node('NAME', p[0].value)
-
-@pg.production('id-or-kw : START')
-def id_kw_start(s, p):
+@pg.production('id-or-kw : INCLUDE')
+def id_kw_include(s, p):
     return Node('NAME', p[0].value)
 
 @pg.production('id-or-kw : LIST')
@@ -475,12 +471,16 @@ def id_kw_mixed(s, p):
 def id_kw_notallowed(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : DIV')
-def id_kw_div(s, p):
+@pg.production('id-or-kw : START')
+def id_kw_start(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : INCLUDE')
-def id_kw_include(s, p):
+@pg.production('id-or-kw : STRING')
+def id_kw_string(s, p):
+    return Node('NAME', p[0].value)
+
+@pg.production('id-or-kw : TEXT')
+def id_kw_text(s, p):
     return Node('NAME', p[0].value)
 
 class ParseError(Exception):
