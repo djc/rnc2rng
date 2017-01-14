@@ -439,6 +439,10 @@ def name_id(s, p):
 def id_kw_id(s, p):
     return Node('NAME', p[0].value)
 
+@pg.production('id-or-kw : STRING')
+def id_kw_string(s, p):
+    return Node('NAME', p[0].value)
+
 @pg.production('id-or-kw : ELEMENT')
 def id_kw_elem(s, p):
     return Node('NAME', p[0].value)
