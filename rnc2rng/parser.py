@@ -546,4 +546,7 @@ def parse(src=None, f=None):
             src = f.read()
     elif f is not None:
         fn, src = f.name, f.read()
+    else:
+        # Caller only gave source code, no filename.
+        fn = None
     return parser.parse(lex(src), state=State(fn, src))
