@@ -550,4 +550,3 @@ def parse(src=None, f=None):
         # Caller only gave source code, no filename.
         fn = None
     return parser.parse(lex(src), state=State(fn, src))
-
