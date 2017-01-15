@@ -10,7 +10,7 @@ class TestUtils(unittest.TestCase):
             self.assertEqual(expected, actual)
 
 
-class RNCTest(TestUtils):
+class FileTest(TestUtils):
 
     def __init__(self, fn):
         unittest.TestCase.__init__(self)
@@ -31,13 +31,23 @@ class RNCTest(TestUtils):
         self.assertBestEqual(expected, actual)
 
 
+class APITests(TestUtils):
+    def test_from_string(self):
+        with open('tests/features.rnc') as f:
+            src = f.read()
+        with open('tests/features.rng') as f:
+            expected = f.read().rstrip()
+        actual = rnc2rng.dumps(rnc2rng.loads(src)).strip()
+        self.assertBestEqual(expected, actual)
+
+
 def suite():
-    suite = unittest.TestSuite()
+    suite = unittest.TestLoader().loadTestsFromTestCase(APITests)
     for fn in os.listdir('tests'):
         if not fn.endswith('.rnc'):
             continue
         fn = os.path.join('tests', fn)
-        suite.addTest(RNCTest(fn))
+        suite.addTest(FileTest(fn))
     return suite
 
 
