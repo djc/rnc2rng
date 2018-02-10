@@ -30,6 +30,7 @@ def lexer():
     lg.add('LITERAL', '".*?"')
     lg.add('DOCUMENTATION', '##.*')
     lg.add('COMMENT', '#.*')
+    lg.add('TILDE', '~')
     lg.ignore('\s+')
     return lg.build()
 
@@ -48,8 +49,9 @@ def lex(src):
 pg = rply.ParserGenerator([
     'AMP', 'CNAME', 'COMBINE', 'COMMA', 'DOCUMENTATION', 'EQUAL', 'ID',
     'LBRACE', 'LBRACKET', 'LPAREN', 'LIST', 'LITERAL', 'MINUS', 'MIXED',
-    'PLUS', 'PIPE', 'QMARK', 'RBRACE', 'RBRACKET', 'RPAREN', 'STAR',
-] + [s.upper() for s in KEYWORDS])
+    'PLUS', 'PIPE', 'QMARK', 'RBRACE', 'RBRACKET', 'RPAREN', 'STAR', 'TILDE',
+] + [s.upper() for s in KEYWORDS], precedence=[("left", ['TILDE'])])
+
 
 class Node(object):
     __slots__ = 'type', 'name', 'value'
@@ -77,6 +79,15 @@ for _node_type in NODE_TYPES:
 def start(s, p):
     return Node('ROOT', None, p[0] + p[1])
 
+@pg.production('strlit : LITERAL')
+def strlit_literal(s, p): # from datatypeValue
+    return p[0]
+
+@pg.production('strlit : strlit TILDE strlit')
+def strlit_concat(s, p):
+    p[0].value += p[2].value
+    return p[0]
+
 @pg.production('preamble : decl preamble')
 def preamble_multi(s, p):
     p[1].insert(0, p[0])
@@ -86,19 +97,19 @@ def preamble_multi(s, p):
 def preamble_empty(s, p):
     return []
 
-@pg.production('decl : DEFAULT NAMESPACE EQUAL LITERAL')
+@pg.production('decl : DEFAULT NAMESPACE EQUAL strlit')
 def decl_default_ns(s, p):
     return Node('DEFAULT_NS', None, [p[3].value.strip('"')])
 
-@pg.production('decl : DEFAULT NAMESPACE id-or-kw EQUAL LITERAL')
+@pg.production('decl : DEFAULT NAMESPACE id-or-kw EQUAL strlit')
 def decl_default_names_ns(s, p):
     return Node('DEFAULT_NS', p[2].name, [p[4].value.strip(' "')])
 
-@pg.production('decl : NAMESPACE id-or-kw EQUAL LITERAL')
+@pg.production('decl : NAMESPACE id-or-kw EQUAL strlit')
 def decl_ns(s, p):
     return Node('NS', p[1].name, [p[3].value.strip(' "')])
 
-@pg.production('decl : DATATYPES id-or-kw EQUAL LITERAL')
+@pg.production('decl : DATATYPES id-or-kw EQUAL strlit')
 def decl_datatypes(s, p):
     return Node('DATATYPES', p[1].name, [p[3].value.strip('"')])
 
@@ -149,7 +160,7 @@ def definition_combine(s, p):
 def component_div(s, p):
     return Node('DIV', None, p[2])
 
-@pg.production('component : INCLUDE LITERAL')
+@pg.production('component : INCLUDE strlit')
 def component_include(s, p):
     return parse(f=os.path.join(s.path, p[1].value))
 
@@ -171,11 +182,11 @@ def start_annotation_content_cname(s, p):
     p[1][0].name = p[0].value
     return p[1]
 
-@pg.production('start-annotation-content : ID EQUAL LITERAL start-annotation-content')
+@pg.production('start-annotation-content : ID EQUAL strlit start-annotation-content')
 def start_annotation_content_id(s, p):
     return [Node('ANNO_ATTR', p[0].value, [p[2].value])] + p[3]
 
-@pg.production('start-annotation-content : LITERAL annotation-content')
+@pg.production('start-annotation-content : strlit annotation-content')
 def start_annotation_content_literal(s, p):
     return [Node('LITERAL', p[0].value)] + p[1]
 
@@ -183,7 +194,7 @@ def start_annotation_content_literal(s, p):
 def start_annotation_content_empty(s, p):
     return []
 
-@pg.production('cname-annotation-content : EQUAL LITERAL start-annotation-content')
+@pg.production('cname-annotation-content : EQUAL strlit start-annotation-content')
 def cname_annotation_content_attribute(s, p):
     return [Node('ANNO_ATTR', None, [p[1].value])] + p[2]
 
@@ -200,7 +211,7 @@ def start_annotations_cname(s, p):
 def start_annotations_empty(s, p):
     return []
 
-@pg.production('cname-annotations : EQUAL LITERAL start-annotations')
+@pg.production('cname-annotations : EQUAL strlit start-annotations')
 def cname_annotations_attrib(s, p):
     return [Node('ANNO_ATTR', None, [p[1].value])] + p[2]
 
@@ -212,7 +223,7 @@ def cname_annotations_element(s, p):
 def annotation_content_nested(s, p):
     return [p[0]] + p[1]
 
-@pg.production('annotation-content : LITERAL annotation-content')
+@pg.production('annotation-content : strlit annotation-content')
 def annotation_content_literal(s, p):
     return [Node('LITERAL', p[0].value)] + p[1]
 
@@ -321,7 +332,7 @@ def primary_mixed(s, p):
 def primary_list(s, p):
     return Node('LIST', None, p[2])
 
-@pg.production('primary : LITERAL')
+@pg.production('primary : strlit')
 def primary_literal(s, p): # from datatypeValue
     return Node('LITERAL', p[0].value)
 
@@ -370,7 +381,7 @@ def params_multi(s, p):
 def params_empty(s, p):
     return []
 
-@pg.production('param : id-or-kw EQUAL LITERAL')
+@pg.production('param : id-or-kw EQUAL strlit')
 def param_single(s, p):
     return Node('PARAM', p[0].name, [p[2].value])
 
