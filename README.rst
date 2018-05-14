@@ -6,7 +6,8 @@ RELAX NG Compact to RELAX NG conversion library
 .. image:: https://coveralls.io/repos/djc/rnc2rng/badge.svg?branch=master&service=github
    :target: https://coveralls.io/github/djc/rnc2rng?branch=master
 
-Is what it says on the tin. Dependencies:
+Converts RELAX NG schemata in Compact syntax (`rnc`) to the equivalent schema
+in the XML-based default RELAX NG syntax. Dependencies:
 
 - Python 2.x (tested with 2.6, 2.7)
 - Python 3.x (tested with 3.3, 3.4, 3.5)
