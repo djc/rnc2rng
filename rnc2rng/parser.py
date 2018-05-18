@@ -1,5 +1,7 @@
 import rply, sys, os
 
+from codecs import BOM_UTF16_BE, BOM_UTF16_LE
+
 KEYWORDS = set([
     'attribute', 'datatypes', 'default', 'div', 'element', 'empty', 'include',
     'list', 'mixed', 'namespace', 'notAllowed', 'parent', 'start', 'string',
@@ -549,11 +551,16 @@ if sys.version_info[0] < 3:
 else:
     str_types = str, bytes
 
+def detect_encoding(fn):
+    with open(fn, 'rb') as f:
+        bom = f.read(2)
+    return 'utf-16' if bom in (BOM_UTF16_BE, BOM_UTF16_LE) else 'utf-8'
+
 def parse(src=None, f=None):
     assert src is None or f is None
     if f is not None and isinstance(f, str_types):
         fn = f
-        with open(fn) as f:
+        with open(fn, encoding=detect_encoding(fn)) as f:
             src = f.read()
     elif f is not None:
         fn, src = f.name, f.read()
