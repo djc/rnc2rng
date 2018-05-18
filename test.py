@@ -22,8 +22,7 @@ class FileTest(TestUtils):
 
     def runTest(self):
 
-        with open(self.fn) as f:
-            root = rnc2rng.load(f)
+        root = rnc2rng.load(self.fn)
         with open(self.fn.replace('.rnc', '.rng')) as f:
             expected = f.read().rstrip()
 
