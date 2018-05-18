@@ -1,6 +1,8 @@
 import rply, sys, os
 
 from codecs import BOM_UTF16_BE, BOM_UTF16_LE
+from io import open
+
 
 KEYWORDS = set([
     'attribute', 'datatypes', 'default', 'div', 'element', 'empty', 'include',
