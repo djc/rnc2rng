@@ -489,7 +489,7 @@ def id_kw_include(s, p):
     return Node('NAME', p[0].value)
 
 @pg.production('id-or-kw : INHERIT')
-def id_kw_token(s, p):
+def id_kw_inherit(s, p):
     return Node('NAME', p[0].value)
 
 @pg.production('id-or-kw : LIST')
