@@ -3,9 +3,9 @@ import rply, sys, os
 from codecs import BOM_UTF16_BE, BOM_UTF16_LE
 
 KEYWORDS = set([
-    'attribute', 'datatypes', 'default', 'div', 'element', 'empty', 'include',
-    'list', 'mixed', 'namespace', 'notAllowed', 'parent', 'start', 'string',
-    'text',
+    'attribute', 'datatypes', 'default', 'div', 'element', 'empty', 'external',
+    'grammar', 'include', 'inherit', 'list', 'mixed', 'namespace',
+    'notAllowed', 'parent', 'start', 'string', 'text', 'token',
 ])
 
 NCNAME = '[A-Za-z_][\w.-]*'
@@ -476,8 +476,20 @@ def id_kw_elem(s, p):
 def id_kw_empty(s, p):
     return Node('NAME', p[0].value)
 
+@pg.production('id-or-kw : EXTERNAL')
+def id_kw_external(s, p):
+    return Node('NAME', p[0].value)
+
+@pg.production('id-or-kw : GRAMMAR')
+def id_kw_grammar(s, p):
+    return Node('NAME', p[0].value)
+
 @pg.production('id-or-kw : INCLUDE')
 def id_kw_include(s, p):
+    return Node('NAME', p[0].value)
+
+@pg.production('id-or-kw : INHERIT')
+def id_kw_token(s, p):
     return Node('NAME', p[0].value)
 
 @pg.production('id-or-kw : LIST')
@@ -510,6 +522,10 @@ def id_kw_string(s, p):
 
 @pg.production('id-or-kw : TEXT')
 def id_kw_text(s, p):
+    return Node('NAME', p[0].value)
+
+@pg.production('id-or-kw : TOKEN')
+def id_kw_token(s, p):
     return Node('NAME', p[0].value)
 
 class ParseError(Exception):
