@@ -426,10 +426,6 @@ def simple_name_class_any(s, p):
 def simple_name_class_name(s, p):
     return [p[0]]
 
-@pg.production('simple-name-class : CNAME')
-def simple_name_class_cname(s, p):
-    return [Node('NAME', p[0].value)]
-
 @pg.production('simple-name-class : LPAREN name-class RPAREN')
 def name_class_group(s, p):
     return p[1]
@@ -443,6 +439,10 @@ def documentations_multi(s, p):
 @pg.production('documentations : ')
 def documentations_empty(s, p):
     return []
+
+@pg.production('name : CNAME')
+def name_cname(s, p):
+    return Node('NAME', p[0].value)
 
 @pg.production('name : id-or-kw')
 def name_id(s, p):
