@@ -120,16 +120,16 @@ def top_level_body_pattern(s, p):
     p[1].value = p[0] + p[1].value
     return [Node('DEFINE', 'start', [Node('ASSIGN', '=', [p[1]])])]
 
-@pg.production('top-level-body : grammar')
+@pg.production('top-level-body : grammar-content')
 def top_level_body_grammar(s, p):
     return p[0]
 
-@pg.production('grammar : member grammar')
+@pg.production('grammar-content : member grammar-content')
 def grammar_multi(s, p):
     p[1].insert(0, p[0])
     return p[1]
 
-@pg.production('grammar : ')
+@pg.production('grammar-content : ')
 def grammar_empty(s, p):
     return []
 
@@ -158,7 +158,7 @@ def definition_equal(s, p):
 def definition_combine(s, p):
     return Node('ASSIGN', p[0].value, p[1])
 
-@pg.production('component : DIV LBRACE grammar RBRACE')
+@pg.production('component : DIV LBRACE grammar-content RBRACE')
 def component_div(s, p):
     return Node('DIV', None, p[2])
 
