@@ -61,6 +61,7 @@ class Node(object):
         self.type = type
         self.name = name
         self.value = value or []
+        assert isinstance(self.value, list), self.value
     def __repr__(self):
         bits = [(k, getattr(self, k, None)) for k in self.__slots__]
         strs = ['%s=%r' % (k, v) for (k, v) in bits if v is not None]
