@@ -140,6 +140,9 @@ def top_level_body(s, p):
     elif p[1].type == 'ELEM':
         p[1].value = p[0] + p[1].value
         p[1] = [Node('DEFINE', 'start', [Node('ASSIGN', '=', [p[1]])])]
+    elif p[1].type == 'GRAMMAR':
+        p[1].value = p[0] + p[1].value
+        p[1] = [p[1]]
     return p[1]
 
 @pg.production('alt-top-level : component grammar-content')
@@ -149,6 +152,10 @@ def top_level_grammar_content(s, p):
 
 @pg.production('alt-top-level : element-primary')
 def top_level_element(s, p):
+    return p[0]
+
+@pg.production('alt-top-level : grammar')
+def top_level_grammar(s, p):
     return p[0]
 
 @pg.production('grammar-content : member grammar-content')
@@ -401,8 +408,12 @@ def primary_notallowed(s, p):
 def primary_parent(s, p):
     return Node('PARENT', p[1].value)
 
-@pg.production('primary : GRAMMAR LBRACE grammar-content RBRACE')
+@pg.production('primary : grammar')
 def primary_grammar(s, p):
+    return p[0]
+
+@pg.production('grammar : GRAMMAR LBRACE grammar-content RBRACE')
+def grammar(s, p):
     return Node('GRAMMAR', None, p[2])
 
 @pg.production('params : params param')
