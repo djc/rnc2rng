@@ -133,13 +133,22 @@ def decl_ns(s, p):
 def decl_datatypes(s, p):
     return Node('DATATYPES', p[1].name, [p[3].value.strip('"')])
 
-@pg.production('top-level-body : documentations element-primary')
-def top_level_body_pattern(s, p):
-    p[1].value = p[0] + p[1].value
-    return [Node('DEFINE', 'start', [Node('ASSIGN', '=', [p[1]])])]
+@pg.production('top-level-body : annotations alt-top-level')
+def top_level_body(s, p):
+    if isinstance(p[1], list):
+        p[1][0].value = p[0] + p[1][0].value
+    elif p[1].type == 'ELEM':
+        p[1].value = p[0] + p[1].value
+        p[1] = [Node('DEFINE', 'start', [Node('ASSIGN', '=', [p[1]])])]
+    return p[1]
 
-@pg.production('top-level-body : grammar-content')
-def top_level_body_grammar(s, p):
+@pg.production('alt-top-level : component grammar-content')
+def top_level_grammar_content(s, p):
+    p[1].insert(0, p[0])
+    return p[1]
+
+@pg.production('alt-top-level : element-primary')
+def top_level_element(s, p):
     return p[0]
 
 @pg.production('grammar-content : member grammar-content')
