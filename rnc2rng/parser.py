@@ -89,9 +89,9 @@ def pprint(n, level=0):
 NODE_TYPES = [
     'ANNO_ATTR', 'ANNOTATION', 'ANY', 'ASSIGN', 'ATTR', 'CHOICE', 'DATATAG',
     'DATATYPES', 'DEFAULT_NS', 'DEFINE', 'DIV', 'DOCUMENTATION', 'ELEM',
-    'EMPTY', 'EXCEPT', 'GROUP', 'INTERLEAVE', 'LIST', 'LITERAL', 'MAYBE',
-    'MIXED', 'NAME', 'NOT_ALLOWED', 'NS', 'PARAM', 'PARENT', 'REF', 'ROOT',
-    'SEQ', 'SOME', 'TEXT',
+    'EMPTY', 'EXCEPT', 'GRAMMAR', 'GROUP', 'INTERLEAVE', 'LIST', 'LITERAL',
+    'MAYBE', 'MIXED', 'NAME', 'NOT_ALLOWED', 'NS', 'PARAM', 'PARENT', 'REF',
+    'ROOT', 'SEQ', 'SOME', 'TEXT',
 ]
 
 for _node_type in NODE_TYPES:

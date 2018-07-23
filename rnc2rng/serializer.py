@@ -3,9 +3,9 @@
 from . import parser
 from rnc2rng.parser import (
     ANNO_ATTR, ANNOTATION, ANY, ASSIGN, ATTR, CHOICE, DATATAG, DATATYPES,
-    DEFAULT_NS, DEFINE, DIV, DOCUMENTATION, ELEM, EMPTY, EXCEPT, GROUP,
-    INTERLEAVE, LIST, LITERAL, MAYBE, MIXED, NAME, NOT_ALLOWED, NS, PARAM,
-    PARENT, REF, ROOT, SEQ, SOME, TEXT,
+    DEFAULT_NS, DEFINE, DIV, DOCUMENTATION, ELEM, EMPTY, EXCEPT, GRAMMAR,
+    GROUP, INTERLEAVE, LIST, LITERAL, MAYBE, MIXED, NAME, NOT_ALLOWED, NS,
+    PARAM, PARENT, REF, ROOT, SEQ, SOME, TEXT,
 )
 
 import sys
@@ -118,6 +118,10 @@ class XMLSerializer(object):
 
             elif x.type == ASSIGN:
                 self.visit(x.value, indent=False)
+            elif x.type == GRAMMAR:
+                self.write('<grammar>')
+                self.visit(x.value)
+                self.write('</grammar>')
             elif x.type in set([MAYBE, SOME, ANY]):
                 self.write('<%s>' % QUANTS[x.type])
                 self.visit(x.value)
