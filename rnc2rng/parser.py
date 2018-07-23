@@ -30,6 +30,7 @@ def lexer():
     lg.add('PLUS', '[+]')
     lg.add('QMARK', '[?]')
     lg.add('CNAME', '%s:(%s|\*)' % (NCNAME, NCNAME))
+    lg.add('QID', '\\\\%s' % NCNAME)
     lg.add('ID', NCNAME)
     lg.add('LITERAL', '".*?"')
     lg.add('DOCUMENTATION', '##.*')
@@ -53,7 +54,8 @@ def lex(src):
 pg = rply.ParserGenerator([
     'AMP', 'CNAME', 'COMBINE', 'COMMA', 'DOCUMENTATION', 'EQUAL', 'ID',
     'LBRACE', 'LBRACKET', 'LPAREN', 'LIST', 'LITERAL', 'MINUS', 'MIXED',
-    'PLUS', 'PIPE', 'QMARK', 'RBRACE', 'RBRACKET', 'RPAREN', 'STAR', 'TILDE',
+    'PLUS', 'PIPE', 'QID', 'QMARK', 'RBRACE', 'RBRACKET', 'RPAREN', 'STAR',
+    'TILDE',
 ] + [s.upper() for s in KEYWORDS], precedence=[("left", ['TILDE'])])
 
 
@@ -176,9 +178,9 @@ def member_annotated_component(s, p):
 def member_foreign_element_annotation(s, p):
     return Node('ANNOTATION', p[0].value, p[1])
 
-@pg.production('component : ID definition')
+@pg.production('component : identifier definition')
 def component_define(s, p):
-    return Node('DEFINE', p[0].value, [p[1]])
+    return Node('DEFINE', p[0].name, [p[1]])
 
 @pg.production('component : START definition')
 def component_start(s, p):
@@ -404,9 +406,9 @@ def primary_text(s, p):
 def primary_empty(s, p):
     return Node('EMPTY', None)
 
-@pg.production('primary : ID')
+@pg.production('primary : identifier')
 def primary_id(s, p):
-    return Node('REF', p[0].value)
+    return Node('REF', p[0].name)
 
 @pg.production('primary : NOTALLOWED')
 def primary_notallowed(s, p):
@@ -498,84 +500,96 @@ def name_cname(s, p):
 def name_id(s, p):
     return p[0]
 
-@pg.production('id-or-kw : ID')
+@pg.production('id-or-kw : identifier')
+def id_or_kw_identifier(s, p):
+    return p[0]
+
+@pg.production('id-or-kw : keyword')
+def id_or_kw_keyword(s, p):
+    return p[0]
+
+@pg.production('identifier : ID')
 def id_kw_id(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : ATTRIBUTE')
-def id_kw_attr(s, p):
+@pg.production('identifier : QID')
+def id_kw_quoted_identifier(s, p):
+    return Node('NAME', p[0].value[1:])
+
+@pg.production('keyword : ATTRIBUTE')
+def keyword_attr(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : DATATYPES')
-def id_kw_dtypes(s, p):
+@pg.production('keyword : DATATYPES')
+def keyword_dtypes(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : DEFAULT')
-def id_kw_default(s, p):
+@pg.production('keyword : DEFAULT')
+def keyword_default(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : DIV')
-def id_kw_div(s, p):
+@pg.production('keyword : DIV')
+def keyword_div(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : ELEMENT')
-def id_kw_elem(s, p):
+@pg.production('keyword : ELEMENT')
+def keyword_elem(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : EMPTY')
-def id_kw_empty(s, p):
+@pg.production('keyword : EMPTY')
+def keyword_empty(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : EXTERNAL')
-def id_kw_external(s, p):
+@pg.production('keyword : EXTERNAL')
+def keyword_external(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : GRAMMAR')
-def id_kw_grammar(s, p):
+@pg.production('keyword : GRAMMAR')
+def keyword_grammar(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : INCLUDE')
-def id_kw_include(s, p):
+@pg.production('keyword : INCLUDE')
+def keyword_include(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : INHERIT')
-def id_kw_inherit(s, p):
+@pg.production('keyword : INHERIT')
+def keyword_inherit(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : LIST')
-def id_kw_list(s, p):
+@pg.production('keyword : LIST')
+def keyword_list(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : MIXED')
-def id_kw_mixed(s, p):
+@pg.production('keyword : MIXED')
+def keyword_mixed(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : NAMESPACE')
-def id_kw_namespace(s, p):
+@pg.production('keyword : NAMESPACE')
+def keyword_namespace(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : NOTALLOWED')
-def id_kw_notallowed(s, p):
+@pg.production('keyword : NOTALLOWED')
+def keyword_notallowed(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : PARENT')
-def id_kw_parent(s, p):
+@pg.production('keyword : PARENT')
+def keyword_parent(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : START')
-def id_kw_start(s, p):
+@pg.production('keyword : START')
+def keyword_start(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : STRING')
-def id_kw_string(s, p):
+@pg.production('keyword : STRING')
+def keyword_string(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : TEXT')
-def id_kw_text(s, p):
+@pg.production('keyword : TEXT')
+def keyword_text(s, p):
     return Node('NAME', p[0].value)
 
-@pg.production('id-or-kw : TOKEN')
-def id_kw_token(s, p):
+@pg.production('keyword : TOKEN')
+def keyword_token(s, p):
     return Node('NAME', p[0].value)
 
 class ParseError(Exception):
