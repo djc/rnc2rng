@@ -196,9 +196,17 @@ def definition_combine(s, p):
 def component_div(s, p):
     return Node('DIV', None, p[2])
 
-@pg.production('component : INCLUDE strlit')
+@pg.production('component : INCLUDE strlit opt-inherit')
 def component_include(s, p):
     return parse(f=os.path.join(s.path, p[1].value))
+
+@pg.production('opt-inherit : INHERIT EQUAL id-or-kw')
+def opt_inherit(s, p):
+    return Node('INHERIT', p[2])
+
+@pg.production('opt-inherit : ')
+def opt_inherit_none(s, p):
+    return None
 
 @pg.production('annotation-attributes-content : LBRACKET start-annotation-content RBRACKET')
 def annotation_attributes_content(s, p):
