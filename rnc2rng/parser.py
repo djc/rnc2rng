@@ -375,6 +375,10 @@ def primary_notallowed(s, p):
 def primary_parent(s, p):
     return Node('PARENT', p[1].value)
 
+@pg.production('primary : GRAMMAR LBRACE grammar-content RBRACE')
+def primary_grammar(s, p):
+    return Node('GRAMMAR', None, p[2])
+
 @pg.production('params : params param')
 def params_multi(s, p):
     p[0].append(p[1])
