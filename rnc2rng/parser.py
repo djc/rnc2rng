@@ -394,6 +394,10 @@ def primary_type_params(s, p):
 def primary_string(s, p):
     return Node('DATATAG', 'string')
 
+@pg.production('primary : STRING strlit')
+def primary_typed_string(s, p):
+    return Node('DATATAG', 'string', [p[1].value])
+
 @pg.production('primary : STRING LBRACE params RBRACE')
 def primary_string_parametrized(s, p):
     return Node('DATATAG', 'string', p[2])
