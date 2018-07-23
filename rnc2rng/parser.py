@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import rply, sys, os
 
 from codecs import BOM_UTF16_BE, BOM_UTF16_LE
@@ -66,6 +68,21 @@ class Node(object):
         bits = [(k, getattr(self, k, None)) for k in self.__slots__]
         strs = ['%s=%r' % (k, v) for (k, v) in bits if v is not None]
         return 'Node(%s)' % ', '.join(strs)
+
+def pprint(n, level=0):
+    if isinstance(n, list):
+        print('[')
+        for v in n:
+            pprint(v, level + 2)
+        print('%s]' % (' ' * level))
+    else:
+        print('%s%s' % (' ' * level, n.type), end=' ')
+        if n.name is not None:
+            print(n.name, end=' ')
+        if not n.value:
+            print('[]')
+        else:
+            pprint(n.value, level)
 
 NODE_TYPES = [
     'ANNO_ATTR', 'ANNOTATION', 'ANY', 'ASSIGN', 'ATTR', 'CHOICE', 'DATATAG',
