@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+         datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <grammar>
+    <start>
+      <element>
+        <name ns="">svn</name>
+        <optional>
+          <attribute>
+            <name ns="">dump-file</name>
+            <data type="string"/>
+          </attribute>
+        </optional>
+        <interleave>
+          <optional>
+            <element>
+              <name ns="">access-file</name>
+              <data type="string"/>
+            </element>
+          </optional>
+          <zeroOrMore>
+            <element>
+              <name ns="">notification</name>
+              <attribute>
+                <name ns="">path</name>
+                <data type="string"/>
+              </attribute>
+              <attribute>
+                <name ns="">emails</name>
+                <data type="string"/>
+              </attribute>
+            </element>
+          </zeroOrMore>
+        </interleave>
+      </element>
+    </start>
+  </grammar>
+</grammar>
