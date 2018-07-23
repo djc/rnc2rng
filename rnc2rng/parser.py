@@ -178,12 +178,20 @@ def member_annotated_component(s, p):
 def member_foreign_element_annotation(s, p):
     return Node('ANNOTATION', p[0].value, p[1])
 
-@pg.production('component : identifier definition')
+@pg.production('component : define')
 def component_define(s, p):
+    return p[0]
+
+@pg.production('component : grammar-start')
+def component_start(s, p):
+    return p[0]
+
+@pg.production('define : identifier definition')
+def define(s, p):
     return Node('DEFINE', p[0].name, [p[1]])
 
-@pg.production('component : START definition')
-def component_start(s, p):
+@pg.production('grammar-start : START definition')
+def grammar_start(s, p):
     return Node('DEFINE', 'start', [p[1]])
 
 @pg.production('definition : EQUAL pattern')
@@ -198,7 +206,7 @@ def definition_combine(s, p):
 def component_div(s, p):
     return Node('DIV', None, p[2])
 
-@pg.production('component : INCLUDE strlit opt-inherit')
+@pg.production('component : INCLUDE strlit opt-inherit opt-include-content')
 def component_include(s, p):
     return parse(f=os.path.join(s.path, p[1].value))
 
@@ -209,6 +217,40 @@ def opt_inherit(s, p):
 @pg.production('opt-inherit : ')
 def opt_inherit_none(s, p):
     return None
+
+@pg.production('opt-include-content : LBRACE include-body RBRACE')
+def opt_include_content(s, p):
+    return p[1]
+
+@pg.production('opt-include-content : ')
+def opt_include_content_none(s, p):
+    return []
+
+@pg.production('include-body : include-member include-body')
+def include_content_multi(s, p):
+    p[1].insert(0, p[0])
+    return p[1]
+
+@pg.production('include-body : ')
+def include_content_empty(s, p):
+    return []
+
+@pg.production('include-member : annotations include-component')
+def include_member(s, p):
+    p[1].value = p[0] + p[1].value
+    return p[1]
+
+@pg.production('include-component : define')
+def include_component_define(s, p):
+    return p[0]
+
+@pg.production('include-component : grammar-start')
+def include_component_start(s, p):
+    return p[0]
+
+@pg.production('include-component : DIV LBRACE include-body RBRACE')
+def component_div(s, p):
+    return Node('DIV', None, p[2])
 
 @pg.production('annotation-attributes-content : LBRACKET start-annotation-content RBRACKET')
 def annotation_attributes_content(s, p):
