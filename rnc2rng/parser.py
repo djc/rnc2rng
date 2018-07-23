@@ -249,7 +249,7 @@ def include_component_start(s, p):
     return p[0]
 
 @pg.production('include-component : DIV LBRACE include-body RBRACE')
-def component_div(s, p):
+def include_component_div(s, p):
     return Node('DIV', None, p[2])
 
 @pg.production('annotation-attributes-content : LBRACKET start-annotation-content RBRACKET')
