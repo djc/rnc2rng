@@ -162,7 +162,12 @@ class XMLSerializer(object):
                     self.write('<name ns="%s">%s</name>' % (ns, name))
             elif x.type in set([REF, PARENT]):
                 bits = x.type.lower(), x.name, attribs
-                self.write('<%s name="%s"%s/>' % bits)
+                if not x.value: # no parameters
+                    self.write('<%s name="%s"%s/>' % bits)
+                else:
+                    self.write('<%s name="%s"%s>' % bits)
+                    self.visit(x.value)
+                    self.write('</%s>' % x.type.lower())
             elif x.type == LITERAL:
                 bits = attribs, html.escape(x.name)
                 self.write('<value%s>%s</value>' % bits)
