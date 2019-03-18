@@ -41,3 +41,12 @@ div {
 ## documentation for definition
 ## continues on the next line
 bar = element bar { empty }
+
+baz = element baz {
+  ## documentation for a group
+  (
+    foo,
+    ## documentation for a ref
+    bar
+  )
+}
