@@ -182,6 +182,11 @@ class XMLSerializer(object):
                     tail = html.escape(''.join(literals)) + '</%s>' % x.name
 
                 bits = x.name, attribs, end, tail
+
+                if ':' in x.name:
+                    parts = x.name.split(':', 1)
+                    ns = self.namespace(parts[0])
+
                 self.write('<%s%s%s>%s' % bits)
                 if not rest:
                     continue
@@ -199,9 +204,12 @@ class XMLSerializer(object):
                 self.write('</%s>' % x.name)
 
             elif x.type == DOCUMENTATION:
-                self.namespace('a')
-                fmt = '<a:documentation>%s</a:documentation>'
-                self.write(fmt % html.escape('\n'.join(x.value)))
+                if self.namespace('a') != NAMESPACES['a']:
+                    xmlns_attr = ' xmlns:a="%s"' % NAMESPACES['a'] # the user is already using namespace a: for something else
+                else: xmlns_attr = ''
+
+                fmt = '<a:documentation%s>%s</a:documentation>'
+                self.write(fmt % (xmlns_attr, html.escape('\n'.join(x.value))))
             elif x.type == GROUP:
                 if len(x.value) == 1 and x.value[0].type != SEQ:
                     self.visit(x.value, indent=False)
