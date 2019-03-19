@@ -438,11 +438,19 @@ def primary_string(s, p):
 
 @pg.production('primary : STRING strlit')
 def primary_typed_string(s, p):
-    return Node('DATATAG', 'string', [p[1].value])
+    return Node('LITERAL', p[1].value, [Node('ANNO_ATTR', 'type', ['string'])])
 
 @pg.production('primary : STRING LBRACE params RBRACE')
 def primary_string_parametrized(s, p):
     return Node('DATATAG', 'string', p[2])
+
+@pg.production('primary : TOKEN')
+def primary_text(s, p):
+    return Node('DATATAG', 'token')
+
+@pg.production('primary : TOKEN strlit')
+def primary_text(s, p):
+    return Node('LITERAL', p[1].value) # the default type is token
 
 @pg.production('primary : TEXT')
 def primary_text(s, p):

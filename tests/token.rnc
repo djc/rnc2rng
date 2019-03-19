@@ -1,0 +1,7 @@
+foo = element foo {
+	attribute token_abc { token "abc" },
+	attribute token { token },
+	attribute string_abc { string "abc" },
+	attribute string { string },
+	text
+}
