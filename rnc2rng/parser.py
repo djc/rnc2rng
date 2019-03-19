@@ -539,7 +539,9 @@ def name_class_group(s, p):
 @pg.production('documentations : DOCUMENTATION documentations')
 def documentations_multi(s, p):
     cur = Node('DOCUMENTATION', None, []) if not p[1] else p[1][0]
-    cur.value.insert(0, p[0].value.lstrip('# '))
+    content = p[0].value.lstrip('#') # strip all leading "#" ( left-recursion in documentationLineContent)
+    if content.startswith(' '): content = content[1:] # strip *one* " ", but no more (now the production is readOfLine)
+    cur.value.insert(0, content)
     return [cur]
 
 @pg.production('documentations : ')
