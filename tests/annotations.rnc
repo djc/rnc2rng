@@ -52,3 +52,6 @@ baz = element baz {
     bar
   )
 }
+
+## combining definition
+baz |= empty

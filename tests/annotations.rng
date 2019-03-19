@@ -55,4 +55,8 @@
       </group>
     </element>
   </define>
+  <define name="baz" combine="choice">
+    <a:documentation>combining definition</a:documentation>
+    <empty/>
+  </define>
 </grammar>

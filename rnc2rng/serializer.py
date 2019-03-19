@@ -98,17 +98,17 @@ class XMLSerializer(object):
 
             attribs = self.anno_attrs(x.value)
             if x.type == DEFINE:
-
-                op, attrib = x.value[0].name, ''
-                if op in set(['|=', '&=']):
-                    modes = {'|': 'choice', '&': 'interleave'}
-                    attrib = ' combine="%s"' % modes[op[0]]
+                for op in (x.name for x in x.value if x.type == 'ASSIGN'):
+                    modes = {'|=': 'choice', '&=': 'interleave'}
+                    if op in modes:
+                        attribs = (' combine="%s"' % modes[op]) + attribs
+                    break;
 
                 if x.name == 'start':
-                    self.write('<start%s%s>' % (attrib, attribs))
+                    self.write('<start%s>' % attribs)
                 else:
-                    bits = x.name, attrib, attribs
-                    self.write('<define name="%s"%s%s>' % bits)
+                    bits = x.name, attribs
+                    self.write('<define name="%s"%s>' % bits)
 
                 self.visit(x.value)
                 if x.name == 'start':
