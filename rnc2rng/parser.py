@@ -1,8 +1,16 @@
 from __future__ import print_function
 
 import rply, sys, os
-
 from codecs import BOM_UTF16_BE, BOM_UTF16_LE
+if sys.version_info[0] < 3:
+    from urllib2 import urlopen as _urlopen
+    from urlparse import urljoin
+    from contextlib import closing
+    def urlopen(f):
+        return closing(_urlopen(f))
+else:
+    from urllib.request import urlopen
+    from urllib.parse import urljoin
 
 KEYWORDS = set([
     'attribute', 'datatypes', 'default', 'div', 'element', 'empty', 'external',
@@ -208,7 +216,11 @@ def component_div(s, p):
 
 @pg.production('component : INCLUDE strlit opt-inherit opt-include-content')
 def component_include(s, p):
-    return parse(f=os.path.join(s.path, p[1].value))
+    if ':' in s.path or ':' in p[1].value:  # it's a URL
+        url = urljoin(s.path, p[1].value)
+    else:
+        url = os.path.join(s.path, p[1].value)
+    return parse(f=url)
 
 @pg.production('opt-inherit : INHERIT EQUAL id-or-kw')
 def opt_inherit(s, p):
@@ -669,7 +681,7 @@ class State(object):
         self.fn = fn
         self.path = os.getcwd()
         if fn is not None:
-            self.path = os.path.dirname(os.path.abspath(fn))
+            self.path = os.path.dirname(os.path.abspath(fn)) if ':' not in fn else fn
         self.lines = src.splitlines()
 
 if sys.version_info[0] < 3:
@@ -681,10 +693,14 @@ def parse(src=None, f=None):
     assert src is None or f is None
     if f is not None and isinstance(f, str_types):
         fn = f
-        with open(fn, 'rb') as f:
-            bytes = f.read()
-            bom = bytes[:2] in {BOM_UTF16_BE, BOM_UTF16_LE}
-            src = bytes.decode('utf-16' if bom else 'utf-8')
+        if ':' in fn:
+            with urlopen(fn) as f:
+                bytes = f.read()
+        else:
+            with open(fn, 'rb') as f:
+                bytes = f.read()
+        bom = bytes[:2] in {BOM_UTF16_BE, BOM_UTF16_LE}
+        src = bytes.decode('utf-16' if bom else 'utf-8')
     elif f is not None:
         fn, src = f.name, f.read()
     else:
