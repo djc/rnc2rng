@@ -18,12 +18,14 @@ class FileTest(TestUtils):
         self.maxDiff = None
 
     def __str__(self):
-        return 'TestCase(%r)' % os.path.basename(self.fn)
+        return 'TestCase(%r)' % self.fn
 
     def runTest(self):
 
         root = rnc2rng.load(self.fn)
-        with open(self.fn.replace('.rnc', '.rng')) as f:
+        ref = self.fn.replace('.rnc', '.rng')
+        ref = ref[7:] if ref.startswith('file://') else ref
+        with open(ref) as f:
             expected = f.read().rstrip()
 
         actual = rnc2rng.dumps(root).strip()
@@ -47,6 +49,8 @@ def suite():
             continue
         fn = os.path.join('tests', fn)
         suite.addTest(FileTest(fn))
+    # synthesize a test that reads its input from a URL
+    suite.addTest(FileTest('file://' + os.path.abspath('tests/include.rnc')))
     return suite
 
 
