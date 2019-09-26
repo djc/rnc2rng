@@ -5,7 +5,7 @@ from rnc2rng.parser import (
     ANNO_ATTR, ANNOTATION, ANY, ASSIGN, ATTR, CHOICE, DATATAG, DATATYPES,
     DEFAULT_NS, DEFINE, DIV, DOCUMENTATION, ELEM, EMPTY, EXCEPT, GRAMMAR,
     GROUP, INTERLEAVE, LIST, LITERAL, MAYBE, MIXED, NAME, NOT_ALLOWED, NS,
-    PARAM, PARENT, REF, ROOT, SEQ, SOME, TEXT,
+    PARAM, PARENT, REF, ROOT, SEQ, SOME, TEXT, LITERAL_TYPE
 )
 
 import sys
@@ -15,7 +15,9 @@ else:
     import html
 
 QUANTS = {SOME: 'oneOrMore', MAYBE: 'optional', ANY: 'zeroOrMore'}
-TYPELIB_NS = 'http://www.w3.org/2001/XMLSchema-datatypes'
+TYPELIBS = {
+    'xsd': 'http://www.w3.org/2001/XMLSchema-datatypes'
+}
 NAMESPACES = {
     'a': 'http://relaxng.org/ns/compatibility/annotations/1.0',
     'xml': 'http://www.w3.org/XML/1998/namespace',
@@ -29,14 +31,20 @@ class XMLSerializer(object):
 
     def reset(self):
         self.buf = []
-        self.needs = {}
         self.types = None
         self.ns = {}
+        self.typelibs = {}
         self.default = ''
         self.level = 0
 
     def write(self, s):
         self.buf.append(self.indent * self.level + s)
+
+    def datatypeLibrary(self, prefix):
+        assert prefix in self.typelibs or prefix in TYPELIBS, prefix
+        if prefix not in self.typelibs:
+            self.typelibs[prefix] = TYPELIBS[prefix]
+        return self.typelibs[prefix]
 
     def namespace(self, ns):
         assert ns in self.ns or ns in NAMESPACES, ns
@@ -50,8 +58,7 @@ class XMLSerializer(object):
         types = None
         for n in node.value:
             if n.type == DATATYPES:
-                types = n.value[0]
-                self.types = types
+                self.typelibs[n.name] = n.value[0]
             elif n.type == DEFAULT_NS:
                 self.default = n.value[0]
                 if n.name is not None:
@@ -67,9 +74,10 @@ class XMLSerializer(object):
         self.visit(node.value)
         for ns, url in sorted(self.ns.items()):
             prelude.append('         xmlns:%s="%s"' % (ns, url))
-        if types is not None or self.needs.get('types'):
-            url = types if types is not None else TYPELIB_NS
-            prelude.append('         datatypeLibrary="%s"' % url)
+
+        # if only one datatypeLibrary was defined, make it global
+        if not self.types is None:
+            prelude.append('         datatypeLibrary="%s"' % self.types)
 
         prelude[-1] = prelude[-1] + '>'
         self.write('</grammar>')
@@ -82,6 +90,21 @@ class XMLSerializer(object):
             return ''
         return ' ' + ' '.join('%s="%s"' % attr for attr in pairs)
 
+    def type_attrs(self, name):
+        if ':' in name:
+            prefix, name = name.split(':', 1)
+            ns = self.datatypeLibrary(prefix)
+        else:
+            assert name in ('string', 'token') # these are the only "built-in" datatypes
+            ns = ""
+
+        attrs = ' type="%s"' % name
+        if self.types is None:
+            self.types = ns # take the first typelib to get used as the global default, as trang does
+        elif ns != self.types:
+            attrs += ' datatypeLibrary="%s"' % ns # and write all exceptions explicitly
+        return attrs
+
     def visit(self, nodes, ctx=None, indent=True):
         '''Visiting a list of nodes, writes out the XML content to the internal
         line-based buffer. By default, adds one level of indentation to the
@@ -93,7 +116,7 @@ class XMLSerializer(object):
 
             if not isinstance(x, parser.Node):
                 raise TypeError("Not a Node: " + repr(x))
-            elif x.type in set([ANNO_ATTR, DATATYPES, DEFAULT_NS, NS]):
+            elif x.type in set([ANNO_ATTR, LITERAL_TYPE, DATATYPES, DEFAULT_NS, NS]):
                 continue
 
             attribs = self.anno_attrs(x.value)
@@ -169,7 +192,13 @@ class XMLSerializer(object):
                     self.visit(x.value)
                     self.write('</%s>' % x.type.lower())
             elif x.type == LITERAL:
+                types = [n.name for n in x.value if isinstance(n, parser.Node) and n.type == LITERAL_TYPE]
+                if types:
+                    assert len(types) == 1
+                    attribs += self.type_attrs(types[0])
+
                 bits = attribs, html.escape(x.name)
+
                 self.write('<value%s>%s</value>' % bits)
                 self.visit(x.value, indent=False)
             elif x.type == ANNOTATION:
@@ -229,14 +258,10 @@ class XMLSerializer(object):
             elif x.type == SEQ:
                 self.visit(x.value, indent=False)
             elif x.type == DATATAG:
-                self.needs['types'] = True
                 if not x.value: # no parameters
-                    self.write('<data type="%s"/>' % x.name)
+                    self.write('<data%s/>' % self.type_attrs(x.name))
                 else:
-                    name = x.name
-                    if name not in ('string', 'token'):
-                        name = x.name.split(':', 1)[1]
-                    self.write('<data type="%s">' % name)
+                    self.write('<data%s>' % self.type_attrs(x.name))
                     self.visit(x.value)
                     self.write('</data>')
             elif x.type == PARAM:
