@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+         ns="http://example.com">
+  <define name="foo">
+    <element>
+      <name ns="http://example.com">bar</name>
+      <ref name="baz"/>
+    </element>
+  </define>
+  <define name="baz">
+    <text/>
+  </define>
+</grammar>

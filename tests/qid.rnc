@@ -1,0 +1,3 @@
+default namespace = "http://example.com"
+foo = element bar { \baz }
+\baz = text
