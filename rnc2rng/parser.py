@@ -38,7 +38,7 @@ def lexer():
     lg.add('PLUS', r'[+]')
     lg.add('QMARK', r'[?]')
     lg.add('CNAME', r'%s:(%s|\*)' % (NCNAME, NCNAME))
-    lg.add('QID', r'\\\\%s' % NCNAME)
+    lg.add('QID', r'\\%s' % NCNAME)
     lg.add('ID', NCNAME)
     lg.add('LITERAL', r'".*?"')
     lg.add('DOCUMENTATION', r'##.*')
