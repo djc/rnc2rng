@@ -56,4 +56,4 @@ Getting started
 License
 -------
 
-All of the code is released into MIT License.
+All of the code is released under MIT License.
