@@ -6,6 +6,7 @@ setup(
     url='https://github.com/djc/rnc2rng',
     author='David Mertz',
     description='RELAX NG Compact to regular syntax conversion library',
+    long_description=open('README.rst').read(),
     maintainer='Dirkjan Ochtman',
     maintainer_email='dirkjan@ochtman.nl',
     classifiers=[
