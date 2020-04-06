@@ -10,7 +10,7 @@ Converts RELAX NG schemata in Compact syntax (`rnc`) to the equivalent schema
 in the XML-based default RELAX NG syntax. Dependencies:
 
 - Python 2.x (tested with 2.6, 2.7)
-- Python 3.x (tested with 3.3, 3.4, 3.5)
+- Python 3.x (tested with 3.3, 3.4, 3.5, 3.7, 3.8)
 - `rply`_
 
 Feedback welcome on `GitHub`_.
