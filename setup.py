@@ -12,7 +12,7 @@ setup(
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
-        'License :: Public Domain',
+        'License :: OSI Approved :: MIT License',
         'Topic :: Text Processing :: Markup :: XML',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.6',
