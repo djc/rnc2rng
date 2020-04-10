@@ -2,8 +2,6 @@ namespace x = "http://www.example.com"
 namespace dc = "http://purl.org/dc/elements/1.1/"
 namespace sch = "http://www.ascc.net/xml/schematron"
 
-start = foo
-
 x:entity [ name="picture" systemId="picture.jpg" notation="jpg" ]
 dc:title [ "Foo without contents & escaped" ]
 sch:ns [ uri = "http://purl.org/dc/elements/1.1" prefix = "dc" ]
@@ -37,6 +35,8 @@ div {
     [ a:defaultValue = "1.0" ] attribute version { "1.0" }
   }
 }
+
+start = foo
 
 ## documentation for definition
 ## continues on the next line

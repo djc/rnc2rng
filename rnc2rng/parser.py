@@ -143,26 +143,23 @@ def decl_ns(s, p):
 def decl_datatypes(s, p):
     return Node('DATATYPES', p[1].name, [p[3].value.strip('"')])
 
-@pg.production('top-level-body : annotations alt-top-level')
+@pg.production('top-level-body : alt-top-level')
 def top_level_body(s, p):
-    if isinstance(p[1], list):
-        p[1][0].value = p[0] + p[1][0].value
-    elif p[1].type == 'ELEM':
-        p[1].value = p[0] + p[1].value
-        p[1] = [Node('DEFINE', 'start', [Node('ASSIGN', '=', [p[1]])])]
-    elif p[1].type == 'GRAMMAR':
-        p[1].value = p[0] + p[1].value
-        p[1] = [p[1]]
-    return p[1]
+    if isinstance(p[0], list):
+        return p[0]
+    elif p[0].type == 'ELEM':
+        return [Node('DEFINE', 'start', [Node('ASSIGN', '=', [p[0]])])]
+    elif p[0].type == 'GRAMMAR':
+        return [p[0]]
 
-@pg.production('alt-top-level : component grammar-content')
+@pg.production('alt-top-level : grammar-content')
 def top_level_grammar_content(s, p):
-    p[1].insert(0, p[0])
-    return p[1]
-
-@pg.production('alt-top-level : element-primary')
-def top_level_element(s, p):
     return p[0]
+
+@pg.production('alt-top-level : annotations element-primary')
+def top_level_element(s, p):
+    p[1].value = p[0] + p[1].value
+    return p[1]
 
 @pg.production('alt-top-level : grammar')
 def top_level_grammar(s, p):
