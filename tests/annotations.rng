@@ -4,9 +4,6 @@
          xmlns:dc="http://purl.org/dc/elements/1.1/"
          xmlns:sch="http://www.ascc.net/xml/schematron"
          xmlns:x="http://www.example.com">
-  <start>
-    <ref name="foo"/>
-  </start>
   <x:entity name="picture" systemId="picture.jpg" notation="jpg"/>
   <dc:title>Foo without contents &amp; escaped</dc:title>
   <sch:ns uri="http://purl.org/dc/elements/1.1" prefix="dc"/>
@@ -34,6 +31,9 @@
       </element>
     </define>
   </div>
+  <start>
+    <ref name="foo"/>
+  </start>
   <define name="bar">
     <a:documentation>documentation for definition
 continues on the next line</a:documentation>
