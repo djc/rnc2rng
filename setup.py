@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='rnc2rng',
-    version='2.6.2',
+    version='2.6.4',
     url='https://github.com/djc/rnc2rng',
     author='David Mertz',
     description='RELAX NG Compact to regular syntax conversion library',
