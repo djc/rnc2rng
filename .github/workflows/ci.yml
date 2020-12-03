@@ -19,6 +19,10 @@ jobs:
             python-version: 3.8
           - os: macos-latest
             python-version: 3.5
+          - os: windows-latest
+            python-version: 3.5
+          - os: windows-latest
+            python-version: 3.9
 
     runs-on: ${{ matrix.os }}
 
@@ -39,6 +43,8 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
+      env:
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       run: |
         coverage run test.py
-        COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS_REPO_TOKEN }} coveralls
+        coveralls
