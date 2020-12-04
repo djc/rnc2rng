@@ -1,5 +1,12 @@
 import rnc2rng
 import unittest, os
+import sys
+if sys.version_info[0] < 3:
+    from urllib import pathname2url, url2pathname
+    from urlparse import urljoin, urlparse
+else:
+    from urllib.parse import urljoin, urlparse
+    from urllib.request import pathname2url, url2pathname
 
 
 class TestUtils(unittest.TestCase):
@@ -21,10 +28,11 @@ class FileTest(TestUtils):
         return 'TestCase(%r)' % self.fn
 
     def runTest(self):
-
         root = rnc2rng.load(self.fn)
         ref = self.fn.replace('.rnc', '.rng')
-        ref = ref[7:] if ref.startswith('file://') else ref
+        if ref.startswith('file:'):
+            parse_result = urlparse(ref)
+            ref = url2pathname(parse_result.path)
         with open(ref) as f:
             expected = f.read().rstrip()
 
@@ -50,7 +58,8 @@ def suite():
         fn = os.path.join('tests', fn)
         suite.addTest(FileTest(fn))
     # synthesize a test that reads its input from a URL
-    suite.addTest(FileTest('file://' + os.path.abspath('tests/include.rnc')))
+    url_test_path = os.path.abspath('tests/include.rnc')
+    suite.addTest(FileTest(urljoin('file:', pathname2url(url_test_path))))
     return suite
 
 
