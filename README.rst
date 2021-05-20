@@ -13,7 +13,8 @@ in the XML-based default RELAX NG syntax. Dependencies:
 - Python 3.x (tested with 3.3, 3.4, 3.5, 3.7, 3.8, 3.9)
 - `rply`_
 
-Feedback welcome on `GitHub`_.
+Feedback welcome on `GitHub`_. Please consider funding continued maintenance of this
+project through [Patreon](https://patreon.com/dochtman) or [GitHub](https://github.com/sponsors/djc?preview=true).
 
 .. _GitHub: https://github.com/djc/rnc2rng
 .. _rply: https://pypi.python.org/pypi/rply
