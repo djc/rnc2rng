@@ -2,3 +2,6 @@
 .coverage
 *.egg-info
 dist
+.eggs
+.DS_Store
+.vscode
