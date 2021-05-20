@@ -14,10 +14,12 @@ in the XML-based default RELAX NG syntax. Dependencies:
 - `rply`_
 
 Feedback welcome on `GitHub`_. Please consider funding continued maintenance of this
-project through [Patreon](https://patreon.com/dochtman) or [GitHub](https://github.com/sponsors/djc?preview=true).
+project through `Patreon`_ or `GitHub Sponsors`_.
 
 .. _GitHub: https://github.com/djc/rnc2rng
 .. _rply: https://pypi.python.org/pypi/rply
+.. _Patreon: https://patreon.com/dochtman
+.. _GitHub Sponsors: https://github.com/sponsors/djc
 
 History
 -------
