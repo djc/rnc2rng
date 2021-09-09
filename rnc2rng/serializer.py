@@ -8,7 +8,7 @@ from rnc2rng.parser import (
     PARAM, PARENT, REF, ROOT, SEQ, SOME, TEXT,
 )
 
-import sys, html
+import html
 
 QUANTS = {SOME: 'oneOrMore', MAYBE: 'optional', ANY: 'zeroOrMore'}
 TYPELIB_NS = 'http://www.w3.org/2001/XMLSchema-datatypes'
