@@ -1,16 +1,8 @@
-from __future__ import print_function
+from codecs import BOM_UTF16_BE, BOM_UTF16_LE
+from urllib.request import urlopen
+from urllib.parse import urljoin, urlparse
 
 import rply, sys, os
-from codecs import BOM_UTF16_BE, BOM_UTF16_LE
-if sys.version_info[0] < 3:
-    from urllib2 import urlopen as _urlopen
-    from urlparse import urljoin, urlparse
-    from contextlib import closing
-    def urlopen(f):
-        return closing(_urlopen(f))
-else:
-    from urllib.request import urlopen
-    from urllib.parse import urljoin, urlparse
 
 KEYWORDS = set([
     'attribute', 'datatypes', 'default', 'div', 'element', 'empty', 'external',
