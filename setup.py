@@ -32,6 +32,5 @@ setup(
             'rnc2rng = rnc2rng.__main__:main',
         ],
     },
-    use_2to3=True,
     install_requires=['rply'],
 )
