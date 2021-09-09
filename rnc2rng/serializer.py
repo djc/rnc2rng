@@ -8,11 +8,7 @@ from rnc2rng.parser import (
     PARAM, PARENT, REF, ROOT, SEQ, SOME, TEXT,
 )
 
-import sys
-if sys.version_info[0] < 3:
-    import cgi as html
-else:
-    import html
+import sys, html
 
 QUANTS = {SOME: 'oneOrMore', MAYBE: 'optional', ANY: 'zeroOrMore'}
 TYPELIB_NS = 'http://www.w3.org/2001/XMLSchema-datatypes'
