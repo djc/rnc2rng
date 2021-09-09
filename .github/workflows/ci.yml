@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  build:
+  Test:
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -38,7 +38,7 @@ jobs:
     - name: Run tests
       run: python test.py
 
-  coverage:
+  Coverage:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
