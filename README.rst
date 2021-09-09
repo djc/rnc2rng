@@ -9,8 +9,7 @@ RELAX NG Compact to RELAX NG conversion library
 Converts RELAX NG schemata in Compact syntax (`rnc`) to the equivalent schema
 in the XML-based default RELAX NG syntax. Dependencies:
 
-- Python 2.x (tested with 2.7)
-- Python 3.x (tested with 3.3, 3.4, 3.5, 3.7, 3.8, 3.9)
+- Python 3.x (tested with 3.7, 3.8, 3.9)
 - `rply`_
 
 Feedback welcome on `GitHub`_. Please consider funding continued maintenance of this
