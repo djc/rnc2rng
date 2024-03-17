@@ -40,7 +40,8 @@ div {
 start = foo
 
 ## documentation for definition
-## continues on the next line
+##     indented continuation on the next line
+## # subheading with leading # (perhaps markdown-style head)
 bar = element bar { empty }
 
 baz = element baz {

@@ -36,7 +36,8 @@
   </start>
   <define name="bar">
     <a:documentation>documentation for definition
-continues on the next line</a:documentation>
+    indented continuation on the next line
+# subheading with leading # (perhaps markdown-style head)</a:documentation>
     <element>
       <name ns="">bar</name>
       <empty/>
