@@ -392,7 +392,7 @@ def particle_some(s, p):
 def particle_primary(s, p):
     return p[0]
 
-@pg.production('annotated-primary : LPAREN pattern RPAREN')
+@pg.production('primary : LPAREN pattern RPAREN')
 def annotated_primary_group(s, p):
     return Node('GROUP', None, p[1])
 
