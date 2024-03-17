@@ -27,7 +27,6 @@ class XMLSerializer(object):
 
     def reset(self):
         self.buf = []
-        self.types = None
         self.ns = {}
         self.typelibs = {}
         self.default = ''
@@ -51,7 +50,6 @@ class XMLSerializer(object):
     def toxml(self, node):
 
         self.reset()
-        types = None
         for n in node.value:
             if n.type == DATATYPES:
                 self.typelibs[n.name] = n.value[0]
@@ -71,9 +69,9 @@ class XMLSerializer(object):
         for ns, url in sorted(self.ns.items()):
             prelude.append('         xmlns:%s="%s"' % (ns, url))
 
-        # if only one datatypeLibrary was defined, make it global
-        if not self.types is None:
-            prelude.append('         datatypeLibrary="%s"' % self.types)
+        # if xsd:* ever referenced, print it at the grammar level
+        if 'xsd' in self.typelibs:
+            prelude.append('         datatypeLibrary="%s"' % self.typelibs['xsd'])
 
         prelude[-1] = prelude[-1] + '>'
         self.write('</grammar>')
@@ -95,10 +93,8 @@ class XMLSerializer(object):
             ns = ""
 
         attrs = ' type="%s"' % name
-        if self.types is None:
-            self.types = ns # take the first typelib to get used as the global default, as trang does
-        elif ns != self.types:
-            attrs += ' datatypeLibrary="%s"' % ns # and write all exceptions explicitly
+        if ns != TYPELIBS['xsd']:
+            attrs += ' datatypeLibrary="%s"' % ns # write all exceptions explicitly
         return attrs
 
     def visit(self, nodes, ctx=None, indent=True):
@@ -272,11 +268,13 @@ class XMLSerializer(object):
                 self.visit(x.value, ctx=x.type)
                 self.write('</attribute>')
             elif x.type == ROOT:
-                # Verify the included document has the same metadata
                 for n in x.value:
+                    # Record included document's custom datatypes
                     if n.type == DATATYPES:
-                        assert self.types == n.value[0]
-                    elif n.type == DEFAULT_NS:
+                        self.typelibs[n.name] = n.value[0]
+                    
+                    # Verify the included document has the same metadata
+                    if n.type == DEFAULT_NS:
                         assert self.default == n.value[0]
                     elif n.type == NS:
                         assert n.name in self.ns

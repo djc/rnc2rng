@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<grammar xmlns="http://relaxng.org/ns/structure/1.0"
-         datatypeLibrary="">
+<grammar xmlns="http://relaxng.org/ns/structure/1.0">
   <start>
     <element>
       <name ns="">foo</name>
-      <data type="string">
+      <data type="string" datatypeLibrary="">
         <param name="pattern">[abc]+</param>
       </data>
     </element>

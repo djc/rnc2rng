@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
-         datatypeLibrary="">
+         datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <start>
     <element>
       <name ns="">token</name>
-      <data type="token"/>
+      <data type="token" datatypeLibrary=""/>
     </element>
     <element>
       <name ns="">token_abc</name>
@@ -12,27 +12,27 @@
     </element>
     <element>
       <name ns="">string</name>
-      <data type="string"/>
+      <data type="string" datatypeLibrary=""/>
     </element>
     <element>
       <name ns="">string_abc</name>
-      <value type="string">abc</value>
+      <value type="string" datatypeLibrary="">abc</value>
     </element>
     <element>
       <name ns="">xsd_string</name>
-      <data type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+      <data type="string"/>
     </element>
     <element>
       <name ns="">xsd_string_abc</name>
-      <value type="string" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">abc</value>
+      <value type="string">abc</value>
     </element>
     <element>
       <name ns="">xsd_double</name>
-      <data type="double" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"/>
+      <data type="double"/>
     </element>
     <element>
       <name ns="">xsd_double_42</name>
-      <value type="double" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">42</value>
+      <value type="double">42</value>
     </element>
     <element>
       <name ns="">custom_foo</name>
