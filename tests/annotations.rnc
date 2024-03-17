@@ -1,6 +1,7 @@
 namespace x = "http://www.example.com"
 namespace dc = "http://purl.org/dc/elements/1.1/"
 namespace sch = "http://www.ascc.net/xml/schematron"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
 
 x:entity [ name="picture" systemId="picture.jpg" notation="jpg" ]
 dc:title [ "Foo without contents & escaped" ]
