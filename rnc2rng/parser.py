@@ -91,7 +91,7 @@ NODE_TYPES = [
     'DATATYPES', 'DEFAULT_NS', 'DEFINE', 'DIV', 'DOCUMENTATION', 'ELEM',
     'EMPTY', 'EXCEPT', 'GRAMMAR', 'GROUP', 'INTERLEAVE', 'LIST', 'LITERAL',
     'MAYBE', 'MIXED', 'NAME', 'NOT_ALLOWED', 'NS', 'PARAM', 'PARENT', 'REF',
-    'ROOT', 'SEQ', 'SOME', 'TEXT',
+    'ROOT', 'SEQ', 'SOME', 'TEXT', 'LITERAL_TYPE'
 ]
 
 for _node_type in NODE_TYPES:
@@ -427,7 +427,11 @@ def primary_literal(s, p): # from datatypeValue
 
 @pg.production('primary : CNAME')
 def primary_cname(s, p):
-    return Node('DATATAG', p[0].value.split(':', 1)[1])
+    return Node('DATATAG', p[0].value)
+
+@pg.production('primary : CNAME strlit')
+def primary_ctyped_string(s, p):
+    return Node('LITERAL', p[1].value, [Node('LITERAL_TYPE', p[0].value)])
 
 @pg.production('primary : CNAME LBRACE params RBRACE')
 def primary_type_params(s, p):
@@ -439,7 +443,7 @@ def primary_string(s, p):
 
 @pg.production('primary : STRING strlit')
 def primary_typed_string(s, p):
-    return Node('LITERAL', p[1].value, [Node('ANNO_ATTR', 'type', ['string'])])
+    return Node('LITERAL', p[1].value, [Node('LITERAL_TYPE', 'string')])
 
 @pg.production('primary : STRING LBRACE params RBRACE')
 def primary_string_parametrized(s, p):
@@ -451,7 +455,7 @@ def primary_text(s, p):
 
 @pg.production('primary : TOKEN strlit')
 def primary_text(s, p):
-    return Node('LITERAL', p[1].value) # the default type is token
+    return Node('LITERAL', p[1].value) # the default type is token, so no LITERAL_TYPE
 
 @pg.production('primary : TEXT')
 def primary_text(s, p):

@@ -1,2 +1,13 @@
 datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
-element height { xsd:double }
+datatypes custom="uri:custom-datatype-library"
+
+start = element token { token },
+	element token_abc { token "abc" },
+	element string { string },
+	element string_abc { string "abc" },
+	element xsd_string { xsd:string },
+	element xsd_string_abc { xsd:string "abc" },
+	element xsd_double { xsd:double },
+	element xsd_double_42 { xsd:double "42" },
+	element custom_foo { custom:foo },
+	element custom_foo_abc { custom:foo "abc" }
