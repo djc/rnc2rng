@@ -42,4 +42,16 @@ continues on the next line</a:documentation>
       <empty/>
     </element>
   </define>
+  <define name="baz">
+    <element>
+      <name ns="">baz</name>
+      <group>
+        <a:documentation>documentation for a group</a:documentation>
+        <ref name="foo"/>
+        <ref name="bar">
+          <a:documentation>documentation for a ref</a:documentation>
+        </ref>
+      </group>
+    </element>
+  </define>
 </grammar>
