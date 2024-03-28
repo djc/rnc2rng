@@ -1,6 +1,7 @@
 namespace x = "http://www.example.com"
 namespace dc = "http://purl.org/dc/elements/1.1/"
 namespace sch = "http://www.ascc.net/xml/schematron"
+namespace a = "http://relaxng.org/ns/compatibility/annotations/1.0"
 
 x:entity [ name="picture" systemId="picture.jpg" notation="jpg" ]
 dc:title [ "Foo without contents & escaped" ]
@@ -39,5 +40,18 @@ div {
 start = foo
 
 ## documentation for definition
-## continues on the next line
+##     indented continuation on the next line
+## # subheading with leading # (perhaps markdown-style head)
 bar = element bar { empty }
+
+baz = element baz {
+  ## documentation for a group
+  (
+    foo,
+    ## documentation for a ref
+    bar
+  )
+}
+
+## combining definition
+baz |= empty

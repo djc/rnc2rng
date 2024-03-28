@@ -73,7 +73,7 @@
         </interleave>
         <attribute>
           <name ns="">s</name>
-          <data type="string">
+          <data type="string" datatypeLibrary="">
             <param name="pattern">t</param>
           </data>
         </attribute>

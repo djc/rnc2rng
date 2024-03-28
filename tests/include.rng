@@ -3,8 +3,44 @@
          datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <start>
     <element>
-      <name ns="">height</name>
+      <name ns="">token</name>
+      <data type="token" datatypeLibrary=""/>
+    </element>
+    <element>
+      <name ns="">token_abc</name>
+      <value>abc</value>
+    </element>
+    <element>
+      <name ns="">string</name>
+      <data type="string" datatypeLibrary=""/>
+    </element>
+    <element>
+      <name ns="">string_abc</name>
+      <value type="string" datatypeLibrary="">abc</value>
+    </element>
+    <element>
+      <name ns="">xsd_string</name>
+      <data type="string"/>
+    </element>
+    <element>
+      <name ns="">xsd_string_abc</name>
+      <value type="string">abc</value>
+    </element>
+    <element>
+      <name ns="">xsd_double</name>
       <data type="double"/>
+    </element>
+    <element>
+      <name ns="">xsd_double_42</name>
+      <value type="double">42</value>
+    </element>
+    <element>
+      <name ns="">custom_foo</name>
+      <data type="foo" datatypeLibrary="uri:custom-datatype-library"/>
+    </element>
+    <element>
+      <name ns="">custom_foo_abc</name>
+      <value type="foo" datatypeLibrary="uri:custom-datatype-library">abc</value>
     </element>
   </start>
   <start>

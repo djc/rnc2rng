@@ -91,7 +91,7 @@ NODE_TYPES = [
     'DATATYPES', 'DEFAULT_NS', 'DEFINE', 'DIV', 'DOCUMENTATION', 'ELEM',
     'EMPTY', 'EXCEPT', 'GRAMMAR', 'GROUP', 'INTERLEAVE', 'LIST', 'LITERAL',
     'MAYBE', 'MIXED', 'NAME', 'NOT_ALLOWED', 'NS', 'PARAM', 'PARENT', 'REF',
-    'ROOT', 'SEQ', 'SOME', 'TEXT',
+    'ROOT', 'SEQ', 'SOME', 'TEXT', 'LITERAL_TYPE'
 ]
 
 for _node_type in NODE_TYPES:
@@ -392,7 +392,7 @@ def particle_some(s, p):
 def particle_primary(s, p):
     return p[0]
 
-@pg.production('annotated-primary : LPAREN pattern RPAREN')
+@pg.production('primary : LPAREN pattern RPAREN')
 def annotated_primary_group(s, p):
     return Node('GROUP', None, p[1])
 
@@ -427,7 +427,11 @@ def primary_literal(s, p): # from datatypeValue
 
 @pg.production('primary : CNAME')
 def primary_cname(s, p):
-    return Node('DATATAG', p[0].value.split(':', 1)[1])
+    return Node('DATATAG', p[0].value)
+
+@pg.production('primary : CNAME strlit')
+def primary_ctyped_string(s, p):
+    return Node('LITERAL', p[1].value, [Node('LITERAL_TYPE', p[0].value)])
 
 @pg.production('primary : CNAME LBRACE params RBRACE')
 def primary_type_params(s, p):
@@ -439,11 +443,19 @@ def primary_string(s, p):
 
 @pg.production('primary : STRING strlit')
 def primary_typed_string(s, p):
-    return Node('DATATAG', 'string', [p[1].value])
+    return Node('LITERAL', p[1].value, [Node('LITERAL_TYPE', 'string')])
 
 @pg.production('primary : STRING LBRACE params RBRACE')
 def primary_string_parametrized(s, p):
     return Node('DATATAG', 'string', p[2])
+
+@pg.production('primary : TOKEN')
+def primary_text(s, p):
+    return Node('DATATAG', 'token')
+
+@pg.production('primary : TOKEN strlit')
+def primary_text(s, p):
+    return Node('LITERAL', p[1].value) # the default type is token, so no LITERAL_TYPE
 
 @pg.production('primary : TEXT')
 def primary_text(s, p):
@@ -532,7 +544,10 @@ def name_class_group(s, p):
 @pg.production('documentations : DOCUMENTATION documentations')
 def documentations_multi(s, p):
     cur = Node('DOCUMENTATION', None, []) if not p[1] else p[1][0]
-    cur.value.insert(0, p[0].value.lstrip('# ').rstrip('\r'))
+    content = p[0].value.lstrip('#').rstrip('\r') # strip all leading "#" ( left-recursion in documentationLineContent)
+    if content.startswith(' '):
+        content = content[1:] # strip *one* " ", but no more (now the production is readOfLine)
+    cur.value.insert(0, content)
     return [cur]
 
 @pg.production('documentations : ')
