@@ -62,7 +62,7 @@ class XMLSerializer(object):
 
         prelude = ['<?xml version="1.0" encoding="UTF-8"?>']
         prelude.append('<grammar xmlns="http://relaxng.org/ns/structure/1.0"')
-        if self.default:
+        if self.default and self.default != 'inherit':
             prelude.append('         ns="%s"' % self.default)
 
         self.visit(node.value)
@@ -174,7 +174,10 @@ class XMLSerializer(object):
                         parts = x.name.split(':', 1)
                         ns = self.namespace(parts[0])
                         name = parts[1]
-                    self.write('<name ns="%s">%s</name>' % (ns, name))
+                    if ns == 'inherit':
+                        self.write('<name>%s</name>' % name)
+                    else:
+                        self.write('<name ns="%s">%s</name>' % (ns, name))
             elif x.type in set([REF, PARENT]):
                 bits = x.type.lower(), x.name, attribs
                 if not x.value: # no parameters

@@ -123,6 +123,10 @@ def preamble_empty(s, p):
 def decl_default_ns(s, p):
     return Node('DEFAULT_NS', None, [p[3].value.strip('"')])
 
+@pg.production('decl : DEFAULT NAMESPACE EQUAL INHERIT')
+def decl_default_ns_inherit(s, p):
+    return Node('DEFAULT_NS', None, ['inherit'])
+
 @pg.production('decl : DEFAULT NAMESPACE id-or-kw EQUAL strlit')
 def decl_default_names_ns(s, p):
     return Node('DEFAULT_NS', p[2].name, [p[4].value.strip(' "')])
