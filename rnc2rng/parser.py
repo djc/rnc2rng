@@ -131,6 +131,10 @@ def decl_default_ns_inherit(s, p):
 def decl_default_names_ns(s, p):
     return Node('DEFAULT_NS', p[2].name, [p[4].value.strip(' "')])
 
+@pg.production('decl : DEFAULT NAMESPACE id-or-kw EQUAL INHERIT')
+def decl_default_names_ns_inherit(s, p):
+    return Node('DEFAULT_NS', p[2].name, ['inherit'])
+
 @pg.production('decl : NAMESPACE id-or-kw EQUAL strlit')
 def decl_ns(s, p):
     return Node('NS', p[1].name, [p[3].value.strip(' "')])
