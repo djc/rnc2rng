@@ -139,6 +139,10 @@ def decl_default_names_ns_inherit(s, p):
 def decl_ns(s, p):
     return Node('NS', p[1].name, [p[3].value.strip(' "')])
 
+@pg.production('decl : NAMESPACE id-or-kw EQUAL INHERIT')
+def decl_ns_inherit(s, p):
+    return Node('NS', p[1].name, ['inherit'])
+
 @pg.production('decl : DATATYPES id-or-kw EQUAL strlit')
 def decl_datatypes(s, p):
     return Node('DATATYPES', p[1].name, [p[3].value.strip('"')])
