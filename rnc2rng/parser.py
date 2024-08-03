@@ -119,29 +119,25 @@ def preamble_multi(s, p):
 def preamble_empty(s, p):
     return []
 
-@pg.production('decl : DEFAULT NAMESPACE EQUAL strlit')
+@pg.production('decl : DEFAULT NAMESPACE EQUAL ns-uri-lit')
 def decl_default_ns(s, p):
-    return Node('DEFAULT_NS', None, [p[3].value.strip('"')])
+    return Node('DEFAULT_NS', None, p[3])
 
-@pg.production('decl : DEFAULT NAMESPACE EQUAL INHERIT')
-def decl_default_ns_inherit(s, p):
-    return Node('DEFAULT_NS', None, ['inherit'])
-
-@pg.production('decl : DEFAULT NAMESPACE id-or-kw EQUAL strlit')
+@pg.production('decl : DEFAULT NAMESPACE id-or-kw EQUAL ns-uri-lit')
 def decl_default_names_ns(s, p):
-    return Node('DEFAULT_NS', p[2].name, [p[4].value.strip(' "')])
+    return Node('DEFAULT_NS', p[2].name, p[4])
 
-@pg.production('decl : DEFAULT NAMESPACE id-or-kw EQUAL INHERIT')
-def decl_default_names_ns_inherit(s, p):
-    return Node('DEFAULT_NS', p[2].name, ['inherit'])
-
-@pg.production('decl : NAMESPACE id-or-kw EQUAL strlit')
+@pg.production('decl : NAMESPACE id-or-kw EQUAL ns-uri-lit')
 def decl_ns(s, p):
-    return Node('NS', p[1].name, [p[3].value.strip(' "')])
+    return Node('NS', p[1].name, p[3])
 
-@pg.production('decl : NAMESPACE id-or-kw EQUAL INHERIT')
-def decl_ns_inherit(s, p):
-    return Node('NS', p[1].name, ['inherit'])
+@pg.production('ns-uri-lit : strlit')
+def ns_uri_lit(s, p):
+    return [p[0].value.strip(' "')]
+
+@pg.production('ns-uri-lit : INHERIT')
+def ns_uri_inh(s, p):
+    return ['inherit']
 
 @pg.production('decl : DATATYPES id-or-kw EQUAL strlit')
 def decl_datatypes(s, p):
