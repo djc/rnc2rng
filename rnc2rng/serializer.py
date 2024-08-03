@@ -67,7 +67,7 @@ class XMLSerializer(object):
 
         self.visit(node.value)
         for ns, url in sorted(self.ns.items()):
-            if url != 'inherit':
+            if url and url != 'inherit':
                 prelude.append('         xmlns:%s="%s"' % (ns, url))
 
         # if xsd:* ever referenced, print it at the grammar level
