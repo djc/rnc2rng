@@ -106,14 +106,14 @@ for _node_type in NODE_TYPES:
 def start(s, p):
     return Node('ROOT', None, p[0] + p[1])
 
+@pg.production('preamble : ')
+def preamble_empty(s, p):
+    return []
+
 @pg.production('preamble : decl preamble')
 def preamble_multi(s, p):
     p[1].insert(0, p[0])
     return p[1]
-
-@pg.production('preamble : ')
-def preamble_empty(s, p):
-    return []
 
 @pg.production('decl : NAMESPACE id-or-kw EQUAL ns-uri-lit')
 def decl_ns(s, p):
@@ -163,14 +163,14 @@ def top_level_element(s, p):
 def top_level_grammar(s, p):
     return p[0]
 
+@pg.production('grammar-content : ')
+def grammar_empty(s, p):
+    return []
+
 @pg.production('grammar-content : member grammar-content')
 def grammar_multi(s, p):
     p[1].insert(0, p[0])
     return p[1]
-
-@pg.production('grammar-content : ')
-def grammar_empty(s, p):
-    return []
 
 @pg.production('member : annotations component')
 def member_annotated_component(s, p):
@@ -217,30 +217,30 @@ def component_include(s, p):
         url = os.path.join(s.path, p[1].value)
     return parse(f=url)
 
+@pg.production('opt-inherit : ')
+def opt_inherit_none(s, p):
+    return None
+
 @pg.production('opt-inherit : INHERIT EQUAL id-or-kw')
 def opt_inherit(s, p):
     return Node('INHERIT', p[2])
 
-@pg.production('opt-inherit : ')
-def opt_inherit_none(s, p):
-    return None
+@pg.production('opt-include-content : ')
+def opt_include_content_none(s, p):
+    return []
 
 @pg.production('opt-include-content : LBRACE include-body RBRACE')
 def opt_include_content(s, p):
     return p[1]
 
-@pg.production('opt-include-content : ')
-def opt_include_content_none(s, p):
+@pg.production('include-body : ')
+def include_content_empty(s, p):
     return []
 
 @pg.production('include-body : include-member include-body')
 def include_content_multi(s, p):
     p[1].insert(0, p[0])
     return p[1]
-
-@pg.production('include-body : ')
-def include_content_empty(s, p):
-    return []
 
 @pg.production('include-member : annotations include-component')
 def include_member(s, p):
