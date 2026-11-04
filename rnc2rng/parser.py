@@ -269,40 +269,40 @@ def pattern_particle(s, p):
 def pattern_choice(s, p):
     return [p[0]]
 
+@pg.production('particle-choice : particle PIPE particle')
+def particle_choice_single(s, p):
+    return Node('CHOICE', None, [p[0], p[2]])
+
 @pg.production('particle-choice : particle PIPE particle-choice')
 def particle_choice_multi(s, p):
     p[2].value.insert(0, p[0])
     return p[2]
 
-@pg.production('particle-choice : particle PIPE particle')
-def particle_choice_single(s, p):
-    return Node('CHOICE', None, [p[0], p[2]])
-
 @pg.production('pattern : particle-group')
 def pattern_seq(s, p):
     return [p[0]]
+
+@pg.production('particle-group : particle COMMA particle')
+def particle_group_single(s, p):
+    return Node('SEQ', None, [p[0], p[2]])
 
 @pg.production('particle-group : particle COMMA particle-group')
 def particle_group_multi(s, p):
     p[2].value.insert(0, p[0])
     return p[2]
 
-@pg.production('particle-group : particle COMMA particle')
-def particle_group_single(s, p):
-    return Node('SEQ', None, [p[0], p[2]])
-
 @pg.production('pattern : particle-interleave')
 def pattern_interleave(s, p):
     return [p[0]]
+
+@pg.production('particle-interleave : particle AMP particle')
+def particle_interleave_single(s, p):
+    return Node('INTERLEAVE', None, [p[0], p[2]])
 
 @pg.production('particle-interleave : particle AMP particle-interleave')
 def particle_interleave_multi(s, p):
     p[2].value.insert(0, p[0])
     return p[2]
-
-@pg.production('particle-interleave : particle AMP particle')
-def particle_interleave_single(s, p):
-    return Node('INTERLEAVE', None, [p[0], p[2]])
 
 @pg.production('particle : annotated-primary QMARK')
 def particle_maybe(s, p):
@@ -413,14 +413,14 @@ def primary_grammar(s, p):
 def grammar(s, p):
     return Node('GRAMMAR', None, p[2])
 
+@pg.production('params : ')
+def params_empty(s, p):
+    return []
+
 @pg.production('params : params param')
 def params_multi(s, p):
     p[0].append(p[1])
     return p[0]
-
-@pg.production('params : ')
-def params_empty(s, p):
-    return []
 
 @pg.production('param : id-or-kw EQUAL strlit')
 def param_single(s, p):
@@ -450,14 +450,14 @@ def except_name_class_simple(s, p):
     p[0][0].value = [Node('EXCEPT', None, p[2])]
     return p[0]
 
+@pg.production('name-class-choice : simple-name-class PIPE simple-name-class')
+def name_class_choice_simple(s, p):
+    return [Node('CHOICE', None, p[0] + p[2])]
+
 @pg.production('name-class-choice : simple-name-class PIPE name-class-choice')
 def name_class_choice_nested(s, p):
     p[2][0].value.insert(0, p[0][0])
     return p[2]
-
-@pg.production('name-class-choice : simple-name-class PIPE simple-name-class')
-def name_class_choice_simple(s, p):
-    return [Node('CHOICE', None, p[0] + p[2])]
 
 @pg.production('simple-name-class : STAR')
 def simple_name_class_any(s, p):
@@ -476,14 +476,18 @@ def name_class_group(s, p):
 def annotation_attributes_content(s, p):
     return p[1]
 
+@pg.production('annotations : documentations')
+def annotations_empty(s, p):
+    return p[0]
+
 @pg.production('annotations : documentations LBRACKET start-annotations RBRACKET')
 def annotations_multi(s, p):
     p[0] += p[2]
     return p[0]
 
-@pg.production('annotations : documentations')
-def annotations_empty(s, p):
-    return p[0]
+@pg.production('start-annotation-content : ')
+def start_annotation_content_empty(s, p):
+    return []
 
 @pg.production('start-annotation-content : CNAME cname-annotation-content')
 def start_annotation_content_cname(s, p):
@@ -498,10 +502,6 @@ def start_annotation_content_id(s, p):
 def start_annotation_content_literal(s, p):
     return [Node('LITERAL', p[0].value)] + p[1]
 
-@pg.production('start-annotation-content : ')
-def start_annotation_content_empty(s, p):
-    return []
-
 @pg.production('cname-annotation-content : EQUAL strlit start-annotation-content')
 def cname_annotation_content_attribute(s, p):
     return [Node('ANNO_ATTR', None, [p[1].value])] + p[2]
@@ -510,14 +510,14 @@ def cname_annotation_content_attribute(s, p):
 def cname_annotation_content_element(s, p):
     return [Node('ANNOTATION', None, p[0])] + p[1]
 
+@pg.production('start-annotations : ')
+def start_annotations_empty(s, p):
+    return []
+
 @pg.production('start-annotations : CNAME cname-annotations')
 def start_annotations_cname(s, p):
     p[1][0].name = p[0].value
     return p[1]
-
-@pg.production('start-annotations : ')
-def start_annotations_empty(s, p):
-    return []
 
 @pg.production('cname-annotations : EQUAL strlit start-annotations')
 def cname_annotations_attrib(s, p):
@@ -527,6 +527,10 @@ def cname_annotations_attrib(s, p):
 def cname_annotations_element(s, p):
     return [Node('ANNOTATION', None, p[0])] + p[1]
 
+@pg.production('annotation-content : ')
+def annotation_content_empty(s, p):
+    return []
+
 @pg.production('annotation-content : annotation-element annotation-content')
 def annotation_content_nested(s, p):
     return [p[0]] + p[1]
@@ -535,8 +539,8 @@ def annotation_content_nested(s, p):
 def annotation_content_literal(s, p):
     return [Node('LITERAL', p[0].value)] + p[1]
 
-@pg.production('annotation-content : ')
-def annotation_content_empty(s, p):
+@pg.production('annotation-elements : ')
+def annotation_elements_empty(s, p):
     return []
 
 @pg.production('annotation-elements : annotation-element annotation-elements')
@@ -544,15 +548,15 @@ def annotation_elements_multi(s, p):
     p[1].insert(0, p[0])
     return p[1]
 
-@pg.production('annotation-elements : ')
-def annotation_elements_empty(s, p):
-    return []
-
 @pg.production('annotation-element : CNAME annotation-attributes-content')
 def nested_annotation_element(s, p):
     return Node('ANNOTATION', p[0].value, p[1])
 
 # Appendix A.1 (Syntax): documentations.
+@pg.production('documentations : ')
+def documentations_empty(s, p):
+    return []
+
 @pg.production('documentations : DOCUMENTATION documentations')
 def documentations_multi(s, p):
     cur = Node('DOCUMENTATION', None, []) if not p[1] else p[1][0]
@@ -561,10 +565,6 @@ def documentations_multi(s, p):
         content = content[1:] # strip *one* " ", but no more (now the production is readOfLine)
     cur.value.insert(0, content)
     return [cur]
-
-@pg.production('documentations : ')
-def documentations_empty(s, p):
-    return []
 
 
 # Appendix A.1 (Syntax): identifiers and keywords.
