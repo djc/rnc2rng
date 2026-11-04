@@ -127,6 +127,10 @@ def decl_default_ns(s, p):
 def decl_default_names_ns(s, p):
     return Node('DEFAULT_NS', p[2].name, p[4])
 
+@pg.production('decl : DATATYPES id-or-kw EQUAL strlit')
+def decl_datatypes(s, p):
+    return Node('DATATYPES', p[1].name, [p[3].value.strip('"')])
+
 @pg.production('ns-uri-lit : strlit')
 def ns_uri_lit(s, p):
     return [p[0].value.strip(' "')]
@@ -134,10 +138,6 @@ def ns_uri_lit(s, p):
 @pg.production('ns-uri-lit : INHERIT')
 def ns_uri_inh(s, p):
     return ['inherit']
-
-@pg.production('decl : DATATYPES id-or-kw EQUAL strlit')
-def decl_datatypes(s, p):
-    return Node('DATATYPES', p[1].name, [p[3].value.strip('"')])
 
 @pg.production('top-level-body : alt-top-level')
 def top_level_body(s, p):
@@ -181,21 +181,21 @@ def member_annotated_component(s, p):
 def member_foreign_element_annotation(s, p):
     return Node('ANNOTATION', p[0].value, p[1])
 
-@pg.production('component : define')
-def component_define(s, p):
-    return p[0]
-
 @pg.production('component : grammar-start')
 def component_start(s, p):
+    return p[0]
+
+@pg.production('grammar-start : START definition')
+def grammar_start(s, p):
+    return Node('DEFINE', 'start', [p[1]])
+
+@pg.production('component : define')
+def component_define(s, p):
     return p[0]
 
 @pg.production('define : identifier definition')
 def define(s, p):
     return Node('DEFINE', p[0].name, [p[1]])
-
-@pg.production('grammar-start : START definition')
-def grammar_start(s, p):
-    return Node('DEFINE', 'start', [p[1]])
 
 @pg.production('definition : EQUAL pattern')
 def definition_equal(s, p):
@@ -205,10 +205,6 @@ def definition_equal(s, p):
 def definition_combine(s, p):
     return Node('ASSIGN', p[0].value, p[1])
 
-@pg.production('component : DIV LBRACE grammar-content RBRACE')
-def component_div(s, p):
-    return Node('DIV', None, p[2])
-
 @pg.production('component : INCLUDE strlit opt-inherit opt-include-content')
 def component_include(s, p):
     if is_url(s.path) or is_url(p[1].value):  # it's a URL
@@ -216,6 +212,10 @@ def component_include(s, p):
     else:
         url = os.path.join(s.path, p[1].value)
     return parse(f=url)
+
+@pg.production('component : DIV LBRACE grammar-content RBRACE')
+def component_div(s, p):
+    return Node('DIV', None, p[2])
 
 @pg.production('opt-inherit : ')
 def opt_inherit_none(s, p):
@@ -247,12 +247,12 @@ def include_member(s, p):
     p[1].value = p[0] + p[1].value
     return p[1]
 
-@pg.production('include-component : define')
-def include_component_define(s, p):
-    return p[0]
-
 @pg.production('include-component : grammar-start')
 def include_component_start(s, p):
+    return p[0]
+
+@pg.production('include-component : define')
+def include_component_define(s, p):
     return p[0]
 
 @pg.production('include-component : DIV LBRACE include-body RBRACE')
@@ -304,9 +304,9 @@ def particle_interleave_multi(s, p):
     p[2].value.insert(0, p[0])
     return p[2]
 
-@pg.production('particle : annotated-primary QMARK')
-def particle_maybe(s, p):
-    return Node('MAYBE', None, [p[0]])
+@pg.production('particle : annotated-primary')
+def particle_primary(s, p):
+    return p[0]
 
 @pg.production('particle : annotated-primary STAR')
 def particle_any(s, p):
@@ -316,9 +316,9 @@ def particle_any(s, p):
 def particle_some(s, p):
     return Node('SOME', None, [p[0]])
 
-@pg.production('particle : annotated-primary')
-def particle_primary(s, p):
-    return p[0]
+@pg.production('particle : annotated-primary QMARK')
+def particle_maybe(s, p):
+    return Node('MAYBE', None, [p[0]])
 
 @pg.production('primary : LPAREN pattern RPAREN')
 def annotated_primary_group(s, p):
