@@ -10,6 +10,7 @@ KEYWORDS = set([
     'notAllowed', 'parent', 'start', 'string', 'text', 'token',
 ])
 
+# Appendix A.2 (Lexical structure): token patterns and tokenization.
 NCNAME = r'[A-Za-z_][\w.-]*'
 
 def lexer():
@@ -41,6 +42,7 @@ def lexer():
 
 LEXER = lexer()
 
+
 def lex(src):
     for t in LEXER.lex(src):
         if t.name == 'ID' and t.value in KEYWORDS:
@@ -59,6 +61,7 @@ pg = rply.ParserGenerator([
 ] + [s.upper() for s in KEYWORDS], precedence=[("left", ['TILDE'])])
 
 
+# Parser values and names used by the serializer.
 class Node(object):
     __slots__ = 'type', 'name', 'value'
     def __init__(self, type, name, value=None):
@@ -97,18 +100,11 @@ NODE_TYPES = [
 for _node_type in NODE_TYPES:
     globals()[_node_type] = _node_type
 
+
+# Appendix A.1 (Syntax): topLevel, preamble, decl, and topLevelBody.
 @pg.production('start : preamble top-level-body')
 def start(s, p):
     return Node('ROOT', None, p[0] + p[1])
-
-@pg.production('strlit : LITERAL')
-def strlit_literal(s, p): # from datatypeValue
-    return p[0]
-
-@pg.production('strlit : strlit TILDE strlit')
-def strlit_concat(s, p):
-    p[0].value += p[2].value
-    return p[0]
 
 @pg.production('preamble : decl preamble')
 def preamble_multi(s, p):
@@ -119,6 +115,10 @@ def preamble_multi(s, p):
 def preamble_empty(s, p):
     return []
 
+@pg.production('decl : NAMESPACE id-or-kw EQUAL ns-uri-lit')
+def decl_ns(s, p):
+    return Node('NS', p[1].name, p[3])
+
 @pg.production('decl : DEFAULT NAMESPACE EQUAL ns-uri-lit')
 def decl_default_ns(s, p):
     return Node('DEFAULT_NS', None, p[3])
@@ -126,10 +126,6 @@ def decl_default_ns(s, p):
 @pg.production('decl : DEFAULT NAMESPACE id-or-kw EQUAL ns-uri-lit')
 def decl_default_names_ns(s, p):
     return Node('DEFAULT_NS', p[2].name, p[4])
-
-@pg.production('decl : NAMESPACE id-or-kw EQUAL ns-uri-lit')
-def decl_ns(s, p):
-    return Node('NS', p[1].name, p[3])
 
 @pg.production('ns-uri-lit : strlit')
 def ns_uri_lit(s, p):
@@ -152,6 +148,8 @@ def top_level_body(s, p):
     elif p[0].type == 'GRAMMAR':
         return [p[0]]
 
+
+# Appendix A.1 (Syntax): grammar, member, component, and include.
 @pg.production('alt-top-level : grammar-content')
 def top_level_grammar_content(s, p):
     return p[0]
@@ -261,86 +259,8 @@ def include_component_start(s, p):
 def include_component_div(s, p):
     return Node('DIV', None, p[2])
 
-@pg.production('annotation-attributes-content : LBRACKET start-annotation-content RBRACKET')
-def annotation_attributes_content(s, p):
-    return p[1]
 
-@pg.production('annotations : documentations LBRACKET start-annotations RBRACKET')
-def annotations_multi(s, p):
-    p[0] += p[2]
-    return p[0]
-
-@pg.production('annotations : documentations')
-def annotations_empty(s, p):
-    return p[0]
-
-@pg.production('start-annotation-content : CNAME cname-annotation-content')
-def start_annotation_content_cname(s, p):
-    p[1][0].name = p[0].value
-    return p[1]
-
-@pg.production('start-annotation-content : ID EQUAL strlit start-annotation-content')
-def start_annotation_content_id(s, p):
-    return [Node('ANNO_ATTR', p[0].value, [p[2].value])] + p[3]
-
-@pg.production('start-annotation-content : strlit annotation-content')
-def start_annotation_content_literal(s, p):
-    return [Node('LITERAL', p[0].value)] + p[1]
-
-@pg.production('start-annotation-content : ')
-def start_annotation_content_empty(s, p):
-    return []
-
-@pg.production('cname-annotation-content : EQUAL strlit start-annotation-content')
-def cname_annotation_content_attribute(s, p):
-    return [Node('ANNO_ATTR', None, [p[1].value])] + p[2]
-
-@pg.production('cname-annotation-content : annotation-attributes-content annotation-content')
-def cname_annotation_content_element(s, p):
-    return [Node('ANNOTATION', None, p[0])] + p[1]
-
-@pg.production('start-annotations : CNAME cname-annotations')
-def start_annotations_cname(s, p):
-    p[1][0].name = p[0].value
-    return p[1]
-
-@pg.production('start-annotations : ')
-def start_annotations_empty(s, p):
-    return []
-
-@pg.production('cname-annotations : EQUAL strlit start-annotations')
-def cname_annotations_attrib(s, p):
-    return [Node('ANNO_ATTR', None, [p[1].value])] + p[2]
-
-@pg.production('cname-annotations : annotation-attributes-content annotation-elements')
-def cname_annotations_element(s, p):
-    return [Node('ANNOTATION', None, p[0])] + p[1]
-
-@pg.production('annotation-content : annotation-element annotation-content')
-def annotation_content_nested(s, p):
-    return [p[0]] + p[1]
-
-@pg.production('annotation-content : strlit annotation-content')
-def annotation_content_literal(s, p):
-    return [Node('LITERAL', p[0].value)] + p[1]
-
-@pg.production('annotation-content : ')
-def annotation_content_empty(s, p):
-    return []
-
-@pg.production('annotation-elements : annotation-element annotation-elements')
-def annotation_elements_multi(s, p):
-    p[1].insert(0, p[0])
-    return p[1]
-
-@pg.production('annotation-elements : ')
-def annotation_elements_empty(s, p):
-    return []
-
-@pg.production('annotation-element : CNAME annotation-attributes-content')
-def nested_annotation_element(s, p):
-    return Node('ANNOTATION', p[0].value, p[1])
-
+# Appendix A.1 (Syntax): pattern, particle, primary, datatype, and grammar.
 @pg.production('pattern : particle')
 def pattern_particle(s, p):
     return [p[0]]
@@ -506,6 +426,8 @@ def params_empty(s, p):
 def param_single(s, p):
     return Node('PARAM', p[0].name, [p[2].value])
 
+
+# Appendix A.1 (Syntax): nameClass and its component productions.
 @pg.production('name-class : simple-name-class')
 def name_class_name(s, p):
     return p[0]
@@ -549,6 +471,88 @@ def simple_name_class_name(s, p):
 def name_class_group(s, p):
     return p[1]
 
+# Appendix A.1 (Syntax): annotations and annotation content.
+@pg.production('annotation-attributes-content : LBRACKET start-annotation-content RBRACKET')
+def annotation_attributes_content(s, p):
+    return p[1]
+
+@pg.production('annotations : documentations LBRACKET start-annotations RBRACKET')
+def annotations_multi(s, p):
+    p[0] += p[2]
+    return p[0]
+
+@pg.production('annotations : documentations')
+def annotations_empty(s, p):
+    return p[0]
+
+@pg.production('start-annotation-content : CNAME cname-annotation-content')
+def start_annotation_content_cname(s, p):
+    p[1][0].name = p[0].value
+    return p[1]
+
+@pg.production('start-annotation-content : ID EQUAL strlit start-annotation-content')
+def start_annotation_content_id(s, p):
+    return [Node('ANNO_ATTR', p[0].value, [p[2].value])] + p[3]
+
+@pg.production('start-annotation-content : strlit annotation-content')
+def start_annotation_content_literal(s, p):
+    return [Node('LITERAL', p[0].value)] + p[1]
+
+@pg.production('start-annotation-content : ')
+def start_annotation_content_empty(s, p):
+    return []
+
+@pg.production('cname-annotation-content : EQUAL strlit start-annotation-content')
+def cname_annotation_content_attribute(s, p):
+    return [Node('ANNO_ATTR', None, [p[1].value])] + p[2]
+
+@pg.production('cname-annotation-content : annotation-attributes-content annotation-content')
+def cname_annotation_content_element(s, p):
+    return [Node('ANNOTATION', None, p[0])] + p[1]
+
+@pg.production('start-annotations : CNAME cname-annotations')
+def start_annotations_cname(s, p):
+    p[1][0].name = p[0].value
+    return p[1]
+
+@pg.production('start-annotations : ')
+def start_annotations_empty(s, p):
+    return []
+
+@pg.production('cname-annotations : EQUAL strlit start-annotations')
+def cname_annotations_attrib(s, p):
+    return [Node('ANNO_ATTR', None, [p[1].value])] + p[2]
+
+@pg.production('cname-annotations : annotation-attributes-content annotation-elements')
+def cname_annotations_element(s, p):
+    return [Node('ANNOTATION', None, p[0])] + p[1]
+
+@pg.production('annotation-content : annotation-element annotation-content')
+def annotation_content_nested(s, p):
+    return [p[0]] + p[1]
+
+@pg.production('annotation-content : strlit annotation-content')
+def annotation_content_literal(s, p):
+    return [Node('LITERAL', p[0].value)] + p[1]
+
+@pg.production('annotation-content : ')
+def annotation_content_empty(s, p):
+    return []
+
+@pg.production('annotation-elements : annotation-element annotation-elements')
+def annotation_elements_multi(s, p):
+    p[1].insert(0, p[0])
+    return p[1]
+
+@pg.production('annotation-elements : ')
+def annotation_elements_empty(s, p):
+    return []
+
+@pg.production('annotation-element : CNAME annotation-attributes-content')
+def nested_annotation_element(s, p):
+    return Node('ANNOTATION', p[0].value, p[1])
+
+# Appendix A.1 (Syntax): documentations.
 @pg.production('documentations : DOCUMENTATION documentations')
 def documentations_multi(s, p):
     cur = Node('DOCUMENTATION', None, []) if not p[1] else p[1][0]
@@ -562,6 +566,8 @@ def documentations_multi(s, p):
 def documentations_empty(s, p):
     return []
 
+
+# Appendix A.1 (Syntax): identifiers and keywords.
 @pg.production('name : CNAME')
 def name_cname(s, p):
     return Node('NAME', p[0].value)
@@ -662,6 +668,18 @@ def keyword_text(s, p):
 def keyword_token(s, p):
     return Node('NAME', p[0].value)
 
+# Appendix A.1 (Syntax): literal.
+@pg.production('strlit : LITERAL')
+def strlit_literal(s, p): # from datatypeValue
+    return p[0]
+
+@pg.production('strlit : strlit TILDE strlit')
+def strlit_concat(s, p):
+    p[0].value += p[2].value
+    return p[0]
+
+
+# Parser errors and source/input handling.
 class ParseError(Exception):
 
     def __init__(self, t, fn, ln, col, line):
