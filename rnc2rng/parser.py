@@ -149,15 +149,17 @@ def top_level_body(s, p):
         return [p[0]]
 
 
-# Appendix A.1 (Syntax): grammar, member, component, and include.
-@pg.production('alt-top-level : grammar-content')
-def top_level_grammar_content(s, p):
-    return p[0]
-
+# Appendix A.1 (Syntax): topLevelBody, grammar, member, component, include.
+# grammar-content is the formal grammar production; alt-top-level adds
+# parser-specific alternatives around that top-level content.
 @pg.production('alt-top-level : annotations element-primary')
 def top_level_element(s, p):
     p[1].value = p[0] + p[1].value
     return p[1]
+
+@pg.production('alt-top-level : grammar-content')
+def top_level_grammar_content(s, p):
+    return p[0]
 
 @pg.production('alt-top-level : grammar')
 def top_level_grammar(s, p):
@@ -269,6 +271,14 @@ def pattern_particle(s, p):
 def pattern_choice(s, p):
     return [p[0]]
 
+@pg.production('pattern : particle-group')
+def pattern_seq(s, p):
+    return [p[0]]
+
+@pg.production('pattern : particle-interleave')
+def pattern_interleave(s, p):
+    return [p[0]]
+
 @pg.production('particle-choice : particle PIPE particle')
 def particle_choice_single(s, p):
     return Node('CHOICE', None, [p[0], p[2]])
@@ -278,10 +288,6 @@ def particle_choice_multi(s, p):
     p[2].value.insert(0, p[0])
     return p[2]
 
-@pg.production('pattern : particle-group')
-def pattern_seq(s, p):
-    return [p[0]]
-
 @pg.production('particle-group : particle COMMA particle')
 def particle_group_single(s, p):
     return Node('SEQ', None, [p[0], p[2]])
@@ -290,10 +296,6 @@ def particle_group_single(s, p):
 def particle_group_multi(s, p):
     p[2].value.insert(0, p[0])
     return p[2]
-
-@pg.production('pattern : particle-interleave')
-def pattern_interleave(s, p):
-    return [p[0]]
 
 @pg.production('particle-interleave : particle AMP particle')
 def particle_interleave_single(s, p):
@@ -320,14 +322,14 @@ def particle_some(s, p):
 def particle_maybe(s, p):
     return Node('MAYBE', None, [p[0]])
 
-@pg.production('primary : LPAREN pattern RPAREN')
-def annotated_primary_group(s, p):
-    return Node('GROUP', None, p[1])
-
 @pg.production('annotated-primary : annotations primary')
 def annotated_primary_annotated(s, p):
     p[1].value = p[0] + p[1].value
     return p[1]
+
+@pg.production('primary : LPAREN pattern RPAREN')
+def annotated_primary_group(s, p):
+    return Node('GROUP', None, p[1])
 
 @pg.production('primary : element-primary')
 def primary_element(s, p):
@@ -349,17 +351,9 @@ def primary_mixed(s, p):
 def primary_list(s, p):
     return Node('LIST', None, p[2])
 
-@pg.production('primary : strlit')
-def primary_literal(s, p): # from datatypeValue
-    return Node('LITERAL', p[0].value)
-
 @pg.production('primary : CNAME')
 def primary_cname(s, p):
     return Node('DATATAG', p[0].value)
-
-@pg.production('primary : CNAME strlit')
-def primary_ctyped_string(s, p):
-    return Node('LITERAL', p[1].value, [Node('LITERAL_TYPE', p[0].value)])
 
 @pg.production('primary : CNAME LBRACE params RBRACE')
 def primary_type_params(s, p):
@@ -369,10 +363,6 @@ def primary_type_params(s, p):
 def primary_string(s, p):
     return Node('DATATAG', 'string')
 
-@pg.production('primary : STRING strlit')
-def primary_typed_string(s, p):
-    return Node('LITERAL', p[1].value, [Node('LITERAL_TYPE', 'string')])
-
 @pg.production('primary : STRING LBRACE params RBRACE')
 def primary_string_parametrized(s, p):
     return Node('DATATAG', 'string', p[2])
@@ -381,25 +371,37 @@ def primary_string_parametrized(s, p):
 def primary_text(s, p):
     return Node('DATATAG', 'token')
 
+@pg.production('primary : CNAME strlit')
+def primary_ctyped_string(s, p):
+    return Node('LITERAL', p[1].value, [Node('LITERAL_TYPE', p[0].value)])
+
+@pg.production('primary : STRING strlit')
+def primary_typed_string(s, p):
+    return Node('LITERAL', p[1].value, [Node('LITERAL_TYPE', 'string')])
+
 @pg.production('primary : TOKEN strlit')
 def primary_text(s, p):
     return Node('LITERAL', p[1].value) # the default type is token, so no LITERAL_TYPE
 
-@pg.production('primary : TEXT')
-def primary_text(s, p):
-    return Node('TEXT', None)
+@pg.production('primary : strlit')
+def primary_literal(s, p): # from datatypeValue
+    return Node('LITERAL', p[0].value)
 
 @pg.production('primary : EMPTY')
 def primary_empty(s, p):
     return Node('EMPTY', None)
 
-@pg.production('primary : identifier')
-def primary_id(s, p):
-    return Node('REF', p[0].name)
-
 @pg.production('primary : NOTALLOWED')
 def primary_notallowed(s, p):
     return Node('NOT_ALLOWED', None)
+
+@pg.production('primary : TEXT')
+def primary_text(s, p):
+    return Node('TEXT', None)
+
+@pg.production('primary : identifier')
+def primary_id(s, p):
+    return Node('REF', p[0].name)
 
 @pg.production('primary : PARENT ID')
 def primary_parent(s, p):
@@ -409,6 +411,8 @@ def primary_parent(s, p):
 def primary_grammar(s, p):
     return p[0]
 
+# This local production implements primary's grammar alternative; the
+# grammar-content production above corresponds to Appendix A's grammar.
 @pg.production('grammar : GRAMMAR LBRACE grammar-content RBRACE')
 def grammar(s, p):
     return Node('GRAMMAR', None, p[2])
@@ -436,6 +440,15 @@ def name_class_name(s, p):
 def name_class_choice(s, p):
     return p[0]
 
+@pg.production('name-class-choice : simple-name-class PIPE simple-name-class')
+def name_class_choice_simple(s, p):
+    return [Node('CHOICE', None, p[0] + p[2])]
+
+@pg.production('name-class-choice : simple-name-class PIPE name-class-choice')
+def name_class_choice_nested(s, p):
+    p[2][0].value.insert(0, p[0][0])
+    return p[2]
+
 @pg.production('name-class : except-name-class')
 def name_class_except(s, p):
     return p[0]
@@ -450,32 +463,27 @@ def except_name_class_simple(s, p):
     p[0][0].value = [Node('EXCEPT', None, p[2])]
     return p[0]
 
-@pg.production('name-class-choice : simple-name-class PIPE simple-name-class')
-def name_class_choice_simple(s, p):
-    return [Node('CHOICE', None, p[0] + p[2])]
+@pg.production('name : CNAME')
+def name_cname(s, p):
+    return Node('NAME', p[0].value)
 
-@pg.production('name-class-choice : simple-name-class PIPE name-class-choice')
-def name_class_choice_nested(s, p):
-    p[2][0].value.insert(0, p[0][0])
-    return p[2]
-
-@pg.production('simple-name-class : STAR')
-def simple_name_class_any(s, p):
-    return [Node('NAME', p[0].value)]
+@pg.production('name : id-or-kw')
+def name_id(s, p):
+    return p[0]
 
 @pg.production('simple-name-class : name')
 def simple_name_class_name(s, p):
     return [p[0]]
+
+@pg.production('simple-name-class : STAR')
+def simple_name_class_any(s, p):
+    return [Node('NAME', p[0].value)]
 
 @pg.production('simple-name-class : LPAREN name-class RPAREN')
 def name_class_group(s, p):
     return p[1]
 
 # Appendix A.1 (Syntax): annotations and annotation content.
-@pg.production('annotation-attributes-content : LBRACKET start-annotation-content RBRACKET')
-def annotation_attributes_content(s, p):
-    return p[1]
-
 @pg.production('annotations : documentations')
 def annotations_empty(s, p):
     return p[0]
@@ -484,6 +492,40 @@ def annotations_empty(s, p):
 def annotations_multi(s, p):
     p[0] += p[2]
     return p[0]
+
+@pg.production('start-annotations : ')
+def start_annotations_empty(s, p):
+    return []
+
+@pg.production('start-annotations : CNAME cname-annotations')
+def start_annotations_cname(s, p):
+    p[1][0].name = p[0].value
+    return p[1]
+
+@pg.production('cname-annotations : EQUAL strlit start-annotations')
+def cname_annotations_attrib(s, p):
+    return [Node('ANNO_ATTR', None, [p[1].value])] + p[2]
+
+@pg.production('cname-annotations : annotation-attributes-content annotation-elements')
+def cname_annotations_element(s, p):
+    return [Node('ANNOTATION', None, p[0])] + p[1]
+
+@pg.production('annotation-elements : ')
+def annotation_elements_empty(s, p):
+    return []
+
+@pg.production('annotation-elements : annotation-element annotation-elements')
+def annotation_elements_multi(s, p):
+    p[1].insert(0, p[0])
+    return p[1]
+
+@pg.production('annotation-element : CNAME annotation-attributes-content')
+def nested_annotation_element(s, p):
+    return Node('ANNOTATION', p[0].value, p[1])
+
+@pg.production('annotation-attributes-content : LBRACKET start-annotation-content RBRACKET')
+def annotation_attributes_content(s, p):
+    return p[1]
 
 @pg.production('start-annotation-content : ')
 def start_annotation_content_empty(s, p):
@@ -510,23 +552,6 @@ def cname_annotation_content_attribute(s, p):
 def cname_annotation_content_element(s, p):
     return [Node('ANNOTATION', None, p[0])] + p[1]
 
-@pg.production('start-annotations : ')
-def start_annotations_empty(s, p):
-    return []
-
-@pg.production('start-annotations : CNAME cname-annotations')
-def start_annotations_cname(s, p):
-    p[1][0].name = p[0].value
-    return p[1]
-
-@pg.production('cname-annotations : EQUAL strlit start-annotations')
-def cname_annotations_attrib(s, p):
-    return [Node('ANNO_ATTR', None, [p[1].value])] + p[2]
-
-@pg.production('cname-annotations : annotation-attributes-content annotation-elements')
-def cname_annotations_element(s, p):
-    return [Node('ANNOTATION', None, p[0])] + p[1]
-
 @pg.production('annotation-content : ')
 def annotation_content_empty(s, p):
     return []
@@ -538,19 +563,6 @@ def annotation_content_nested(s, p):
 @pg.production('annotation-content : strlit annotation-content')
 def annotation_content_literal(s, p):
     return [Node('LITERAL', p[0].value)] + p[1]
-
-@pg.production('annotation-elements : ')
-def annotation_elements_empty(s, p):
-    return []
-
-@pg.production('annotation-elements : annotation-element annotation-elements')
-def annotation_elements_multi(s, p):
-    p[1].insert(0, p[0])
-    return p[1]
-
-@pg.production('annotation-element : CNAME annotation-attributes-content')
-def nested_annotation_element(s, p):
-    return Node('ANNOTATION', p[0].value, p[1])
 
 # Appendix A.1 (Syntax): documentations.
 @pg.production('documentations : ')
@@ -568,14 +580,6 @@ def documentations_multi(s, p):
 
 
 # Appendix A.1 (Syntax): identifiers and keywords.
-@pg.production('name : CNAME')
-def name_cname(s, p):
-    return Node('NAME', p[0].value)
-
-@pg.production('name : id-or-kw')
-def name_id(s, p):
-    return p[0]
-
 @pg.production('id-or-kw : identifier')
 def id_or_kw_identifier(s, p):
     return p[0]
