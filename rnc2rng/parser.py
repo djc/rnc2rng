@@ -327,17 +327,9 @@ def annotated_primary_annotated(s, p):
     p[1].value = p[0] + p[1].value
     return p[1]
 
-@pg.production('primary : LPAREN pattern RPAREN')
-def annotated_primary_group(s, p):
-    return Node('GROUP', None, p[1])
-
 @pg.production('primary : element-primary')
 def primary_element(s, p):
     return p[0]
-
-@pg.production('element-primary : ELEMENT name-class LBRACE pattern RBRACE')
-def element_primary(s, p):
-    return Node('ELEM', None, p[1] + p[3])
 
 @pg.production('primary : ATTRIBUTE name-class LBRACE pattern RBRACE')
 def primary_attrib(s, p):
@@ -411,12 +403,23 @@ def primary_parent(s, p):
 def primary_grammar(s, p):
     return p[0]
 
-# This local production implements primary's grammar alternative; the
-# grammar-content production above corresponds to Appendix A's grammar.
+# Parenthesized patterns are handled by Appendix A's leadAnnotatedPrimary.
+@pg.production('primary : LPAREN pattern RPAREN')
+def annotated_primary_group(s, p):
+    return Node('GROUP', None, p[1])
+
+# Parser-specific productions supporting the primary alternatives above.
+@pg.production('element-primary : ELEMENT name-class LBRACE pattern RBRACE')
+def element_primary(s, p):
+    return Node('ELEM', None, p[1] + p[3])
+
+# grammar-content above corresponds to Appendix A's grammar; this local
+# rule wraps it for primary's grammar { ... } alternative.
 @pg.production('grammar : GRAMMAR LBRACE grammar-content RBRACE')
 def grammar(s, p):
     return Node('GRAMMAR', None, p[2])
 
+# These rules provide the datatype parameters used by primary alternatives.
 @pg.production('params : ')
 def params_empty(s, p):
     return []
