@@ -4,11 +4,39 @@ from urllib.parse import urljoin, urlparse
 
 import rply, sys, os
 
-KEYWORDS = set([
-    'attribute', 'datatypes', 'default', 'div', 'element', 'empty', 'external',
-    'grammar', 'include', 'inherit', 'list', 'mixed', 'namespace',
-    'notAllowed', 'parent', 'start', 'string', 'text', 'token',
-])
+# Appendix A.2: lexical structure.
+
+# Sections 2.1-2.2: byte decoding and BOM handling.
+def _decode_source(data):
+    bom = data[:2] in {BOM_UTF16_BE, BOM_UTF16_LE}
+    return data.decode('utf-16' if bom else 'utf-8')
+
+
+# Sections 2.3-2.4 (newline normalization and escape interpretation) are
+# not currently implemented as separate preprocessing stages.
+
+# Section 2.5: tokenization.
+KEYWORDS = (
+    'attribute',
+    'default',
+    'datatypes',
+    'div',
+    'element',
+    'empty',
+    'external',
+    'grammar',
+    'include',
+    'inherit',
+    'list',
+    'mixed',
+    'namespace',
+    'notAllowed',
+    'parent',
+    'start',
+    'string',
+    'text',
+    'token',
+)
 
 # Appendix A.2 (Lexical structure): token patterns and tokenization.
 NCNAME = r'[A-Za-z_][\w.-]*'
@@ -53,6 +81,7 @@ def lex(src):
             continue
         yield t
 
+# Parser-generator configuration and AST node types.
 pg = rply.ParserGenerator([
     'AMP', 'CNAME', 'COMBINE', 'COMMA', 'DOCUMENTATION', 'EQUAL', 'ID',
     'LBRACE', 'LBRACKET', 'LPAREN', 'LIST', 'LITERAL', 'MINUS', 'MIXED',
@@ -591,14 +620,6 @@ def id_or_kw_identifier(s, p):
 def id_or_kw_keyword(s, p):
     return p[0]
 
-@pg.production('identifier : ID')
-def id_kw_id(s, p):
-    return Node('NAME', p[0].value)
-
-@pg.production('identifier : QID')
-def id_kw_quoted_identifier(s, p):
-    return Node('NAME', p[0].value[1:])
-
 @pg.production('keyword : ATTRIBUTE')
 def keyword_attr(s, p):
     return Node('NAME', p[0].value)
@@ -675,6 +696,16 @@ def keyword_text(s, p):
 def keyword_token(s, p):
     return Node('NAME', p[0].value)
 
+# Appendix A.2 defines identifier lexically; these productions adapt its
+# lexer tokens to the parser's identifier value.
+@pg.production('identifier : ID')
+def id_kw_id(s, p):
+    return Node('NAME', p[0].value)
+
+@pg.production('identifier : QID')
+def id_kw_quoted_identifier(s, p):
+    return Node('NAME', p[0].value[1:])
+
 # Appendix A.1 (Syntax): literal.
 @pg.production('strlit : LITERAL')
 def strlit_literal(s, p): # from datatypeValue
@@ -740,8 +771,7 @@ def parse(src=None, f=None):
         else:
             with open(fn, 'rb') as f:
                 bytes = f.read()
-        bom = bytes[:2] in {BOM_UTF16_BE, BOM_UTF16_LE}
-        src = bytes.decode('utf-16' if bom else 'utf-8')
+        src = _decode_source(bytes)
     elif f is not None:
         fn, src = f.name, f.read()
     else:
