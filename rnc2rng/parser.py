@@ -216,25 +216,9 @@ def member_foreign_element_annotation(s, p):
 def component_start(s, p):
     return p[0]
 
-@pg.production('grammar-start : START definition')
-def grammar_start(s, p):
-    return Node('DEFINE', 'start', [p[1]])
-
 @pg.production('component : define')
 def component_define(s, p):
     return p[0]
-
-@pg.production('define : identifier definition')
-def define(s, p):
-    return Node('DEFINE', p[0].name, [p[1]])
-
-@pg.production('definition : EQUAL pattern')
-def definition_equal(s, p):
-    return Node('ASSIGN', p[0].value, p[1])
-
-@pg.production('definition : COMBINE pattern')
-def definition_combine(s, p):
-    return Node('ASSIGN', p[0].value, p[1])
 
 @pg.production('component : INCLUDE strlit opt-inherit opt-include-content')
 def component_include(s, p):
@@ -247,6 +231,23 @@ def component_include(s, p):
 @pg.production('component : DIV LBRACE grammar-content RBRACE')
 def component_div(s, p):
     return Node('DIV', None, p[2])
+
+# Parser-specific rules for the component alternatives above.
+@pg.production('grammar-start : START definition')
+def grammar_start(s, p):
+    return Node('DEFINE', 'start', [p[1]])
+
+@pg.production('define : identifier definition')
+def define(s, p):
+    return Node('DEFINE', p[0].name, [p[1]])
+
+@pg.production('definition : EQUAL pattern')
+def definition_equal(s, p):
+    return Node('ASSIGN', p[0].value, p[1])
+
+@pg.production('definition : COMBINE pattern')
+def definition_combine(s, p):
+    return Node('ASSIGN', p[0].value, p[1])
 
 @pg.production('opt-inherit : ')
 def opt_inherit_none(s, p):
