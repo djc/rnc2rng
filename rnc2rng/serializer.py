@@ -28,9 +28,11 @@ class XMLSerializer(object):
     def reset(self):
         self.buf = []
         self.ns = {}
+        self.global_ns = {}
         self.typelibs = {}
         self.default = ''
         self.level = 0
+        self.root_depth = 0
 
     def write(self, s):
         self.buf.append(self.indent * self.level + s)
@@ -60,6 +62,7 @@ class XMLSerializer(object):
             elif n.type == NS:
                 self.ns[n.name] = n.value[0]
 
+        self.global_ns = self.ns.copy()
         prelude = ['<?xml version="1.0" encoding="UTF-8"?>']
         prelude.append('<grammar xmlns="http://relaxng.org/ns/structure/1.0"')
         if self.default and self.default != 'inherit':
@@ -97,6 +100,27 @@ class XMLSerializer(object):
         if ns != TYPELIBS['xsd']:
             attrs += ' datatypeLibrary="%s"' % ns # write all exceptions explicitly
         return attrs
+
+    def visit_root(self, root):
+        outer_ns = self.ns
+        outer_default = self.default
+        self.ns = outer_ns.copy()
+        self.root_depth += 1
+        try:
+            for n in root.value:
+                if n.type == DATATYPES:
+                    self.typelibs[n.name] = n.value[0]
+                elif n.type == DEFAULT_NS:
+                    self.default = n.value[0]
+                    if n.name is not None:
+                        self.ns[n.name] = n.value[0]
+                elif n.type == NS:
+                    self.ns[n.name] = n.value[0]
+            self.visit(root.value, indent=False)
+        finally:
+            self.root_depth -= 1
+            self.ns = outer_ns
+            self.default = outer_default
 
     def visit(self, nodes, ctx=None, indent=True):
         '''Visiting a list of nodes, writes out the XML content to the internal
@@ -272,18 +296,7 @@ class XMLSerializer(object):
                 self.visit(x.value, ctx=x.type)
                 self.write('</attribute>')
             elif x.type == ROOT:
-                for n in x.value:
-                    # Record included document's custom datatypes
-                    if n.type == DATATYPES:
-                        self.typelibs[n.name] = n.value[0]
-                    
-                    # Verify the included document has the same metadata
-                    if n.type == DEFAULT_NS:
-                        assert self.default == n.value[0]
-                    elif n.type == NS:
-                        assert n.name in self.ns
-                        assert self.ns[n.name] == n.value[0]
-                self.visit(x.value, indent=False)
+                self.visit_root(x)
             else:
                 assert False, x
         if indent:

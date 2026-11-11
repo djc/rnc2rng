@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+         ns="http://www.example.com/address"
+         xmlns:a="www.anotherexample.com">
+  <start>
+    <element>
+      <name ns="www.anotherexample.com">foo</name>
+      <attribute>
+        <name ns="www.anotherexample.com">bar</name>
+        <data type="string" datatypeLibrary=""/>
+      </attribute>
+    </element>
+  </start>
+</grammar>

@@ -133,7 +133,10 @@ for _node_type in NODE_TYPES:
 # Appendix A.1 (Syntax): topLevel, preamble, decl, and topLevelBody.
 @pg.production('start : preamble top-level-body')
 def start(s, p):
-    return Node('ROOT', None, p[0] + p[1])
+    declarations = p[0]
+    if s.has_inherited_namespace and not s.default_namespace_declared:
+        declarations.append(Node('DEFAULT_NS', None, [s.default_namespace]))
+    return Node('ROOT', None, declarations + p[1])
 
 @pg.production('preamble : ')
 def preamble_empty(s, p):
@@ -146,15 +149,30 @@ def preamble_multi(s, p):
 
 @pg.production('decl : NAMESPACE id-or-kw EQUAL ns-uri-lit')
 def decl_ns(s, p):
-    return Node('NS', p[1].name, p[3])
+    raw_uri = p[3][0]
+    uri = s.resolve_namespace(raw_uri)
+    s.namespaces[p[1].name] = uri
+    stored_uri = uri if s.has_inherited_namespace else raw_uri
+    return Node('NS', p[1].name, [stored_uri])
 
 @pg.production('decl : DEFAULT NAMESPACE EQUAL ns-uri-lit')
 def decl_default_ns(s, p):
-    return Node('DEFAULT_NS', None, p[3])
+    raw_uri = p[3][0]
+    uri = s.resolve_namespace(raw_uri)
+    s.default_namespace = uri
+    s.default_namespace_declared = True
+    stored_uri = uri if s.has_inherited_namespace else raw_uri
+    return Node('DEFAULT_NS', None, [stored_uri])
 
 @pg.production('decl : DEFAULT NAMESPACE id-or-kw EQUAL ns-uri-lit')
 def decl_default_names_ns(s, p):
-    return Node('DEFAULT_NS', p[2].name, p[4])
+    raw_uri = p[4][0]
+    uri = s.resolve_namespace(raw_uri)
+    s.default_namespace = uri
+    s.default_namespace_declared = True
+    s.namespaces[p[2].name] = uri
+    stored_uri = uri if s.has_inherited_namespace else raw_uri
+    return Node('DEFAULT_NS', p[2].name, [stored_uri])
 
 @pg.production('decl : DATATYPES id-or-kw EQUAL strlit')
 def decl_datatypes(s, p):
@@ -226,7 +244,17 @@ def component_include(s, p):
         url = urljoin(s.path, p[1].value)
     else:
         url = os.path.join(s.path, p[1].value)
-    return parse(f=url)
+    inherited_namespace = s.default_namespace
+    if p[2] is not None:
+        prefix = p[2].name
+        if prefix not in s.namespaces:
+            raise _make_parse_error(
+                s,
+                p[0],
+                'Unknown namespace prefix %r in include inherit declaration' % prefix,
+            )
+        inherited_namespace = s.namespaces[prefix]
+    return parse(f=url, inherited_namespace=inherited_namespace)
 
 @pg.production('component : DIV LBRACE grammar-content RBRACE')
 def component_div(s, p):
@@ -255,7 +283,7 @@ def opt_inherit_none(s, p):
 
 @pg.production('opt-inherit : INHERIT EQUAL id-or-kw')
 def opt_inherit(s, p):
-    return Node('INHERIT', p[2])
+    return Node('INHERIT', p[2].name)
 
 @pg.production('opt-include-content : ')
 def opt_include_content_none(s, p):
@@ -721,7 +749,7 @@ def strlit_concat(s, p):
 # Parser errors and source/input handling.
 class ParseError(Exception):
 
-    def __init__(self, t, fn, ln, col, line):
+    def __init__(self, t, fn, ln, col, line, message=None):
 
         self.token = t
         self.location = fn, ln, col
@@ -729,29 +757,44 @@ class ParseError(Exception):
 
         fn = fn if fn is not None else '(unknown)'
         loc = 'in %s [%s:%s]' % (fn, ln + 1, col + 1)
+        if message is not None:
+            loc += ': ' + message
         spaces = col + 3 * min(col, line.count('\t'))
         line = line.replace('\t', ' ' * 4).rstrip()
         self.msg = '\n'.join((loc, line, ' ' * spaces + '^'))
         Exception.__init__(self, self.msg)
 
-@pg.error
-def error(s, t):
+def _make_parse_error(s, t, message=None):
     ln = t.source_pos.lineno - 1
     if t.value and t.value[0] == '\n':
         ln -= 1
     col = t.source_pos.colno - 1
     line = s.lines[ln] if ln < len(s.lines) else ''
-    raise ParseError(t, s.fn, ln, col, line)
+    return ParseError(t, s.fn, ln, col, line, message)
+
+@pg.error
+def error(s, t):
+    raise _make_parse_error(s, t)
 
 parser = pg.build()
 
 class State(object):
-    def __init__(self, fn, src):
+    def __init__(self, fn=None, src='', inherited_namespace=None):
         self.fn = fn
         self.path = os.getcwd()
         if fn is not None:
             self.path = os.path.dirname(os.path.abspath(fn)) if not is_url(fn) else fn
         self.lines = src.splitlines()
+        self.has_inherited_namespace = inherited_namespace is not None
+        self.inherited_namespace = inherited_namespace or ''
+        self.default_namespace = self.inherited_namespace
+        self.default_namespace_declared = False
+        self.namespaces = {
+            'xml': 'http://www.w3.org/XML/1998/namespace',
+        }
+
+    def resolve_namespace(self, uri):
+        return self.inherited_namespace if uri == 'inherit' else uri
 
 if sys.version_info[0] < 3:
     str_types = str, bytes, unicode  # noqa: unicode not defined in Python 3
@@ -762,7 +805,7 @@ def is_url(fn):
     parse_result = urlparse(fn)
     return parse_result.scheme in ('http', 'https', 'file')
 
-def parse(src=None, f=None):
+def parse(src=None, f=None, inherited_namespace=None):
     assert src is None or f is None
     if f is not None and isinstance(f, str_types):
         fn = f
@@ -778,4 +821,4 @@ def parse(src=None, f=None):
     else:
         # Caller only gave source code, no filename.
         fn = None
-    return parser.parse(lex(src), state=State(fn, src))
+    return parser.parse(lex(src), state=State(fn, src, inherited_namespace))
