@@ -2,3 +2,4 @@ include AUTHORS
 include README.rst
 include test.py
 include tests/*.rn*
+recursive-include tests/golden *.rnc *.rng
