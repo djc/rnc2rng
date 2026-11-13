@@ -57,6 +57,22 @@ class XMLSerializer(object):
         self.ns[prefix] = uri
         return ''
 
+    def documentation_namespace_declaration(self):
+        # Compact Syntax section 5.2 fixes documentation shorthand's namespace.
+        documentation_ns = NAMESPACES['a']
+        self.namespace('a')
+        if self.root_depth:
+            global_binding_differs = self.global_ns.get('a') != documentation_ns
+            local_binding_differs = self.ns.get('a') != documentation_ns
+            needs_declaration = global_binding_differs or local_binding_differs
+            if needs_declaration:
+                return ' xmlns:a="%s"' % html.escape(documentation_ns)
+            return ''
+        if self.global_ns.get('a') not in (None, documentation_ns):
+            return ' xmlns:a="%s"' % html.escape(documentation_ns)
+        self.ns['a'] = documentation_ns
+        return ''
+
     def toxml(self, node):
 
         self.reset()
@@ -279,9 +295,7 @@ class XMLSerializer(object):
                 self.write('</%s>' % x.name)
 
             elif x.type == DOCUMENTATION:
-                xmlns_attr = ''
-                if self.namespace('a') != NAMESPACES['a']:
-                    xmlns_attr = ' xmlns:a="%s"' % NAMESPACES['a']
+                xmlns_attr = self.documentation_namespace_declaration()
 
                 fmt = '<a:documentation%s>%s</a:documentation>'
                 self.write(fmt % (xmlns_attr, html.escape('\n'.join(x.value))))
