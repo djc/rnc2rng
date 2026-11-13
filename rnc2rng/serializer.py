@@ -49,6 +49,14 @@ class XMLSerializer(object):
             self.ns[ns] = NAMESPACES[ns]
         return self.ns[ns]
 
+    def namespace_declaration(self, prefix, uri):
+        if prefix == 'xml' or self.global_ns.get(prefix) == uri:
+            return ''
+        if self.root_depth:
+            return ' xmlns:%s="%s"' % (prefix, html.escape(uri))
+        self.ns[prefix] = uri
+        return ''
+
     def toxml(self, node):
 
         self.reset()
@@ -81,12 +89,26 @@ class XMLSerializer(object):
         self.write('</grammar>')
         return '\n'.join(prelude + self.buf)
 
-    def anno_attrs(self, nodes):
+    def anno_attrs(self, nodes, extra_prefixes=()):
         select = lambda n: isinstance(n, parser.Node) and n.type == ANNO_ATTR
-        pairs = [(n.name, html.escape(n.value[0])) for n in nodes if select(n)]
-        if not pairs:
-            return ''
-        return ' ' + ' '.join('%s="%s"' % attr for attr in pairs)
+        pairs = []
+        prefixes = set(extra_prefixes)
+        for n in nodes:
+            if not select(n):
+                continue
+            pairs.append((n.name, html.escape(n.value[0])))
+            if n.name is not None and ':' in n.name:
+                prefixes.add(n.name.split(':', 1)[0])
+
+        declarations = []
+        for prefix in sorted(prefixes):
+            uri = self.namespace(prefix)
+            declaration = self.namespace_declaration(prefix, uri)
+            if declaration:
+                declarations.append(declaration)
+
+        attrs = ' ' + ' '.join('%s="%s"' % attr for attr in pairs) if pairs else ''
+        return attrs + ''.join(declarations)
 
     def type_attrs(self, name):
         if ':' in name:
@@ -136,7 +158,11 @@ class XMLSerializer(object):
             elif x.type in set([ANNO_ATTR, LITERAL_TYPE, DATATYPES, DEFAULT_NS, NS]):
                 continue
 
-            attribs = self.anno_attrs(x.value)
+            annotation_prefixes = (
+                [x.name.split(':', 1)[0]]
+                if x.type == ANNOTATION and ':' in x.name else []
+            )
+            attribs = self.anno_attrs(x.value, annotation_prefixes)
             if x.type == DEFINE:
                 for op in (x.name for x in x.value if x.type == 'ASSIGN'):
                     modes = {'|=': 'choice', '&=': 'interleave'}
@@ -222,7 +248,6 @@ class XMLSerializer(object):
                 self.write('<value%s>%s</value>' % bits)
                 self.visit(x.value, indent=False)
             elif x.type == ANNOTATION:
-
                 literals, rest = [], []
                 for n in x.value:
                     if n.type == LITERAL:
@@ -236,10 +261,6 @@ class XMLSerializer(object):
                     tail = html.escape(''.join(literals)) + '</%s>' % x.name
 
                 bits = x.name, attribs, end, tail
-
-                if ':' in x.name:
-                    parts = x.name.split(':', 1)
-                    ns = self.namespace(parts[0])
 
                 self.write('<%s%s%s>%s' % bits)
                 if not rest:
@@ -260,7 +281,7 @@ class XMLSerializer(object):
             elif x.type == DOCUMENTATION:
                 xmlns_attr = ''
                 if self.namespace('a') != NAMESPACES['a']:
-                    xmlns_attr = ' xmlns:a="%s"' % NAMESPACES['a'] # the user is already using namespace a: for something else
+                    xmlns_attr = ' xmlns:a="%s"' % NAMESPACES['a']
 
                 fmt = '<a:documentation%s>%s</a:documentation>'
                 self.write(fmt % (xmlns_attr, html.escape('\n'.join(x.value))))

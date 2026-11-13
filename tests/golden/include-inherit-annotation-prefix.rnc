@@ -1,0 +1,2 @@
+namespace ann = "urn:outer-annotation"
+include "include-inherit/annotation-prefix.rnc"
