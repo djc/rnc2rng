@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+         ns="http://relaxng.org/ns/compatibility/annotations/1.0"
+         xmlns:a="urn:outer-annotation">
+  <start>
+    <a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">child documentation</a:documentation>
+    <element>
+      <name ns="http://relaxng.org/ns/compatibility/annotations/1.0">foo</name>
+      <empty/>
+    </element>
+  </start>
+</grammar>

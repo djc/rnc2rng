@@ -1,0 +1,3 @@
+default namespace = "http://relaxng.org/ns/compatibility/annotations/1.0"
+namespace a = "urn:outer-annotation"
+include "include-inherit/documentation-prefix.rnc"
