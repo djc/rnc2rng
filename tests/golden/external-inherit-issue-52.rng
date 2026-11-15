@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+         ns="http://www.example.com/address"
+         xmlns:a="www.anotherexample.com">
+  <start>
+    <externalRef href="include-inherit/ns-inherit.rng" ns="www.anotherexample.com"/>
+  </start>
+</grammar>

@@ -449,11 +449,21 @@ def primary_empty(s, p):
 def primary_notallowed(s, p):
     return Node('NOT_ALLOWED', None)
 
-@pg.production('external-pattern : EXTERNAL strlit')
+@pg.production('external-pattern : EXTERNAL strlit opt-inherit')
 def external_pattern(s, p):
-    inherited_namespace = s.default_namespace
-    if not s.default_namespace_declared and not s.has_inherited_namespace:
-        inherited_namespace = 'inherit'
+    if p[2] is not None:
+        prefix = p[2].name
+        if prefix not in s.namespaces:
+            raise _make_parse_error(
+                s,
+                p[0],
+                'Unknown namespace prefix %r in external inherit declaration' % prefix,
+            )
+        inherited_namespace = s.namespaces[prefix]
+    else:
+        inherited_namespace = s.default_namespace
+        if not s.default_namespace_declared and not s.has_inherited_namespace:
+            inherited_namespace = 'inherit'
     return Node('EXTERNAL', p[1].value, [inherited_namespace])
 
 @pg.production('primary : TEXT')

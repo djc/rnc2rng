@@ -45,6 +45,10 @@ class TestSuite(unittest.TestCase):
         with self.assertRaisesRegex(ParseError, "Unknown namespace prefix"):
             rnc2rng.loads('include "child.rnc" inherit = missing\n')
 
+    def test_unknown_external_inherit_prefix(self):
+        with self.assertRaisesRegex(ParseError, "Unknown namespace prefix"):
+            rnc2rng.loads('external "child.rnc" inherit = missing\n')
+
     # synthesize a test that reads its input from a URL
     def test_urlinput(self):
         with resources.path(golden, "include.rnc") as path:
