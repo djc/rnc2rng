@@ -121,9 +121,9 @@ def pprint(n, level=0):
 NODE_TYPES = [
     'ANNO_ATTR', 'ANNOTATION', 'ANY', 'ASSIGN', 'ATTR', 'CHOICE', 'DATATAG',
     'DATATYPES', 'DEFAULT_NS', 'DEFINE', 'DIV', 'DOCUMENTATION', 'ELEM',
-    'EMPTY', 'EXCEPT', 'GRAMMAR', 'GROUP', 'INTERLEAVE', 'LIST', 'LITERAL',
-    'MAYBE', 'MIXED', 'NAME', 'NOT_ALLOWED', 'NS', 'PARAM', 'PARENT', 'REF',
-    'ROOT', 'SEQ', 'SOME', 'TEXT', 'LITERAL_TYPE'
+    'EMPTY', 'EXCEPT', 'EXTERNAL', 'GRAMMAR', 'GROUP', 'INTERLEAVE', 'LIST',
+    'LITERAL', 'MAYBE', 'MIXED', 'NAME', 'NOT_ALLOWED', 'NS', 'PARAM',
+    'PARENT', 'REF', 'ROOT', 'SEQ', 'SOME', 'TEXT', 'LITERAL_TYPE'
 ]
 
 for _node_type in NODE_TYPES:
@@ -190,19 +190,23 @@ def ns_uri_inh(s, p):
 def top_level_body(s, p):
     if isinstance(p[0], list):
         return p[0]
-    elif p[0].type == 'ELEM':
+    elif p[0].type in ('ELEM', 'EXTERNAL'):
         return [Node('DEFINE', 'start', [Node('ASSIGN', '=', [p[0]])])]
     elif p[0].type == 'GRAMMAR':
         return [p[0]]
 
-
 # Appendix A.1 (Syntax): topLevelBody, grammar, member, component, include.
-# grammar-content is the formal grammar production; alt-top-level adds
-# parser-specific alternatives around that top-level content.
+# grammar-content is the formal grammar production. alt-top-level adapts the
+# top-level shorthand; it does not yet route through pattern, so external has
+# an explicit alternative here.
 @pg.production('alt-top-level : annotations element-primary')
 def top_level_element(s, p):
     p[1].value = p[0] + p[1].value
     return p[1]
+
+@pg.production('alt-top-level : external-pattern')
+def top_level_external(s, p):
+    return p[0]
 
 @pg.production('alt-top-level : grammar-content')
 def top_level_grammar_content(s, p):
@@ -445,6 +449,13 @@ def primary_empty(s, p):
 def primary_notallowed(s, p):
     return Node('NOT_ALLOWED', None)
 
+@pg.production('external-pattern : EXTERNAL strlit')
+def external_pattern(s, p):
+    inherited_namespace = s.default_namespace
+    if not s.default_namespace_declared and not s.has_inherited_namespace:
+        inherited_namespace = 'inherit'
+    return Node('EXTERNAL', p[1].value, [inherited_namespace])
+
 @pg.production('primary : TEXT')
 def primary_text(s, p):
     return Node('TEXT', None)
@@ -459,6 +470,10 @@ def primary_parent(s, p):
 
 @pg.production('primary : grammar')
 def primary_grammar(s, p):
+    return p[0]
+
+@pg.production('primary : external-pattern')
+def primary_external(s, p):
     return p[0]
 
 # Parenthesized patterns are handled by Appendix A's leadAnnotatedPrimary.
