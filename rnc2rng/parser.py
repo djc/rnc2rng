@@ -161,6 +161,7 @@ def decl_default_ns(s, p):
     uri = s.resolve_namespace(raw_uri)
     s.default_namespace = uri
     s.default_namespace_declared = True
+    s.default_namespace_is_inherited = raw_uri == 'inherit' and not s.has_inherited_namespace
     stored_uri = uri if s.has_inherited_namespace else raw_uri
     return Node('DEFAULT_NS', None, [stored_uri])
 
@@ -170,6 +171,7 @@ def decl_default_names_ns(s, p):
     uri = s.resolve_namespace(raw_uri)
     s.default_namespace = uri
     s.default_namespace_declared = True
+    s.default_namespace_is_inherited = raw_uri == 'inherit' and not s.has_inherited_namespace
     s.namespaces[p[2].name] = uri
     stored_uri = uri if s.has_inherited_namespace else raw_uri
     return Node('DEFAULT_NS', p[2].name, [stored_uri])
@@ -462,7 +464,7 @@ def external_pattern(s, p):
         inherited_namespace = s.namespaces[prefix]
     else:
         inherited_namespace = s.default_namespace
-        if not s.default_namespace_declared and not s.has_inherited_namespace:
+        if s.default_namespace_is_inherited:
             inherited_namespace = 'inherit'
     return Node('EXTERNAL', p[1].value, [inherited_namespace])
 
@@ -814,6 +816,7 @@ class State(object):
         self.inherited_namespace = inherited_namespace or ''
         self.default_namespace = self.inherited_namespace
         self.default_namespace_declared = False
+        self.default_namespace_is_inherited = inherited_namespace is None
         self.namespaces = {
             'xml': 'http://www.w3.org/XML/1998/namespace',
         }
