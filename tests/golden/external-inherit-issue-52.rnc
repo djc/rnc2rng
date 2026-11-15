@@ -1,0 +1,4 @@
+default namespace = "http://www.example.com/address"
+namespace a = "www.anotherexample.com"
+
+external "include-inherit/ns-inherit.rnc" inherit = a
