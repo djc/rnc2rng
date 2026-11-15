@@ -3,12 +3,14 @@
 from . import parser
 from rnc2rng.parser import (
     ANNO_ATTR, ANNOTATION, ANY, ASSIGN, ATTR, CHOICE, DATATAG, DATATYPES,
-    DEFAULT_NS, DEFINE, DIV, DOCUMENTATION, ELEM, EMPTY, EXCEPT, GRAMMAR,
+    DEFAULT_NS, DEFINE, DIV, DOCUMENTATION, ELEM, EMPTY, EXCEPT, EXTERNAL,
+    GRAMMAR,
     GROUP, INTERLEAVE, LIST, LITERAL, MAYBE, MIXED, NAME, NOT_ALLOWED, NS,
     PARAM, PARENT, REF, ROOT, SEQ, SOME, TEXT, LITERAL_TYPE
 )
 
 import html
+from urllib.parse import urlsplit, urlunsplit
 
 QUANTS = {SOME: 'oneOrMore', MAYBE: 'optional', ANY: 'zeroOrMore'}
 TYPELIBS = {
@@ -139,6 +141,17 @@ class XMLSerializer(object):
             attrs += ' datatypeLibrary="%s"' % ns # write all exceptions explicitly
         return attrs
 
+    def map_schema_ref(self, uri):
+        parts = urlsplit(uri)
+        path = parts.path
+        if path.endswith('.rnc'):
+            path = path[:-4] + '.rng'
+        else:
+            path += '.rng'
+        return urlunsplit((
+            parts.scheme, parts.netloc, path, parts.query, parts.fragment
+        ))
+
     def visit_root(self, root):
         outer_ns = self.ns
         outer_default = self.default
@@ -253,6 +266,13 @@ class XMLSerializer(object):
                     self.write('<%s name="%s"%s>' % bits)
                     self.visit(x.value)
                     self.write('</%s>' % x.type.lower())
+            elif x.type == EXTERNAL:
+                href = html.escape(self.map_schema_ref(x.name))
+                inherited_namespace = x.value[0]
+                ns_attr = ''
+                if inherited_namespace != 'inherit':
+                    ns_attr = ' ns="%s"' % html.escape(inherited_namespace)
+                self.write('<externalRef href="%s"%s/>' % (href, ns_attr))
             elif x.type == LITERAL:
                 types = [n.name for n in x.value if isinstance(n, parser.Node) and n.type == LITERAL_TYPE]
                 if types:
