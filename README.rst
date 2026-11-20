@@ -27,16 +27,21 @@ of a collection of files around RELAX NG `on his site`_ into the Public Domain.
 `Hartmut Goebel`_ published it as a package on PyPI to make it easier to access.
 It was mirrored on GitHub by `Dustin J. Mitchell`_ in 2010 after he fixed some
 bugs. `Timmy Zhu`_ forked his repository and contributed further enhancements.
-Recently, I (Dirkjan Ochtman) was interested in playing with RELAX NG Compact
-and started making further updates. I asked Hartmut for maintainership on PyPI
-and received it. While I cannot promise many updates, I should be responsive to
-bug reports and (especially!) pull requests.
+`Dirkjan Ochtman`_ later made further updates and took over maintainership on
+PyPI from Hartmut Goebel. I began contributing in 2024, and Dirkjan later asked
+if I was interested in taking over maintainership. I received PyPI maintainership
+on November 17, 2026.
+
+I intend to keep the project up to date by testing supported Python versions,
+modernizing the code, and implementing remaining parts of the RELAX NG standard.
+I'll also try to be responsive to issues and pull requests.
 
 .. _David Mertz: http://www.gnosis.cx/publish/
 .. _on his site: http://www.gnosis.cx/download/relax/
 .. _Hartmut Goebel: http://www.goebel-consult.de/
 .. _Dustin J. Mitchell: http://code.v.igoro.us/
 .. _Timmy Zhu: https://github.com/nattofriends
+.. _Dirkjan Ochtman: https://dirkjan.ochtman.nl/
 
 How to install
 --------------
