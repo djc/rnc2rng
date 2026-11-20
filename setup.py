@@ -3,12 +3,12 @@ from setuptools import setup
 setup(
     name='rnc2rng',
     version='2.8.0',
-    url='https://github.com/djc/rnc2rng',
+    url='https://github.com/jombr/rnc2rng',
     author='David Mertz',
     description='RELAX NG Compact to regular syntax conversion library',
     long_description=open('README.rst').read(),
-    maintainer='Dirkjan Ochtman',
-    maintainer_email='dirkjan@ochtman.nl',
+    maintainer='Joseph Bredahl',
+    maintainer_email='joseph.bredahl@outlook.com',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
