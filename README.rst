@@ -3,8 +3,8 @@ RELAX NG Compact to RELAX NG conversion library
 
 .. image:: https://github.com/djc/rnc2rng/workflows/CI/badge.svg
    :target: https://github.com/djc/rnc2rng/actions?query=workflow%3ACI
-.. image:: https://coveralls.io/repos/djc/rnc2rng/badge.svg?branch=master&service=github
-   :target: https://coveralls.io/github/djc/rnc2rng?branch=master
+.. image:: https://coveralls.io/repos/jombr/rnc2rng/badge.svg?branch=main&service=github
+   :target: https://coveralls.io/github/jombr/rnc2rng?branch=main
 
 Converts RELAX NG schemata in Compact syntax (`rnc`) to the equivalent schema
 in the XML-based default RELAX NG syntax. Dependencies:
