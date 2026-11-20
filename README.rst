@@ -1,8 +1,8 @@
 RELAX NG Compact to RELAX NG conversion library
 ===============================================
 
-.. image:: https://github.com/djc/rnc2rng/workflows/CI/badge.svg
-   :target: https://github.com/djc/rnc2rng/actions?query=workflow%3ACI
+.. image:: https://github.com/jombr/rnc2rng/actions/workflows/ci.yml/badge.svg?branch=main
+   :target: https://github.com/jombr/rnc2rng/actions/workflows/ci.yml
 .. image:: https://coveralls.io/repos/jombr/rnc2rng/badge.svg?branch=main&service=github
    :target: https://coveralls.io/github/jombr/rnc2rng?branch=main
 
